@@ -22,13 +22,13 @@ async def on_guild_join(ctx):
 
 
 @bot.command(name='add-league', help='Adds league associated to this guild ID.')
-async def add_league(ctx, league: int):
+async def add_league(ctx, league: str):
     existing_league = MONGO.servers.find_one(
             {"server": ctx.message.guild.id})
     if existing_league:
         newvalue = {"$set": {"league": league}}
         MONGO.servers.update_one(existing_league, newvalue)
-        await ctx.send('Updated your Sleeper league to '+league+'!')
+        await ctx.send('Successfully updated your Sleeper league to '+league+'!')
     else:
         server_league_object = {
             "server": ctx.message.guild.id,
