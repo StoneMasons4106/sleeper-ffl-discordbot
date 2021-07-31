@@ -40,13 +40,7 @@ bot = commands.Bot(command_prefix=get_prefix)
 
 @bot.event
 async def on_ready():
-    for guild in bot.guilds:
-        prefix = MONGO.prefixes.find_one(
-                {"server": str(guild.id)})["prefix"]
-        if prefix:
-            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=prefix+"help"))
-        else:
-            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
 
 
 ## On Guild Join - Message
@@ -78,7 +72,6 @@ async def set_prefix(ctx, prefix: str):
         if existing_prefix:
             newvalue = {"$set": {"prefix": prefix}}
             MONGO.prefixes.update_one(existing_prefix, newvalue)
-            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=prefix+"help"))
             await ctx.send('Successfully updated your prefix to '+prefix+'!')
         else:
             server_prefix_object = {
@@ -86,7 +79,6 @@ async def set_prefix(ctx, prefix: str):
                 "prefix": prefix
             }
             MONGO.prefixes.insert_one(server_prefix_object)
-            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=prefix+"help"))
             await ctx.send('Successfully updated your prefix to '+prefix+'!')
     else:
         await ctx.send('You do not have access to this command.')
