@@ -77,7 +77,9 @@ async def add_league(ctx, league: str):
 async def my_league_name(ctx):
     existing_league = find_existing_league(ctx)
     if existing_league:
-        await ctx.send(existing_league["name"])
+        league_id = existing_league["league"]
+        league = sleeper_wrapper.League(league_id)
+        await ctx.send(league["name"])
     else:
         await ctx.send('No league ID found, run add-league command to complete setup.')
 
