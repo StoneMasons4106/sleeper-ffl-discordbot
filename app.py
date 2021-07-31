@@ -17,9 +17,21 @@ MONGO_URI = os.environ.get("MONGO_URI")
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
+# Get Custom Prefixes
+
+def get_prefix(message):
+    existing_prefix = MONGO.prefixes.find_one(
+                {"server": str(message.guild.id)})
+    if existing_prefix:
+        my_prefix = existing_prefix["prefix"]
+    else:
+        my_prefix = '$'
+    return my_prefix
+
+
 # Bot Prefix
 
-bot = commands.Bot(command_prefix='$')
+bot = commands.Bot(command_prefix=get_prefix)
 
 
 # Bot Events
@@ -40,7 +52,7 @@ async def on_guild_join(ctx):
 
 # Functions
 
-# Get Existing Server League Object from Mongo
+## Get Existing Server League Object from Mongo
 
 def get_existing_league(ctx):
     existing_league = MONGO.servers.find_one(
@@ -49,6 +61,28 @@ def get_existing_league(ctx):
 
 
 # Bot Commands
+
+## Set Custom Prefix
+
+@bot.command(name='set-prefix', help='Set custom prefix per guild.')
+async def set_prefix(ctx, prefix: str):
+    if ctx.author.guild_permissions.administrator:
+        existing_prefix = MONGO.prefixes.find_one(
+                {"server": str(ctx.message.guild.id)})
+        if existing_prefix:
+            newvalue = {"$set": {"prefix": prefix}}
+            MONGO.prefixes.update_one(existing_prefix, newvalue)
+            await ctx.send('Successfully updated your prefix to '+prefix+'!')
+        else:
+            server_prefix_object = {
+                "server": str(ctx.message.guild.id),
+                "prefix": prefix
+            }
+            MONGO.prefixes.insert_one(server_prefix_object)
+            await ctx.send('Successfully updated your prefix to '+prefix+'!')
+    else:
+        await ctx.send('You do not have access to this command.')
+
 
 ## Set League ID in MongoDB
 
