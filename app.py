@@ -40,11 +40,11 @@ async def on_guild_join(ctx):
 
 # Functions
 
-## Find existing server league connection in Mongo
+# Get Existing Server League Object from Mongo
 
-def find_existing_league(ctx):
+def get_existing_league(ctx):
     existing_league = MONGO.servers.find_one(
-                {"server": ctx.message.guild.id})
+                {"server": str(ctx.message.guild.id)})
     return existing_league
 
 
@@ -55,7 +55,7 @@ def find_existing_league(ctx):
 @bot.command(name='add-league', help='Adds league associated to this guild ID.')
 async def add_league(ctx, league: str):
     if ctx.author.guild_permissions.administrator:
-        existing_league = find_existing_league(ctx)
+        existing_league = get_existing_league(ctx)
         if existing_league:
             newvalue = {"$set": {"league": league}}
             MONGO.servers.update_one(existing_league, newvalue)
@@ -75,10 +75,10 @@ async def add_league(ctx, league: str):
 
 @bot.command(name='my-league-name', help='Returns league name.')
 async def my_league_name(ctx):
-    existing_league = find_existing_league(ctx)
+    existing_league = get_existing_league(ctx)
     if existing_league:
         league_id = existing_league["league"]
-        league = sleeper_wrapper.League(league_id)
+        league = sleeper_wrapper.League(int(league_id)).get_league()
         await ctx.send(league["name"])
     else:
         await ctx.send('No league ID found, run add-league command to complete setup.')
