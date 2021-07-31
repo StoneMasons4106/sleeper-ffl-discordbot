@@ -15,4 +15,8 @@ async def on_guild_join(ctx):
     await ctx.send('Happy to be here! Please run the add-league command to set your Sleeper Fantasy Football league!')
 
 
+#@bot.command(name='add-league', help='Adds league associated to this guild ID.')
+#def add_league(ctx, league: int):
+
+
 bot.run(TOKEN)
