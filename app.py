@@ -43,7 +43,10 @@ async def on_ready():
     for guild in bot.guilds:
         prefix = MONGO.prefixes.find_one(
                 {"server": str(guild.id)})["prefix"]
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=prefix+"help"))
+        if prefix:
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=prefix+"help"))
+        else:
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
 
 
 ## On Guild Join - Message
