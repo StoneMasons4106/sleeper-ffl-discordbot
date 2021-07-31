@@ -1,0 +1,10 @@
+discord.py==1.6.0
+pymongo==3.11.4
+aiohttp==3.6.3
+async-timeout==3.0.1
+chardet==3.0.4
+yarl==1.5.1
+idna==2.8
+multidict==4.7.6
+attrs==21.2.0
+dnspython==2.1.0
