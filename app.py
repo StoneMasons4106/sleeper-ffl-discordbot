@@ -17,6 +17,11 @@ bot = commands.Bot(command_prefix='$')
 
 
 @bot.event
+async def on_ready():
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
+
+
+@bot.event
 async def on_guild_join(ctx):
     await ctx.send('Happy to be here! Please run the add-league command to set your Sleeper Fantasy Football league!')
 
