@@ -32,7 +32,7 @@ async def add_league(ctx, league: str):
             await ctx.send('Successfully updated your Sleeper league to '+league+'!')
         else:
             server_league_object = {
-                "server": ctx.message.guild.id,
+                "server": str(ctx.message.guild.id),
                 "league": league
             }
             MONGO.servers.insert_one(server_league_object)
