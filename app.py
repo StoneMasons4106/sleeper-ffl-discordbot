@@ -1,6 +1,5 @@
 # Import needed libraries
 
-from apscheduler.schedulers.blocking import BlockingScheduler
 import discord
 from discord.ext import commands
 import os
