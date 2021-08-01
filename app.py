@@ -1,6 +1,7 @@
 # Import needed libraries
 
 import discord
+from discord import colour
 from discord.ext import commands
 import os
 import pymongo
@@ -60,6 +61,13 @@ def get_existing_league(ctx):
     return existing_league
 
 
+def my_embed(title, description, color, name, value, inline, ctx):
+    embed = discord.Embed(title=title, description=description, color = color)
+    embed.add_field(name=name, value=value, inline=inline)
+    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+    return embed
+
+
 # Bot Commands
 
 ## Set Custom Prefix
@@ -72,16 +80,19 @@ async def set_prefix(ctx, prefix: str):
         if existing_prefix:
             newvalue = {"$set": {"prefix": prefix}}
             MONGO.prefixes.update_one(existing_prefix, newvalue)
-            await ctx.send('Successfully updated your prefix to '+prefix+'!')
+            embed = my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
+            await ctx.send(embed=embed)
         else:
             server_prefix_object = {
                 "server": str(ctx.message.guild.id),
                 "prefix": prefix
             }
             MONGO.prefixes.insert_one(server_prefix_object)
-            await ctx.send('Successfully updated your prefix to '+prefix+'!')
+            embed = my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
+            await ctx.send(embed=embed)
     else:
-        await ctx.send('You do not have access to this command.')
+        embed = my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'You do not have access to this command, request failed.', False, ctx)
+        await ctx.send(embed=embed)
 
 
 ## Set League ID in MongoDB
@@ -93,16 +104,19 @@ async def add_league(ctx, league: str):
         if existing_league:
             newvalue = {"$set": {"league": league}}
             MONGO.servers.update_one(existing_league, newvalue)
-            await ctx.send('Successfully updated your Sleeper league to '+league+'!')
+            embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league+'!', False, ctx)
+            await ctx.send(embed=embed)
         else:
             server_league_object = {
                 "server": str(ctx.message.guild.id),
                 "league": league
             }
             MONGO.servers.insert_one(server_league_object)
-            await ctx.send('Created your Sleeper league connection to '+league+'!')
+            embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league+'!', False, ctx)
+            await ctx.send(embed=embed)
     else:
-        await ctx.send('You do not have access to this command.')
+        embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'You do not have access to this command, request failed.', False, ctx)
+        await ctx.send(embed=embed)
 
 
 ## Get League Name
@@ -113,14 +127,16 @@ async def my_league_name(ctx):
     if existing_league:
         league_id = existing_league["league"]
         league = sleeper_wrapper.League(int(league_id)).get_league()
-        await ctx.send(league["name"])
+        embed = my_embed('Sleeper League Name', 'Name of your Sleeper League', discord.Colour.blue(), 'Name', league["name"], False, ctx)
+        await ctx.send(embed=embed)
     else:
-        await ctx.send('No league ID found, run add-league command to complete setup.')
+        embed = my_embed('Sleeper League Name', 'Name of your Sleeper League', discord.Colour.blue(), 'Name', 'No league specified, run add-league command to complete setup.', False, ctx)
+        await ctx.send(embed=embed)
 
 
 ## Get League Users
 
-@bot.command(name='my-league-members', help='Returns league members.')
+@bot.command(name='my-league-members', help='Returns league member display names and quantity.')
 async def my_league_members(ctx):
     existing_league = get_existing_league(ctx)
     if existing_league:
@@ -129,9 +145,12 @@ async def my_league_members(ctx):
         users = []
         for user in users_object:
             users.append(user["display_name"])
-        await ctx.send('Your league has '+str(len(users))+' members.\n\nThe members are as follows:\n'+", ".join(users))
+        embed = my_embed('Sleeper League Members', 'Display Names and Quantity of Sleeper League Members', discord.Colour.blue(), 'Members', ", ".join(users), False, ctx)
+        embed.add_field(name='Quantity', value=len(users))
+        await ctx.send(embed=embed)
     else:
-        await ctx.send('No league ID found, run add-league command to complete setup.')
+        embed = my_embed('Sleeper League Members', 'Display Names and Quantity of Sleeper League Members', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
+        await ctx.send(embed=embed)
 
 
 # Bot Run
