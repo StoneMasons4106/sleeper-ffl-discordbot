@@ -118,6 +118,22 @@ async def my_league_name(ctx):
         await ctx.send('No league ID found, run add-league command to complete setup.')
 
 
+## Get League Users
+
+@bot.command(name='my-league-members', help='Returns league members.')
+async def my_league_members(ctx):
+    existing_league = get_existing_league(ctx)
+    if existing_league:
+        league_id = existing_league["league"]
+        users_object = sleeper_wrapper.League(int(league_id)).get_users()
+        users = []
+        for user in users_object:
+            users.append(user["display_name"])
+        await ctx.send('Your league has '+str(len(users))+' members.\n\nThe members are as follows:\n'+", ".join(users))
+    else:
+        await ctx.send('No league ID found, run add-league command to complete setup.')
+
+
 # Bot Run
 
 bot.run(TOKEN)
