@@ -153,6 +153,26 @@ async def my_league_members(ctx):
         await ctx.send(embed=embed)
 
 
+@bot.command(name='my-league-standings', help='Returns the current standings of my league with win loss record and points for.')
+async def my_league_standings(ctx):
+    existing_league = get_existing_league(ctx)
+    if existing_league:
+        league_id = existing_league["league"]
+        users_object = sleeper_wrapper.League(int(league_id)).get_users()
+        rosters_object = sleeper_wrapper.League(int(league_id)).get_rosters()
+        standings_object = sleeper_wrapper.League(int(league_id)).get_standings(rosters_object, users_object)
+        standings_string = ''
+        count = 0
+        for i in standings_object:
+            count = count + 1
+            standings_string += str(count) + '.' + ' ' + i[0] + ' / Record: ' + i[1] + '-' + i[2] + ' / Points For: ' + i[3] + '\n'
+        embed = my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', standings_string, False, ctx)
+        await ctx.send(embed=embed)
+    else:
+        embed = my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
+        await ctx.send(embed=embed)
+
+
 # Bot Run
 
 bot.run(TOKEN)
