@@ -1,11 +1,15 @@
 # Import needed libraries
 
+from apscheduler.schedulers.blocking import BlockingScheduler
 import discord
 from discord import colour
 from discord.ext import commands
 import os
 import pymongo
 import sleeper_wrapper
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.combining import OrTrigger
+from apscheduler.triggers.cron import CronTrigger
 if os.path.exists("env.py"):
     import env
 
@@ -61,11 +65,31 @@ def get_existing_league(ctx):
     return existing_league
 
 
+## Set Embed for Discord Bot Responses
+
 def my_embed(title, description, color, name, value, inline, ctx):
     embed = discord.Embed(title=title, description=description, color = color)
     embed.add_field(name=name, value=value, inline=inline)
     embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
     return embed
+
+
+## Refresh Player Collection in Mongo Daily
+
+def refresh_players():
+    MONGO.players.delete_many({})
+    players = sleeper_wrapper.Players().get_all_players()
+    for player in players:
+        full_name = players[player]["first_name"] + ' ' + players[player]["last_name"]
+        position = players[player]["position"]
+        team = players[player]["team"]
+        player_object = {
+            "id": player,
+            "name": full_name,
+            "position": position,
+            "team": team
+        }
+        MONGO.players.insert_one(player_object)
 
 
 # Bot Commands
@@ -171,6 +195,16 @@ async def my_league_standings(ctx):
     else:
         embed = my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
         await ctx.send(embed=embed)
+
+
+# Run Player Refresh Function Once a Day Per Sleeper API Docs
+
+scheduler = BlockingScheduler()
+trigger = OrTrigger({
+    CronTrigger(day_of_week="*", hour=4)
+})
+scheduler.add_job(refresh_players, trigger, misfire_grace_time=None)
+scheduler.start()
 
 
 # Bot Run
