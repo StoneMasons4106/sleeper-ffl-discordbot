@@ -105,7 +105,7 @@ async def add_league(ctx, league_id: str):
         if existing_league:
             newvalue = {"$set": {"league": league_id}}
             MONGO.servers.update_one(existing_league, newvalue)
-            embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league+'!', False, ctx)
+            embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
             await ctx.send(embed=embed)
         else:
             server_league_object = {
@@ -113,7 +113,7 @@ async def add_league(ctx, league_id: str):
                 "league": league_id
             }
             MONGO.servers.insert_one(server_league_object)
-            embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league+'!', False, ctx)
+            embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
             await ctx.send(embed=embed)
     else:
         embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'You do not have access to this command, request failed.', False, ctx)
