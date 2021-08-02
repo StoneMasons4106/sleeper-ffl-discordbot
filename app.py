@@ -81,7 +81,7 @@ class Setup(commands.Cog, name='Setup'):
     ### Set Custom Prefix
 
     @commands.command(name='set-prefix', help='Set custom prefix per guild.')
-    async def set_prefix(ctx, prefix: str):
+    async def set_prefix(self, ctx, prefix: str):
         if ctx.author.guild_permissions.administrator:
             existing_prefix = MONGO.prefixes.find_one(
                     {"server": str(ctx.message.guild.id)})
@@ -106,7 +106,7 @@ class Setup(commands.Cog, name='Setup'):
     ### Set League ID in MongoDB
 
     @commands.command(name='add-league', help='Adds league associated to this guild ID.')
-    async def add_league(ctx, league_id: str):
+    async def add_league(self, ctx, league_id: str):
         if ctx.author.guild_permissions.administrator:
             existing_league = get_existing_league(ctx)
             if existing_league:
@@ -138,7 +138,7 @@ class League(commands.Cog, name='League'):
     ### Get League Name
 
     @commands.command(name='my-league-name', help='Returns league name.')
-    async def my_league_name(ctx):
+    async def my_league_name(self, ctx):
         existing_league = get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
@@ -153,7 +153,7 @@ class League(commands.Cog, name='League'):
     ### Get League Users
 
     @commands.command(name='my-league-members', help='Returns league member display names and quantity.')
-    async def my_league_members(ctx):
+    async def my_league_members(self, ctx):
         existing_league = get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
@@ -172,7 +172,7 @@ class League(commands.Cog, name='League'):
     ### Get League Standings Sorted by Most to Least Wins
 
     @commands.command(name='my-league-standings', help='Returns the current standings of my league with win loss record and points for.')
-    async def my_league_standings(ctx):
+    async def my_league_standings(self, ctx):
         existing_league = get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
@@ -191,7 +191,7 @@ class League(commands.Cog, name='League'):
             await ctx.send(embed=embed)
 
 
-### Players Cog
+## Players Cog
 
 class Players(commands.Cog, name='Players'):
 
@@ -201,7 +201,7 @@ class Players(commands.Cog, name='Players'):
     ### Get Trending Players
 
     @commands.command(name='trending-players', help='Returns the current top 10 trending players over the last 24 hours based on add or drop rate.')
-    async def trending_players(ctx, add_drop: str):
+    async def trending_players(self, ctx, add_drop: str):
         if add_drop == 'add' or add_drop == 'drop':
             trending_players = sleeper_wrapper.Players().get_trending_players('nfl', add_drop, 24, 10)
             trending_string = ''
