@@ -135,37 +135,24 @@ class League(commands.Cog, name='League'):
         self.bot = bot
 
 
-    ### Get League Name
+    ### Get League Name and Member Info
 
-    @commands.command(name='my-league-name', help='Returns league name.')
-    async def my_league_name(self, ctx):
-        existing_league = get_existing_league(ctx)
-        if existing_league:
-            league_id = existing_league["league"]
-            league = sleeper_wrapper.League(int(league_id)).get_league()
-            embed = my_embed('Sleeper League Name', 'Name of your Sleeper League', discord.Colour.blue(), 'Name', league["name"], False, ctx)
-            await ctx.send(embed=embed)
-        else:
-            embed = my_embed('Sleeper League Name', 'Name of your Sleeper League', discord.Colour.blue(), 'Name', 'No league specified, run add-league command to complete setup.', False, ctx)
-            await ctx.send(embed=embed)
-
-
-    ### Get League Users
-
-    @commands.command(name='my-league-members', help='Returns league member display names and quantity.')
+    @commands.command(name='my-league', help='Returns league name, member display names, and quantity of players.')
     async def my_league_members(self, ctx):
         existing_league = get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
+            league = sleeper_wrapper.League(int(league_id)).get_league()
             users_object = sleeper_wrapper.League(int(league_id)).get_users()
             users = []
             for user in users_object:
                 users.append(user["display_name"])
-            embed = my_embed('Sleeper League Members', 'Display Names and Quantity of Sleeper League Members', discord.Colour.blue(), 'Members', ", ".join(users), False, ctx)
-            embed.add_field(name='Quantity', value=len(users))
+            embed = my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Name', league["name"], False, ctx)
+            embed.add_field(name='Members', value=", ".join(users), inline=False)
+            embed.add_field(name='Quantity', value=len(users), inline=False)
             await ctx.send(embed=embed)
         else:
-            embed = my_embed('Sleeper League Members', 'Display Names and Quantity of Sleeper League Members', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
+            embed = my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
             await ctx.send(embed=embed)
 
 
