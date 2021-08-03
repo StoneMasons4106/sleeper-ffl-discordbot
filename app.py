@@ -106,22 +106,22 @@ class Setup(commands.Cog, name='Setup'):
     ### Set Channel to Send Timed Messages in
 
     @commands.command(name='set-channel', help='Set channel to send timed messages in.')
-    async def set_channel(self, ctx, channel: str):
+    async def set_channel(self, ctx, channel_id: str):
         if ctx.author.guild_permissions.administrator:
             existing_channel = MONGO.servers.find_one(
                     {"server": str(ctx.message.guild.id)})
             if existing_channel:
-                newvalue = {"$set": {"channel": channel}}
+                newvalue = {"$set": {"channel": channel_id}}
                 MONGO.servers.update_one(existing_channel, newvalue)
-                embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel+'!', False, ctx)
+                embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
                 server_channel_object = {
                     "server": str(ctx.message.guild.id),
-                    "channel": channel
+                    "channel": channel_id
                 }
                 MONGO.servers.insert_one(server_channel_object)
-                embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel+'!', False, ctx)
+                embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
             embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'You do not have access to this command, request failed.', False, ctx)
