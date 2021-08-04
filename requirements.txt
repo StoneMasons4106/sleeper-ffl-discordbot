@@ -9,3 +9,10 @@ multidict==4.7.6
 attrs==21.2.0
 dnspython==2.1.0
 sleeper-api-wrapper==1.0.7
+apscheduler==3.6.3
+pytz==2021.1
+six==1.16.0
+setuptools==52.0.0
+tzlocal==2.1
+pendulum==2.1.2
+pytzdata==2020.1

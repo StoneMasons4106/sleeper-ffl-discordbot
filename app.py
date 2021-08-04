@@ -2,9 +2,15 @@
 
 import discord
 from discord.ext import commands
+from discord.utils import find
 import os
 import pymongo
 import sleeper_wrapper
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.combining import OrTrigger
+import constants
+import pendulum
 if os.path.exists("env.py"):
     import env
 
@@ -29,10 +35,34 @@ def get_prefix(bot, message):
     return my_prefix
 
 
-# Bot Prefix
+# Get Current Week
+
+def get_current_week():
+    today = pendulum.today()
+    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+    week = today.diff(starting_week).in_weeks()
+    return week + 1
+
+
+# Define Bot and Bot Prefix
 
 bot = commands.Bot(command_prefix=get_prefix)
 
+
+#Add Scheduled Messages
+
+#async def scheduled_messages():
+    #servers = MONGO.servers.find(
+                #{})
+    #if servers:
+        #for server in servers:
+            #channel = bot.get_channel(int(server["channel"]))
+            #if channel:
+                #await channel.send('Test message working.')
+            #else:
+                #pass
+    #else:
+        #pass
 
 # Bot Events
 
@@ -41,13 +71,21 @@ bot = commands.Bot(command_prefix=get_prefix)
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
+    #scheduler = AsyncIOScheduler()
+    #trigger = OrTrigger([
+        #CronTrigger(second=10)
+    #])
+    #scheduler.add_job(scheduled_messages, trigger, misfire_grace_time=None)
+    #scheduler.start()
 
 
 ## On Guild Join - Message
 
 @bot.event
-async def on_guild_join(ctx):
-    await ctx.send('Happy to be here! Please run the add-league command to set your Sleeper Fantasy Football league!')
+async def on_guild_join(guild):
+    general = find(lambda x: x.name == 'general', guild.text_channels)
+    if general and general.permissions_for(guild.me).send_messages:
+        await general.send('Happy to be here! Please run the add-league and set-channel commands to finish setting up!')
 
 
 # Functions
