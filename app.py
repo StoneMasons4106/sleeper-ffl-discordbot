@@ -9,8 +9,7 @@ import sleeper_wrapper
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
-import constants
-import pendulum
+import functions
 if os.path.exists("env.py"):
     import env
 
@@ -23,46 +22,10 @@ MONGO_URI = os.environ.get("MONGO_URI")
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
-# Get Custom Prefixes
-
-def get_prefix(bot, message):
-    existing_prefix = MONGO.prefixes.find_one(
-                {"server": str(message.guild.id)})
-    if existing_prefix:
-        my_prefix = existing_prefix["prefix"]
-    else:
-        my_prefix = '$'
-    return my_prefix
-
-
-# Get Current Week
-
-def get_current_week():
-    today = pendulum.today()
-    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
-    week = today.diff(starting_week).in_weeks()
-    return week + 1
-
-
 # Define Bot and Bot Prefix
 
-bot = commands.Bot(command_prefix=get_prefix)
+bot = commands.Bot(command_prefix=functions.get_prefix)
 
-
-#Add Scheduled Messages
-
-#async def scheduled_messages():
-    #servers = MONGO.servers.find(
-                #{})
-    #if servers:
-        #for server in servers:
-            #channel = bot.get_channel(int(server["channel"]))
-            #if channel:
-                #await channel.send('Test message working.')
-            #else:
-                #pass
-    #else:
-        #pass
 
 # Bot Events
 
@@ -71,12 +34,12 @@ bot = commands.Bot(command_prefix=get_prefix)
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
-    #scheduler = AsyncIOScheduler()
-    #trigger = OrTrigger([
-        #CronTrigger(second=10)
-    #])
-    #scheduler.add_job(scheduled_messages, trigger, misfire_grace_time=None)
-    #scheduler.start()
+    scheduler = AsyncIOScheduler()
+    trigger = OrTrigger([
+        CronTrigger(day_of_week='thu', hour=15)
+    ])
+    scheduler.add_job(functions.get_current_matchups, trigger, misfire_grace_time=None)
+    scheduler.start()
 
 
 ## On Guild Join - Message
@@ -86,25 +49,6 @@ async def on_guild_join(guild):
     general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
         await general.send('Happy to be here! Please run the add-league and set-channel commands to finish setting up!')
-
-
-# Functions
-
-## Get Existing Server League Object from Mongo
-
-def get_existing_league(ctx):
-    existing_league = MONGO.servers.find_one(
-                {"server": str(ctx.message.guild.id)})
-    return existing_league
-
-
-## Set Embed for Discord Bot Responses
-
-def my_embed(title, description, color, name, value, inline, ctx):
-    embed = discord.Embed(title=title, description=description, color = color)
-    embed.add_field(name=name, value=value, inline=inline)
-    embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url)
-    return embed
 
 
 # Bot Commands
@@ -126,7 +70,7 @@ class Setup(commands.Cog, name='Setup'):
             if existing_prefix:
                 newvalue = {"$set": {"prefix": prefix}}
                 MONGO.prefixes.update_one(existing_prefix, newvalue)
-                embed = my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
+                embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
                 server_prefix_object = {
@@ -134,10 +78,10 @@ class Setup(commands.Cog, name='Setup'):
                     "prefix": prefix
                 }
                 MONGO.prefixes.insert_one(server_prefix_object)
-                embed = my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
+                embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
-            embed = my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'You do not have access to this command, request failed.', False, ctx)
+            embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'You do not have access to this command, request failed.', False, ctx)
             await ctx.send(embed=embed)
 
 
@@ -151,7 +95,7 @@ class Setup(commands.Cog, name='Setup'):
             if existing_channel:
                 newvalue = {"$set": {"channel": channel_id}}
                 MONGO.servers.update_one(existing_channel, newvalue)
-                embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
+                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
                 server_channel_object = {
@@ -159,10 +103,10 @@ class Setup(commands.Cog, name='Setup'):
                     "channel": channel_id
                 }
                 MONGO.servers.insert_one(server_channel_object)
-                embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
+                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
-            embed = my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'You do not have access to this command, request failed.', False, ctx)
+            embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'You do not have access to this command, request failed.', False, ctx)
             await ctx.send(embed=embed)
 
 
@@ -171,11 +115,11 @@ class Setup(commands.Cog, name='Setup'):
     @commands.command(name='add-league', help='Adds league associated to this guild ID.')
     async def add_league(self, ctx, league_id: str):
         if ctx.author.guild_permissions.administrator:
-            existing_league = get_existing_league(ctx)
+            existing_league = functions.get_existing_league(ctx)
             if existing_league:
                 newvalue = {"$set": {"league": league_id}}
                 MONGO.servers.update_one(existing_league, newvalue)
-                embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
+                embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
                 server_league_object = {
@@ -183,10 +127,10 @@ class Setup(commands.Cog, name='Setup'):
                     "league": league_id
                 }
                 MONGO.servers.insert_one(server_league_object)
-                embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
+                embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
-            embed = my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'You do not have access to this command, request failed.', False, ctx)
+            embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'You do not have access to this command, request failed.', False, ctx)
             await ctx.send(embed=embed)
 
 
@@ -202,7 +146,7 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league', help='Returns league name, member display names, and quantity of players.')
     async def my_league_members(self, ctx):
-        existing_league = get_existing_league(ctx)
+        existing_league = functions.get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
             league = sleeper_wrapper.League(int(league_id)).get_league()
@@ -210,12 +154,12 @@ class League(commands.Cog, name='League'):
             users = []
             for user in users_object:
                 users.append(user["display_name"])
-            embed = my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Name', league["name"], False, ctx)
+            embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Name', league["name"], False, ctx)
             embed.add_field(name='Members', value=", ".join(users), inline=False)
             embed.add_field(name='Quantity', value=len(users), inline=False)
             await ctx.send(embed=embed)
         else:
-            embed = my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
+            embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
             await ctx.send(embed=embed)
 
 
@@ -223,7 +167,7 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-standings', help='Returns the current standings of my league with win loss record and points for.')
     async def my_league_standings(self, ctx):
-        existing_league = get_existing_league(ctx)
+        existing_league = functions.get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
             users_object = sleeper_wrapper.League(int(league_id)).get_users()
@@ -234,10 +178,10 @@ class League(commands.Cog, name='League'):
             for i in standings_object:
                 count = count + 1
                 standings_string += str(count) + '.' + ' ' + i[0] + ' / Record: ' + i[1] + '-' + i[2] + ' / Points For: ' + i[3] + '\n'
-            embed = my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', standings_string, False, ctx)
+            embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', standings_string, False, ctx)
             await ctx.send(embed=embed)
         else:
-            embed = my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
+            embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
             await ctx.send(embed=embed)
 
 
@@ -268,10 +212,10 @@ class Players(commands.Cog, name='Players'):
                     team = 'None'
                 trending_string += str(count) + '.' + ' ' + db_player["name"] + ' ' + db_player["position"] + ' - ' + team + ' ' + str(change) + '\n'
             if add_drop == 'add':
-                embed = my_embed('Trending Players', 'Display Current Trending Added Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
+                embed = functions.my_embed('Trending Players', 'Display Current Trending Added Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
                 await ctx.send(embed=embed)
             else:    
-                embed = my_embed('Trending Players', 'Display Current Trending Dropped Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
+                embed = functions.my_embed('Trending Players', 'Display Current Trending Dropped Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
                 await ctx.send(embed=embed)
         else:
             await ctx.send('Invalid add_drop argument. Please use either add or drop to get trending players.')
