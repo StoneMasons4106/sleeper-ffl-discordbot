@@ -216,15 +216,10 @@ class League(commands.Cog, name='League'):
                         else:
                             matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
                     embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week)}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
-                    channel = bot.get_channel(int(existing_league["channel"]))
-                    if channel:
-                        await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week)} in our league:')
-                        await channel.send(embed=embed)
-                    else:
-                        pass
+                    await ctx.send(f'Who is ready to rumble?! Here are the matchups for week {str(week)} in our league:')
+                    await ctx.send(embed=embed)
                 else:
-                    channel = bot.get_channel(int(existing_league["channel"]))
-                    await channel.send('There are no matchups this week, try this command again during the season!')
+                    await ctx.send('There are no matchups this week, try this command again during the season!')
             else:
                 pass
         else:
