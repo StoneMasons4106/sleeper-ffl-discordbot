@@ -216,14 +216,44 @@ class League(commands.Cog, name='League'):
                         else:
                             matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
                     embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week)}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
-                    await ctx.send(f'Who is ready to rumble?! Here are the matchups for week {str(week)} in our league:')
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send('There are no matchups this week, try this command again during the season!')
             else:
-                pass
+                await ctx.send('Please run add-league command, no Sleeper League connected.')
         else:
-            pass
+            await ctx.send('Please run add-league command, no Sleeper League connected.')
+    
+
+    ### Get Current Week Scoreboard
+
+    @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week.')
+    async def my_league_scoreboard(self, ctx, score_type: str):
+        today = pendulum.today()
+        starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+        week = today.diff(starting_week).in_weeks() + 1
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            league_id = existing_league["league"]
+            if league_id:
+                users = sleeper_wrapper.League(int(league_id)).get_users()
+                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
+                scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, score_type, week)
+                if scoreboard:
+                    scoreboard_string = ''
+                    count = 0
+                    for score in scoreboard:
+                        count = count + 1
+                        scoreboard_string += f'{str(count)}. {scoreboard[score][0]} - {str(scoreboard[score][1])} / {scoreboard[score][2]} - {str(scoreboard[score][3])}\n'
+                    embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Matchups', scoreboard_string, False, ctx)
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send('There is no scoreboard this week, try this command again during the season!')
+            else:
+                await ctx.send('Please run add-league command, no Sleeper League connected.')
+        else:
+            await ctx.send('Please run add-league command, no Sleeper League connected.')
 
 
 ## Players Cog
