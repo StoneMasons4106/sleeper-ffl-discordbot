@@ -10,6 +10,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
 import functions
+import pendulum
+import constants
 if os.path.exists("env.py"):
     import env
 
@@ -177,12 +179,56 @@ class League(commands.Cog, name='League'):
             count = 0
             for i in standings_object:
                 count = count + 1
-                standings_string += str(count) + '.' + ' ' + i[0] + ' / Record: ' + i[1] + '-' + i[2] + ' / Points For: ' + i[3] + '\n'
+                standings_string += f'{str(count)}. {i[0]} / Record: {i[1]}-{i[2]} / Points For: {i[3]}\n'
             embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', standings_string, False, ctx)
             await ctx.send(embed=embed)
         else:
             embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
             await ctx.send(embed=embed)
+
+    
+    ### Get Current Week Matchups
+
+    @commands.command(name='my-league-matchups', help='Returns the matchups for the current week.')
+    async def my_league_matchups(self, ctx):
+        today = pendulum.today()
+        starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+        week = today.diff(starting_week).in_weeks() + 1
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            league_id = existing_league["league"]
+            if league_id:
+                users = sleeper_wrapper.League(int(league_id)).get_users()
+                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
+                if matchups:
+                    sorted_matchups = lambda i: i["matchup_id"]
+                    matchups_string = ''
+                    count = 0
+                    matchup_count = 0
+                    for matchup in sorted_matchups:
+                        count = count + 1
+                        roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                        user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                        if (count % 2) == 0:
+                            matchup_count = matchup_count + 1
+                            matchups_string += f'{user}\n'
+                        else:
+                            matchups_string += f'{matchup_count}. {user} vs. '
+                    embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {week}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
+                    channel = bot.get_channel(int(existing_league["channel"]))
+                    if channel:
+                        await channel.send(f'Who is ready to rumble?! Here are the matchups for week {week} in our league:')
+                        await channel.send(embed=embed)
+                    else:
+                        pass
+                else:
+                    channel = bot.get_channel(int(existing_league["channel"]))
+                    await channel.send('There are no matchups this week, try this command again during the season!')
+            else:
+                pass
+        else:
+            pass
 
 
 ## Players Cog
@@ -210,7 +256,7 @@ class Players(commands.Cog, name='Players'):
                     team = db_player["team"]
                 else:
                     team = 'None'
-                trending_string += str(count) + '.' + ' ' + db_player["name"] + ' ' + db_player["position"] + ' - ' + team + ' ' + str(change) + '\n'
+                trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} {str(change)}\n'
             if add_drop == 'add':
                 embed = functions.my_embed('Trending Players', 'Display Current Trending Added Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
                 await ctx.send(embed=embed)
