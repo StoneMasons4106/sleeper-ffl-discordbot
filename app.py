@@ -260,9 +260,13 @@ class Players(commands.Cog, name='Players'):
                 count = count + 1
                 player_id = player["player_id"]
                 change = player["count"]
+                if db_player["team"]:
+                    team = db_player["team"]
+                else:
+                    team = 'None'
                 db_player = MONGO.players.find_one(
                     {"id": str(player_id)})
-                trending_string += str(count) + '.' + ' ' + db_player["name"] + ' ' + db_player["position"] + ' - ' + db_player["team"] + ' ' + str(change) + '\n'
+                trending_string += str(count) + '.' + ' ' + db_player["name"] + ' ' + db_player["position"] + ' - ' + team + ' ' + str(change) + '\n'
             if add_drop == 'add':
                 embed = my_embed('Trending Players', 'Display Current Trending Added Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
                 await ctx.send(embed=embed)
