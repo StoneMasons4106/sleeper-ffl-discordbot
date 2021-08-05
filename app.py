@@ -229,31 +229,34 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week based on score type. Must use either pts_std, pts_half_ppr, or pts_ppr as an argument.')
     async def my_league_scoreboard(self, ctx, score_type: str):
-        today = pendulum.today()
-        starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
-        week = today.diff(starting_week).in_weeks() + 1
-        existing_league = functions.get_existing_league(ctx)
-        if existing_league:
-            league_id = existing_league["league"]
-            if league_id:
-                users = sleeper_wrapper.League(int(league_id)).get_users()
-                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
-                scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, score_type, week)
-                if scoreboard:
-                    scoreboard_string = ''
-                    count = 0
-                    for score in scoreboard:
-                        count = count + 1
-                        scoreboard_string += f'{str(count)}. {scoreboard[score][0]} - {str(scoreboard[score][1])} / {scoreboard[score][2]} - {str(scoreboard[score][3])}\n'
-                    embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Matchups', scoreboard_string, False, ctx)
-                    await ctx.send(embed=embed)
+        if score_type == 'pts_ppr' or score_type == 'pts_half_ppr' or score_type == 'pts_std':
+            today = pendulum.today()
+            starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+            week = today.diff(starting_week).in_weeks() + 1
+            existing_league = functions.get_existing_league(ctx)
+            if existing_league:
+                league_id = existing_league["league"]
+                if league_id:
+                    users = sleeper_wrapper.League(int(league_id)).get_users()
+                    rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                    matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
+                    scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, score_type, week)
+                    if scoreboard:
+                        scoreboard_string = ''
+                        count = 0
+                        for score in scoreboard:
+                            count = count + 1
+                            scoreboard_string += f'{str(count)}. {scoreboard[score][0]} - {str(scoreboard[score][1])} / {scoreboard[score][2]} - {str(scoreboard[score][3])}\n'
+                        embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Matchups', scoreboard_string, False, ctx)
+                        await ctx.send(embed=embed)
+                    else:
+                        await ctx.send('There is no scoreboard this week, try this command again during the season!')
                 else:
-                    await ctx.send('There is no scoreboard this week, try this command again during the season!')
+                    await ctx.send('Please run add-league command, no Sleeper League connected.')
             else:
                 await ctx.send('Please run add-league command, no Sleeper League connected.')
         else:
-            await ctx.send('Please run add-league command, no Sleeper League connected.')
+            await ctx.send('Invalid score_type argument. Please use either pts_ppr, pts_half_ppr, or pts_std to get your scoreboard.')
 
 
 ## Players Cog
