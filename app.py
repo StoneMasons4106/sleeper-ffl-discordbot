@@ -227,7 +227,7 @@ class League(commands.Cog, name='League'):
 
     ### Get Current Week Scoreboard
 
-    @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week.')
+    @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week based on score type. Must use either pts_std, pts_half_ppr, or pts_ppr as an argument.')
     async def my_league_scoreboard(self, ctx, score_type: str):
         today = pendulum.today()
         starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
