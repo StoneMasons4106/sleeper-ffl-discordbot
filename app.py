@@ -15,7 +15,7 @@ if os.path.exists("env.py"):
     import env
 
 
-# Define constant variables
+# Define Environment Variables
 
 TOKEN = os.environ.get("DISCORD_TOKEN")
 MONGO_DBNAME = os.environ.get("MONGO_DBNAME")
@@ -103,7 +103,7 @@ def get_existing_league(ctx):
 def my_embed(title, description, color, name, value, inline, ctx):
     embed = discord.Embed(title=title, description=description, color = color)
     embed.add_field(name=name, value=value, inline=inline)
-    embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+    embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url)
     return embed
 
 
