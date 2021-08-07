@@ -16,7 +16,7 @@ Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848
 
 Default Prefix: $
 
-Once you have invited the bot to your server, there are a few commands you should run to finish setting this bot up for full functionality on your server:
+* Finish setting up by running the following commands:
     * add-league:
         * $add-league sleeper_league_id
     * set-channel:
