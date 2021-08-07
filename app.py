@@ -37,10 +37,14 @@ bot = commands.Bot(command_prefix=functions.get_prefix)
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
     scheduler = AsyncIOScheduler()
-    trigger = OrTrigger([
+    trigger_one = OrTrigger([
         CronTrigger(day_of_week='thu', hour=15)
     ])
-    scheduler.add_job(functions.get_current_matchups, trigger, misfire_grace_time=None)
+    trigger_two = OrTrigger([
+        CronTrigger(day_of_week='tue', hour=9)
+    ])
+    scheduler.add_job(get_current_matchups, trigger_one, misfire_grace_time=None)
+    scheduler.add_job(get_current_scoreboards, trigger_two, misfire_grace_time=None)
     scheduler.start()
 
 
@@ -95,9 +99,9 @@ class Setup(commands.Cog, name='Setup'):
             existing_channel = MONGO.servers.find_one(
                     {"server": str(ctx.message.guild.id)})
             if existing_channel:
-                newvalue = {"$set": {"channel": channel_id}}
+                newvalue = {"$set": {"channel": str(channel_id)}}
                 MONGO.servers.update_one(existing_channel, newvalue)
-                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
+                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
                 server_channel_object = {
@@ -105,7 +109,7 @@ class Setup(commands.Cog, name='Setup'):
                     "channel": channel_id
                 }
                 MONGO.servers.insert_one(server_channel_object)
-                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+channel_id+'!', False, ctx)
+                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
             embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'You do not have access to this command, request failed.', False, ctx)
@@ -133,6 +137,33 @@ class Setup(commands.Cog, name='Setup'):
                 await ctx.send(embed=embed)
         else:
             embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'You do not have access to this command, request failed.', False, ctx)
+            await ctx.send(embed=embed)
+
+
+    ### Set Score Type in MongoDB
+
+    @commands.command(name='set-score-type', help='Adds score type used in scheduled scoreboard message associated to your league.')
+    async def set_score_type(self, ctx, score_type: str):
+        if ctx.author.guild_permissions.administrator:
+            if score_type == 'pts_ppr' or score_type == 'pts_half_ppr' or score_type == 'pts_std': 
+                existing_league = functions.get_existing_league(ctx)
+                if existing_league:
+                    newvalue = {"$set": {"score_type": score_type}}
+                    MONGO.servers.update_one(existing_league, newvalue)
+                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type}!', False, ctx)
+                    await ctx.send(embed=embed)
+                else:
+                    score_type_object = {
+                        "server": str(ctx.message.guild.id),
+                        "score_type": score_type
+                    }
+                    MONGO.servers.insert_one(score_type_object)
+                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type}!', False, ctx)
+                    await ctx.send(embed=embed)
+            else:
+                await ctx.send('Invalid score_type argument. Please use either pts_std, pts_ppr, or pts_half_ppr.')
+        else:
+            embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', 'You do not have access to this command.', False, ctx)
             await ctx.send(embed=embed)
 
 
@@ -293,6 +324,92 @@ class Players(commands.Cog, name='Players'):
                 await ctx.send(embed=embed)
         else:
             await ctx.send('Invalid add_drop argument. Please use either add or drop to get trending players.')
+
+
+# Scheduled Messages
+
+## Get Matchups for Current Week
+
+async def get_current_matchups():
+    today = pendulum.today()
+    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+    week = today.diff(starting_week).in_weeks() + 1
+    servers = MONGO.servers.find(
+                {})
+    if servers:
+        for server in servers:
+            league_id = server["league"]
+            if league_id:
+                users = sleeper_wrapper.League(int(league_id)).get_users()
+                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
+                if matchups:
+                    sorted_matchups = lambda i: i["matchup_id"]
+                    matchups_string = ''
+                    count = 0
+                    matchup_count = 0
+                    for matchup in sorted_matchups:
+                        count = count + 1
+                        roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                        user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                        if (count % 2) == 0:
+                            matchup_count = matchup_count + 1
+                            matchups_string += f'{user["display_name"]}\n'
+                        else:
+                            matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
+                    embed = discord.Embed(title='Current Week Matchups', description=f'Matchups for Week {str(week)}', color=discord.Colour.blue())
+                    embed.add_field(name='Matchups', value=matchups_string, inline=False)
+                    channel = await bot.fetch_channel(int(server["channel"]))
+                    if channel:
+                        await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week)} in our league:')
+                        await channel.send(embed=embed)
+                    else:
+                        pass
+                else:
+                    pass
+            else:
+                pass
+    else:
+        pass
+
+
+## Get Scoreboard for Current Week
+
+async def get_current_scoreboards():
+    today = pendulum.today()
+    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+    week = today.diff(starting_week).in_weeks() + 1
+    servers = MONGO.servers.find(
+        {})
+    if servers:
+        for server in servers:
+            score_type = server["score_type"]
+            league_id = server["league"]
+            if league_id and score_type:
+                users = sleeper_wrapper.League(int(league_id)).get_users()
+                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
+                scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, score_type, week)
+                if scoreboard:
+                    scoreboard_string = ''
+                    count = 0
+                    for score in scoreboard:
+                        count = count + 1
+                        scoreboard_string += f'{str(count)}. {scoreboard[score][0]} - {str(scoreboard[score][1])} / {scoreboard[score][2]} - {str(scoreboard[score][3])}\n'
+                    embed = discord.Embed(title='Current Week Scoreboard', description=f'Scoreboard for Week {str(week)}', color=discord.Colour.blue())
+                    embed.add_field(name='Scoreboard', value=scoreboard_string, inline=False)
+                    channel = await bot.fetch_channel(int(server["channel"]))
+                    if channel:
+                        await channel.send(f'Another week, another round of football! Here are the results for week {str(week)} in our league:')
+                        await channel.send(embed=embed)
+                    else:
+                        pass
+                else:
+                    pass
+            else:
+                pass
+    else:
+        pass
         
 
 # Bot Add Cogs
