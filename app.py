@@ -278,7 +278,7 @@ class League(commands.Cog, name='League'):
                         for score in scoreboard:
                             count = count + 1
                             scoreboard_string += f'{str(count)}. {scoreboard[score][0]} - {str(scoreboard[score][1])} / {scoreboard[score][2]} - {str(scoreboard[score][3])}\n'
-                        embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Matchups', scoreboard_string, False, ctx)
+                        embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, ctx)
                         await ctx.send(embed=embed)
                     else:
                         await ctx.send('There is no scoreboard this week, try this command again during the season!')
