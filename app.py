@@ -205,7 +205,13 @@ class League(commands.Cog, name='League'):
             league_id = existing_league["league"]
             users_object = sleeper_wrapper.League(int(league_id)).get_users()
             rosters_object = sleeper_wrapper.League(int(league_id)).get_rosters()
-            standings_object = sleeper_wrapper.League(int(league_id)).get_standings(rosters_object, users_object)
+            filtered_roster_object = []
+            for roster in rosters_object:
+                if roster["owner_id"] != None:
+                    filtered_roster_object.append(roster)
+                else:
+                    pass
+            standings_object = sleeper_wrapper.League(int(league_id)).get_standings(filtered_roster_object, users_object)
             standings_string = ''
             count = 0
             for i in standings_object:
@@ -258,20 +264,20 @@ class League(commands.Cog, name='League'):
 
     ### Get Current Week Scoreboard
 
-    @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week based on score type. Must use either pts_std, pts_half_ppr, or pts_ppr as an argument.')
-    async def my_league_scoreboard(self, ctx, score_type: str):
-        if score_type == 'pts_ppr' or score_type == 'pts_half_ppr' or score_type == 'pts_std':
-            today = pendulum.today()
-            starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
-            week = today.diff(starting_week).in_weeks() + 1
-            existing_league = functions.get_existing_league(ctx)
-            if existing_league:
-                league_id = existing_league["league"]
-                if league_id:
+    @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week based on score type.')
+    async def my_league_scoreboard(self, ctx):
+        today = pendulum.today()
+        starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+        week = today.diff(starting_week).in_weeks() + 1
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            league_id = existing_league["league"]
+            if league_id:
+                if existing_league["score_type"]:
                     users = sleeper_wrapper.League(int(league_id)).get_users()
                     rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                     matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
-                    scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, score_type, week)
+                    scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, existing_league["score_type"], week)
                     if scoreboard:
                         scoreboard_string = ''
                         count = 0
@@ -283,11 +289,11 @@ class League(commands.Cog, name='League'):
                     else:
                         await ctx.send('There is no scoreboard this week, try this command again during the season!')
                 else:
-                    await ctx.send('Please run add-league command, no Sleeper League connected.')
+                    await ctx.send('Please run set-score-type command, no score type specified.')
             else:
                 await ctx.send('Please run add-league command, no Sleeper League connected.')
         else:
-            await ctx.send('Invalid score_type argument. Please use either pts_ppr, pts_half_ppr, or pts_std to get your scoreboard.')
+            await ctx.send('Please run add-league command, no Sleeper League connected.')
 
 
 ## Players Cog
