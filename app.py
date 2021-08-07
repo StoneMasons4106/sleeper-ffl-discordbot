@@ -239,10 +239,11 @@ class League(commands.Cog, name='League'):
                 rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                 matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
                 if matchups:
+                    sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
                     matchups_string = ''
                     count = 0
                     matchup_count = 1
-                    for matchup in matchups:
+                    for matchup in sorted_matchups:
                         count = count + 1
                         roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
                         user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
@@ -351,10 +352,11 @@ async def get_current_matchups():
                 if matchups:
                     channel = await bot.fetch_channel(int(server["channel"]))
                     if channel:
+                        sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
                         matchups_string = ''
                         count = 0
                         matchup_count = 1
-                        for matchup in matchups:
+                        for matchup in sorted_matchups:
                             count = count + 1
                             roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
                             user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
