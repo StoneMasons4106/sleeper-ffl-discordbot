@@ -239,11 +239,11 @@ class League(commands.Cog, name='League'):
                 rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                 matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
                 if matchups:
-                    sorted_matchups = lambda i: i["matchup_id"]
+                    #sorted_matchups = lambda i: i["matchup_id"]
                     matchups_string = ''
                     count = 0
-                    matchup_count = 0
-                    for matchup in sorted_matchups:
+                    matchup_count = 1
+                    for matchup in matchups:
                         count = count + 1
                         roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
                         user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
@@ -283,7 +283,7 @@ class League(commands.Cog, name='League'):
                         count = 0
                         for score in scoreboard:
                             count = count + 1
-                            scoreboard_string += f'{str(count)}. {scoreboard[score][0]} - {str(scoreboard[score][1])} / {scoreboard[score][2]} - {str(scoreboard[score][3])}\n'
+                            scoreboard_string += f'{str(count)}. {scoreboard[score][0][0]} - {str(scoreboard[score][0][1])} / {scoreboard[score][1][0]} - {str(scoreboard[score][1][1])}\n'
                         embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, ctx)
                         await ctx.send(embed=embed)
                     else:
