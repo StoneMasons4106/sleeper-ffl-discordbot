@@ -239,7 +239,6 @@ class League(commands.Cog, name='League'):
                 rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                 matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week)
                 if matchups:
-                    #sorted_matchups = lambda i: i["matchup_id"]
                     matchups_string = ''
                     count = 0
                     matchup_count = 1
@@ -352,11 +351,10 @@ async def get_current_matchups():
                 if matchups:
                     channel = await bot.fetch_channel(int(server["channel"]))
                     if channel:
-                        sorted_matchups = lambda i: i["matchup_id"]
                         matchups_string = ''
                         count = 0
-                        matchup_count = 0
-                        for matchup in sorted_matchups:
+                        matchup_count = 1
+                        for matchup in matchups:
                             count = count + 1
                             roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
                             user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
@@ -403,7 +401,7 @@ async def get_current_scoreboards():
                         count = 0
                         for score in scoreboard:
                             count = count + 1
-                            scoreboard_string += f'{str(count)}. {scoreboard[score][0]} - {str(scoreboard[score][1])} / {scoreboard[score][2]} - {str(scoreboard[score][3])}\n'
+                            scoreboard_string += f'{str(count)}. {scoreboard[score][0][0]} - {str(scoreboard[score][0][1])} / {scoreboard[score][1][0]} - {str(scoreboard[score][1][1])}\n'
                         embed = discord.Embed(title='Current Week Scoreboard', description=f'Scoreboard for Week {str(week)}', color=discord.Colour.blue())
                         embed.add_field(name='Scoreboard', value=scoreboard_string, inline=False)
                         await channel.send(f'Another week, another round of football! Here are the results for week {str(week)} in our league:')
