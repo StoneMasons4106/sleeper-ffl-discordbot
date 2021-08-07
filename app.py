@@ -54,7 +54,7 @@ async def on_ready():
 async def on_guild_join(guild):
     general = find(lambda x: x.name == 'general', guild.text_channels)
     if general and general.permissions_for(guild.me).send_messages:
-        await general.send('Happy to be here! Please run the add-league and set-channel commands to finish setting up!')
+        await general.send('Happy to be here! Please run the add-league, set-channel, and set-score-type commands to finish setting up!')
 
 
 # Bot Commands
