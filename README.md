@@ -10,6 +10,9 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 * Current Scoreboard
     * Tuesdays at 09:00
 
+* Close Games
+    * Mondays at 09:00
+
 ## Setup
 
 Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848311382086&permissions=103079267328&scope=bot) to invite the bot to your Discord server.
