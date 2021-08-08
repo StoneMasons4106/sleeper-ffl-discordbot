@@ -297,6 +297,7 @@ class Players(commands.Cog, name='Players'):
     def __init__(self, bot):
         self.bot = bot
 
+
     ### Get Trending Players
 
     @commands.command(name='trending-players', help='Returns the current top 10 trending players over the last 24 hours based on add or drop rate.')
@@ -336,28 +337,36 @@ class Players(commands.Cog, name='Players'):
                 league_id = existing_league["league"]
                 users = sleeper_wrapper.League(int(league_id)).get_users()
                 rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                count = 0
                 for i in users:
+                    count = count + 1
                     if i["display_name"] == username:
                         user = i
                         break
                     else:
-                        continue
-                for roster in rosters:
-                    if roster["owner_id"] == user["user_id"]:
-                        users_roster = roster
-                        break
-                    else:
-                        continue
-                starters_string = ''
-                for i in users_roster["starters"]:
-                    if i == '0':
-                        player = 'None'
-                        starters_string += 'None\n'
-                    else:
-                        player = MONGO.players.find_one({'id': i})
-                        starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
-                await ctx.send(embed=embed)
+                        if count == len(users):
+                            user = False
+                        else:
+                            continue
+                if user:
+                    for roster in rosters:
+                        if roster["owner_id"] == user["user_id"]:
+                            users_roster = roster
+                            break
+                        else:
+                            continue
+                    starters_string = ''
+                    for i in users_roster["starters"]:
+                        if i == '0':
+                            player = 'None'
+                            starters_string += 'None\n'
+                        else:
+                            player = MONGO.players.find_one({'id': i})
+                            starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                    embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
+                    await ctx.send(embed=embed)
+                else:
+                   await ctx.send('Invalid username. Double check for any typos and try again.') 
 
 
 # Scheduled Messages
