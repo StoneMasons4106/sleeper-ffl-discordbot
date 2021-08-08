@@ -325,6 +325,40 @@ class Players(commands.Cog, name='Players'):
         else:
             await ctx.send('Invalid add_drop argument. Please use either add or drop to get trending players.')
 
+    
+    ### Get Roster of Team in Your League
+
+    @commands.command(name='roster', help='Returns the starting roster of a team in your league based on username specified.')
+    async def roster(self, ctx, username: str):
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            if existing_league["league"]:
+                league_id = existing_league["league"]
+                users = sleeper_wrapper.League(int(league_id)).get_users()
+                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                for i in users:
+                    if i["display_name"] == username:
+                        user = i
+                        break
+                    else:
+                        continue
+                for roster in rosters:
+                    if roster["owner_id"] == user["user_id"]:
+                        users_roster = roster
+                        break
+                    else:
+                        continue
+                starters_string = ''
+                for i in users_roster["starters"]:
+                    if i == '0':
+                        player = 'None'
+                        starters_string += 'None\n'
+                    else:
+                        player = MONGO.players.find_one({'id': i})
+                        starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
+                await ctx.send(embed=embed)
+
 
 # Scheduled Messages
 
