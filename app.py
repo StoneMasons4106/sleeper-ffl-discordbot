@@ -329,7 +329,7 @@ class Players(commands.Cog, name='Players'):
     
     ### Get Roster of Team in Your League
 
-    @commands.command(name='roster', help='Returns the starting roster of a team in your league based on username specified.')
+    @commands.command(name='roster', help='Returns the roster, or portion of a roster, of a team in your league based on username and portion specified.')
     async def roster(self, ctx, username: str, roster_portion: str):
         if roster_portion == 'starters' or roster_portion == 'bench' or roster_portion == 'all':
             existing_league = functions.get_existing_league(ctx)
