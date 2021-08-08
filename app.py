@@ -360,7 +360,6 @@ class Players(commands.Cog, name='Players'):
                             starters_string = ''
                             for i in users_roster["starters"]:
                                 if i == '0':
-                                    player = 'None'
                                     starters_string += 'None\n'
                                 else:
                                     player = MONGO.players.find_one({'id': i})
@@ -369,27 +368,35 @@ class Players(commands.Cog, name='Players'):
                             await ctx.send(embed=embed)
                         if roster_portion == 'all':
                             players_string = ''
-                            for i in users_roster["players"]:
-                                if i == '0':
-                                    player = 'None'
-                                    players_string += 'None\n'
-                                else:
-                                    player = MONGO.players.find_one({'id': i})
-                                    players_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                            embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
-                            await ctx.send(embed=embed)
+                            if users_roster["players"] != None:
+                                for i in users_roster["players"]:
+                                    if i == '0':
+                                        players_string += 'None\n'
+                                    else:
+                                        player = MONGO.players.find_one({'id': i})
+                                        players_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                                embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
+                                await ctx.send(embed=embed)
+                            else:
+                                players_string = 'None'
+                                embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
+                                await ctx.send(embed=embed)
                         if roster_portion == 'bench':
                             bench_string = ''
-                            bench_roster = list(set(users_roster["players"]).difference(users_roster["starters"]))
-                            for i in bench_roster:
-                                if i == '0':
-                                    player = 'None'
-                                    bench_string += 'None\n'
-                                else:
-                                    player = MONGO.players.find_one({'id': i})
-                                    bench_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                            embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
-                            await ctx.send(embed=embed)
+                            if users_roster["players"] != None:
+                                bench_roster = list(set(users_roster["players"]).difference(users_roster["starters"]))
+                                for i in bench_roster:
+                                    if i == '0':
+                                        bench_string += 'None\n'
+                                    else:
+                                        player = MONGO.players.find_one({'id': i})
+                                        bench_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                                embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
+                                await ctx.send(embed=embed)
+                            else:
+                                bench_string = 'None'
+                                embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
+                                await ctx.send(embed=embed)
                     else:
                         await ctx.send('Invalid username. Double check for any typos and try again.')
                 else:
