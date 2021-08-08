@@ -39,7 +39,7 @@ async def on_ready():
         CronTrigger(day_of_week='thu', hour=15)
     ])
     trigger_two = OrTrigger([
-        CronTrigger(second=15)
+        CronTrigger(day_of_week='tue', hour=9)
     ])
     scheduler.add_job(get_current_matchups, trigger_one, misfire_grace_time=None)
     scheduler.add_job(get_current_scoreboards, trigger_two, misfire_grace_time=None)
