@@ -10,8 +10,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
 import functions
-import pendulum
-import constants
 if os.path.exists("env.py"):
     import env
 
@@ -228,9 +226,7 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-matchups', help='Returns the matchups for the current week.')
     async def my_league_matchups(self, ctx):
-        today = pendulum.today()
-        starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
-        week = today.diff(starting_week).in_weeks() + 1
+        week = functions.get_current_week()
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
@@ -266,9 +262,7 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week based on score type.')
     async def my_league_scoreboard(self, ctx):
-        today = pendulum.today()
-        starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
-        week = today.diff(starting_week).in_weeks() + 1
+        week = functions.get_current_week()
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
             league_id = existing_league["league"]
@@ -337,9 +331,7 @@ class Players(commands.Cog, name='Players'):
 ## Get Matchups for Current Week
 
 async def get_current_matchups():
-    today = pendulum.today()
-    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
-    week = today.diff(starting_week).in_weeks() + 1
+    week = functions.get_current_week()
     servers = MONGO.servers.find(
                 {})
     if servers:
@@ -382,9 +374,7 @@ async def get_current_matchups():
 ## Get Scoreboard for Current Week
 
 async def get_current_scoreboards():
-    today = pendulum.today()
-    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
-    week = today.diff(starting_week).in_weeks() + 1
+    week = functions.get_current_week()
     servers = MONGO.servers.find(
         {})
     if servers:

@@ -3,6 +3,8 @@
 import discord
 import os
 import pymongo
+import pendulum
+import constants
 if os.path.exists("env.py"):
     import env
 
@@ -41,3 +43,15 @@ def my_embed(title, description, color, name, value, inline, ctx):
     embed.add_field(name=name, value=value, inline=inline)
     embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url)
     return embed
+
+
+# Get Current Week
+
+def get_current_week():
+    today = pendulum.today()
+    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+    if starting_week.is_future():
+        week = 1
+    else:
+        week = today.diff(starting_week).in_weeks() + 1
+    return week
