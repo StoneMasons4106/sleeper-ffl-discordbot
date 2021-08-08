@@ -23,3 +23,7 @@ Default Prefix: $
         * $set-channel discord_channel_id
     * set-score-type
         * $set-score-type pts_ppr/pts_half_ppr/pts_std
+
+## Issues
+
+Please post any issues in the Issues section of this repo. Thank you.
