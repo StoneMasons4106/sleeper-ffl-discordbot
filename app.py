@@ -233,8 +233,8 @@ class League(commands.Cog, name='League'):
         week = functions.get_current_week()
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
-            league_id = existing_league["league"]
-            if league_id:
+            if "league" in existing_league:
+                league_id = existing_league["league"]
                 users = sleeper_wrapper.League(int(league_id)).get_users()
                 rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                 matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
@@ -271,7 +271,7 @@ class League(commands.Cog, name='League'):
         if existing_league:
             league_id = existing_league["league"]
             if league_id:
-                if existing_league["score_type"]:
+                if "score_type" in existing_league:
                     users = sleeper_wrapper.League(int(league_id)).get_users()
                     rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                     matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
@@ -338,7 +338,7 @@ class Players(commands.Cog, name='Players'):
         if roster_portion == 'starters' or roster_portion == 'bench' or roster_portion == 'all':
             existing_league = functions.get_existing_league(ctx)
             if existing_league:
-                if existing_league["league"]:
+                if "league" in existing_league:
                     league_id = existing_league["league"]
                     users = sleeper_wrapper.League(int(league_id)).get_users()
                     rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
@@ -422,7 +422,7 @@ async def get_current_matchups():
     if servers:
         if week[1] == False:
             for server in servers:
-                if server["league"]:
+                if "league" in server:
                     league_id = server["league"]
                     users = sleeper_wrapper.League(int(league_id)).get_users()
                     rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
@@ -466,7 +466,7 @@ async def get_current_scoreboards():
     if servers:
         if week[1] == False:
             for server in servers:
-                if server["league"] and server["score_type"]:
+                if "league" in server and "score_type" in server:
                     score_type = server["score_type"]
                     league_id = server["league"]
                     users = sleeper_wrapper.League(int(league_id)).get_users()
@@ -506,7 +506,7 @@ async def get_current_close_games():
     if servers:
         if week[1] == False:
             for server in servers:
-                if server["league"] and server["score_type"]:
+                if "league" in server and "score_type" in server:
                     score_type = server["score_type"]
                     league_id = server["league"]
                     users = sleeper_wrapper.League(int(league_id)).get_users()
