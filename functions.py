@@ -51,7 +51,9 @@ def get_current_week():
     today = pendulum.today()
     starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
     if starting_week.is_future():
+        future = True
         week = 1
     else:
+        future = False
         week = today.diff(starting_week).in_weeks() + 1
-    return week
+    return week, future
