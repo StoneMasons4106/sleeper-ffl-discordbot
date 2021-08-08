@@ -330,43 +330,74 @@ class Players(commands.Cog, name='Players'):
     ### Get Roster of Team in Your League
 
     @commands.command(name='roster', help='Returns the starting roster of a team in your league based on username specified.')
-    async def roster(self, ctx, username: str):
-        existing_league = functions.get_existing_league(ctx)
-        if existing_league:
-            if existing_league["league"]:
-                league_id = existing_league["league"]
-                users = sleeper_wrapper.League(int(league_id)).get_users()
-                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                count = 0
-                for i in users:
-                    count = count + 1
-                    if i["display_name"] == username:
-                        user = i
-                        break
-                    else:
-                        if count == len(users):
-                            user = False
-                        else:
-                            continue
-                if user:
-                    for roster in rosters:
-                        if roster["owner_id"] == user["user_id"]:
-                            users_roster = roster
+    async def roster(self, ctx, username: str, roster_portion: str):
+        if roster_portion == 'starters' or roster_portion == 'bench' or roster_portion == 'all':
+            existing_league = functions.get_existing_league(ctx)
+            if existing_league:
+                if existing_league["league"]:
+                    league_id = existing_league["league"]
+                    users = sleeper_wrapper.League(int(league_id)).get_users()
+                    rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                    count = 0
+                    for i in users:
+                        count = count + 1
+                        if i["display_name"] == username:
+                            user = i
                             break
                         else:
-                            continue
-                    starters_string = ''
-                    for i in users_roster["starters"]:
-                        if i == '0':
-                            player = 'None'
-                            starters_string += 'None\n'
-                        else:
-                            player = MONGO.players.find_one({'id': i})
-                            starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                    embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
-                    await ctx.send(embed=embed)
+                            if count == len(users):
+                                user = False
+                            else:
+                                continue
+                    if user:
+                        for roster in rosters:
+                            if roster["owner_id"] == user["user_id"]:
+                                users_roster = roster
+                                break
+                            else:
+                                continue
+                        if roster_portion == 'starters':
+                            starters_string = ''
+                            for i in users_roster["starters"]:
+                                if i == '0':
+                                    player = 'None'
+                                    starters_string += 'None\n'
+                                else:
+                                    player = MONGO.players.find_one({'id': i})
+                                    starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                            embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
+                            await ctx.send(embed=embed)
+                        if roster_portion == 'all':
+                            players_string = ''
+                            for i in users_roster["players"]:
+                                if i == '0':
+                                    player = 'None'
+                                    players_string += 'None\n'
+                                else:
+                                    player = MONGO.players.find_one({'id': i})
+                                    players_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                            embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
+                            await ctx.send(embed=embed)
+                        if roster_portion == 'bench':
+                            bench_string = ''
+                            bench_roster = list(set(users_roster["players"]).difference(users_roster["starters"]))
+                            for i in bench_roster:
+                                if i == '0':
+                                    player = 'None'
+                                    bench_string += 'None\n'
+                                else:
+                                    player = MONGO.players.find_one({'id': i})
+                                    bench_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                            embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
+                            await ctx.send(embed=embed)
+                    else:
+                        await ctx.send('Invalid username. Double check for any typos and try again.')
                 else:
-                   await ctx.send('Invalid username. Double check for any typos and try again.') 
+                    await ctx.send('Please run add-league command, no Sleeper League connected.')
+            else:
+                await ctx.send('Please run add-league command, no Sleeper League connected.')
+        else:
+             await ctx.send('Invalid roster_portion argument. Please use starters, bench, or all.')
 
 
 # Scheduled Messages
