@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord.utils import find
 import os
+import pendulum
 import pymongo
 import sleeper_wrapper
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -44,9 +45,13 @@ async def on_ready():
     trigger_three = OrTrigger([
         CronTrigger(day_of_week='mon', hour=9)
     ])
+    trigger_four = OrTrigger([
+        CronTrigger(hour=4)
+    ])
     scheduler.add_job(get_current_matchups, trigger_one, misfire_grace_time=None)
     scheduler.add_job(get_current_scoreboards, trigger_two, misfire_grace_time=None)
     scheduler.add_job(get_current_close_games, trigger_three, misfire_grace_time=None)
+    scheduler.add_job(refresh_players, trigger_four, misfire_grace_time=None)
     scheduler.start()
 
 
@@ -411,7 +416,7 @@ class Players(commands.Cog, name='Players'):
              await ctx.send('Invalid roster_portion argument. Please use starters, bench, or all.')
 
 
-# Scheduled Messages
+# Scheduled Messages/Jobs
 
 ## Get Matchups for Current Week
 
@@ -539,6 +544,25 @@ async def get_current_close_games():
             pass
     else:
         pass
+
+
+## Refresh Player Data in Mongo
+
+def refresh_players():
+    MONGO.players.delete_many({})
+    nfl_players = sleeper_wrapper.Players().get_all_players()
+    for player in nfl_players:
+        full_name = nfl_players[player]["first_name"] + ' ' + nfl_players[player]["last_name"]
+        position = nfl_players[player]["position"]
+        team = nfl_players[player]["team"]
+        player_object = {
+            "id": player,
+            "name": full_name,
+            "position": position,
+            "team": team
+        }
+        MONGO.players.insert_one(player_object)
+    print(f'Completed player refresh at {pendulum.now()}')
         
 
 # Bot Add Cogs
