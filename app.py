@@ -440,7 +440,7 @@ class Weather(commands.Cog, name='Weather'):
     
     ### Get Local Forecast
 
-    @commands.command(name='forecast', help='Returns a 3 day forecast for any specific city specified.')
+    @commands.command(name='forecast', help='Returns a 3 day forecast for any specific city or zip code specified.')
     async def forecast(self, ctx, *city: str):
         weather_api_key = os.environ.get("WEATHER_API_KEY")
         forecast = requests.get(
