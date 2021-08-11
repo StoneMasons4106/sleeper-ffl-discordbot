@@ -495,6 +495,7 @@ class Help(commands.Cog, name='Help'):
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
         embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot)", inline=False)
+        MONGO_CONN.close()
         await ctx.send(embed=embed)
 
     
