@@ -25,9 +25,10 @@ MONGO_CONN = pymongo.MongoClient(MONGO_URI)
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
-# Define Bot and Bot Prefix
+# Define Bot and Bot Prefix/Remove Default Help
 
 bot = commands.Bot(command_prefix=functions.get_prefix)
+bot.remove_command("help")
 
 
 # Bot Events
@@ -77,7 +78,7 @@ class Setup(commands.Cog, name='Setup'):
 
     ### Set Custom Prefix
 
-    @commands.command(name='set-prefix', help='Set custom prefix per guild.')
+    @commands.command(name='set-prefix')
     async def set_prefix(self, ctx, prefix: str):
         if ctx.author.guild_permissions.administrator:
             existing_prefix = MONGO.prefixes.find_one(
@@ -104,7 +105,7 @@ class Setup(commands.Cog, name='Setup'):
 
     ### Set Channel to Send Timed Messages in
 
-    @commands.command(name='set-channel', help='Set channel to send timed messages in.')
+    @commands.command(name='set-channel')
     async def set_channel(self, ctx, channel_id: str):
         if ctx.author.guild_permissions.administrator:
             existing_channel = MONGO.servers.find_one(
@@ -131,7 +132,7 @@ class Setup(commands.Cog, name='Setup'):
 
     ### Set League ID in MongoDB
 
-    @commands.command(name='add-league', help='Adds league associated to this guild ID.')
+    @commands.command(name='add-league')
     async def add_league(self, ctx, league_id: str):
         if ctx.author.guild_permissions.administrator:
             existing_league = functions.get_existing_league(ctx)
@@ -157,7 +158,7 @@ class Setup(commands.Cog, name='Setup'):
 
     ### Set Score Type in MongoDB
 
-    @commands.command(name='set-score-type', help='Adds score type used in scheduled scoreboard message associated to your league.')
+    @commands.command(name='set-score-type')
     async def set_score_type(self, ctx, score_type: str):
         if ctx.author.guild_permissions.administrator:
             if score_type == 'pts_ppr' or score_type == 'pts_half_ppr' or score_type == 'pts_std': 
@@ -194,7 +195,7 @@ class League(commands.Cog, name='League'):
 
     ### Get League Name and Member Info
 
-    @commands.command(name='my-league', help='Returns league name, member display names, and quantity of players.')
+    @commands.command(name='my-league')
     async def my_league_members(self, ctx):
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
@@ -215,7 +216,7 @@ class League(commands.Cog, name='League'):
 
     ### Get League Standings Sorted by Most to Least Wins
 
-    @commands.command(name='my-league-standings', help='Returns the current standings of my league with win loss record and points for.')
+    @commands.command(name='my-league-standings')
     async def my_league_standings(self, ctx):
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
@@ -243,7 +244,7 @@ class League(commands.Cog, name='League'):
     
     ### Get Current Week Matchups
 
-    @commands.command(name='my-league-matchups', help='Returns the matchups for the current week.')
+    @commands.command(name='my-league-matchups')
     async def my_league_matchups(self, ctx):
         week = functions.get_current_week()
         existing_league = functions.get_existing_league(ctx)
@@ -279,7 +280,7 @@ class League(commands.Cog, name='League'):
 
     ### Get Current Week Scoreboard
 
-    @commands.command(name='my-league-scoreboard', help='Returns the scoreboard for the current week based on score type.')
+    @commands.command(name='my-league-scoreboard')
     async def my_league_scoreboard(self, ctx):
         week = functions.get_current_week()
         existing_league = functions.get_existing_league(ctx)
@@ -319,7 +320,7 @@ class Players(commands.Cog, name='Players'):
 
     ### Get Trending Players
 
-    @commands.command(name='trending-players', help='Returns the current top 10 trending players over the last 24 hours based on add or drop rate.')
+    @commands.command(name='trending-players')
     async def trending_players(self, ctx, add_drop: str):
         if add_drop == 'add' or add_drop == 'drop':
             trending_players = sleeper_wrapper.Players().get_trending_players('nfl', add_drop, 24, 10)
@@ -349,7 +350,7 @@ class Players(commands.Cog, name='Players'):
     
     ### Get Roster of Team in Your League
 
-    @commands.command(name='roster', help='Returns the roster, or portion of a roster, of a team in your league based on username and portion specified.')
+    @commands.command(name='roster')
     async def roster(self, ctx, username: str, roster_portion: str):
         if roster_portion == 'starters' or roster_portion == 'bench' or roster_portion == 'all':
             existing_league = functions.get_existing_league(ctx)
@@ -440,7 +441,7 @@ class Weather(commands.Cog, name='Weather'):
     
     ### Get Local Forecast
 
-    @commands.command(name='forecast', help='Returns a 3 day forecast for any specific city or zip code specified.')
+    @commands.command(name='forecast')
     async def forecast(self, ctx, *city: str):
         weather_api_key = os.environ.get("WEATHER_API_KEY")
         forecast = requests.get(
@@ -468,6 +469,121 @@ class Weather(commands.Cog, name='Weather'):
             await ctx.send(embed=embed)
         else:
             await ctx.send('Invalid city name, please try again!')
+
+
+
+##Help Command
+
+class Help(commands.Cog, name='Help'):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    ### Help Command
+
+    @commands.group(invoke_without_command=True)
+    async def help(self, ctx):
+        existing_prefix = MONGO.prefixes.find_one(
+                    {"server": str(ctx.message.guild.id)})["prefix"]
+        embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
+        embed.add_field(name='Players', value='trending-players, roster', inline=False)
+        embed.add_field(name='Weather', value='forecast', inline=False)
+        embed.add_field(name='Setup', value='set-channel, add-league, score-type, set-prefix', inline=False)
+        if existing_prefix:
+            embed.add_field(name='Prefix', value=existing_prefix, inline=False)
+        else:
+            embed.add_field(name='Prefix', value="$", inline=False)
+        embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot)", inline=False)
+        await ctx.send(embed=embed)
+
+    
+    ### My League Help
+
+    @help.command(name="my-league")
+    async def my_league(self, ctx):
+        embed = functions.my_embed('My League', 'Returns information about the league such as league name, players, and number of players. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### My League Standings Help
+
+    @help.command(name="my-league-standings")
+    async def my_league_standings(self, ctx):
+        embed = functions.my_embed('My League Standings', 'Returns current league standings. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-standings', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### My League Scoreboard Help
+
+    @help.command(name="my-league-scoreboard")
+    async def my_league_scoreboard(self, ctx):
+        embed = functions.my_embed('My League Scoreboard', 'Returns scoreboard for the current week. If the league is pre-draft, it will return week 1 scoreboard. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-scoreboard', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### My League Matchups Help
+
+    @help.command(name="my-league-matchups")
+    async def my_league_matchups(self, ctx):
+        embed = functions.my_embed('My League Matchups', 'Returns matchups for the current week. If the league is pre-draft, it will return week 1 scoreboard. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-matchups', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Trending Players Help
+
+    @help.command(name="trending-players")
+    async def trending_players(self, ctx):
+        embed = functions.my_embed('Trending Players', 'Returns top 10 trending players based on add or drop rate for the past 24 hours.', discord.Colour.blue(), '**Syntax**', '<prefix>trending players [add or drop]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Roster Help
+
+    @help.command(name="roster")
+    async def roster(self, ctx):
+        embed = functions.my_embed('Roster', 'Returns the list of player on a given players roster based on parameters specified. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>roster [username] [starting, bench, or all]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Forecast Help
+
+    @help.command(name="forecast")
+    async def forecast(self, ctx):
+        embed = functions.my_embed('Forecast', 'Returns the 3 day forecast for a given city or zip code.', discord.Colour.blue(), '**Syntax**', '<prefix>forecast [city or zip code]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Add League Help
+
+    @help.command(name="add-league")
+    async def add_league(self, ctx):
+        embed = functions.my_embed('Add League', 'Creates a connection in our database between your Sleeper League and your Discord Server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>add-league [sleeper_league_id]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Set Channel Help
+
+    @help.command(name="set-channel")
+    async def set_channel(self, ctx):
+        embed = functions.my_embed('Set Channel', 'Designates a channel for your automated messages to funnel through. Restricted for administrators. See our Github for schedule of these messages.', discord.Colour.blue(), '**Syntax**', '<prefix>set-channel [discord_channel_id]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Score Type Help
+
+    @help.command(name="score-type")
+    async def score_type(self, ctx):
+        embed = functions.my_embed('Score Type', 'Designates the score type that your Sleeper League uses. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>score-type [pts_std, pts_half_ppr, or pts_ppr]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Set Prefix Help
+
+    @help.command(name="set-prefix")
+    async def set_prefix(self, ctx):
+        embed = functions.my_embed('Set Prefix', 'Designates the prefix you want this bot to use. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>set-prefix [prefix]', False, ctx)
+        await ctx.send(embed=embed)
 
 
 
@@ -631,6 +747,7 @@ bot.add_cog(Setup(bot))
 bot.add_cog(League(bot))
 bot.add_cog(Players(bot))
 bot.add_cog(Weather(bot))
+bot.add_cog(Help(bot))
 
 # Bot Run
 
