@@ -13,6 +13,7 @@ if os.path.exists("env.py"):
 
 MONGO_DBNAME = os.environ.get("MONGO_DBNAME")
 MONGO_URI = os.environ.get("MONGO_URI")
+MONGO_CONN = pymongo.MongoClient(MONGO_URI)
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
@@ -21,6 +22,7 @@ MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 def get_prefix(bot, message):
     existing_prefix = MONGO.prefixes.find_one(
                 {"server": str(message.guild.id)})
+    MONGO_CONN.close()
     if existing_prefix:
         my_prefix = existing_prefix["prefix"]
     else:
@@ -33,6 +35,7 @@ def get_prefix(bot, message):
 def get_existing_league(ctx):
     existing_league = MONGO.servers.find_one(
                 {"server": str(ctx.message.guild.id)})
+    MONGO_CONN.close()
     return existing_league
 
 

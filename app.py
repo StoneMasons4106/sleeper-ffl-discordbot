@@ -20,6 +20,7 @@ if os.path.exists("env.py"):
 TOKEN = os.environ.get("DISCORD_TOKEN")
 MONGO_DBNAME = os.environ.get("MONGO_DBNAME")
 MONGO_URI = os.environ.get("MONGO_URI")
+MONGO_CONN = pymongo.MongoClient(MONGO_URI)
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
@@ -83,6 +84,7 @@ class Setup(commands.Cog, name='Setup'):
             if existing_prefix:
                 newvalue = {"$set": {"prefix": prefix}}
                 MONGO.prefixes.update_one(existing_prefix, newvalue)
+                MONGO_CONN.close()
                 embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
@@ -91,6 +93,7 @@ class Setup(commands.Cog, name='Setup'):
                     "prefix": prefix
                 }
                 MONGO.prefixes.insert_one(server_prefix_object)
+                MONGO_CONN.close()
                 embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
@@ -108,6 +111,7 @@ class Setup(commands.Cog, name='Setup'):
             if existing_channel:
                 newvalue = {"$set": {"channel": str(channel_id)}}
                 MONGO.servers.update_one(existing_channel, newvalue)
+                MONGO_CONN.close()
                 embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
@@ -116,6 +120,7 @@ class Setup(commands.Cog, name='Setup'):
                     "channel": channel_id
                 }
                 MONGO.servers.insert_one(server_channel_object)
+                MONGO_CONN.close()
                 embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
@@ -132,6 +137,7 @@ class Setup(commands.Cog, name='Setup'):
             if existing_league:
                 newvalue = {"$set": {"league": league_id}}
                 MONGO.servers.update_one(existing_league, newvalue)
+                MONGO_CONN.close()
                 embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
                 await ctx.send(embed=embed)
             else:
@@ -140,6 +146,7 @@ class Setup(commands.Cog, name='Setup'):
                     "league": league_id
                 }
                 MONGO.servers.insert_one(server_league_object)
+                MONGO_CONN.close()
                 embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
                 await ctx.send(embed=embed)
         else:
@@ -157,6 +164,7 @@ class Setup(commands.Cog, name='Setup'):
                 if existing_league:
                     newvalue = {"$set": {"score_type": score_type}}
                     MONGO.servers.update_one(existing_league, newvalue)
+                    MONGO_CONN.close()
                     embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type}!', False, ctx)
                     await ctx.send(embed=embed)
                 else:
@@ -165,6 +173,7 @@ class Setup(commands.Cog, name='Setup'):
                         "score_type": score_type
                     }
                     MONGO.servers.insert_one(score_type_object)
+                    MONGO_CONN.close()
                     embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type}!', False, ctx)
                     await ctx.send(embed=embed)
             else:
@@ -326,6 +335,7 @@ class Players(commands.Cog, name='Players'):
                 else:
                     team = 'None'
                 trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} {str(change)}\n'
+            MONGO_CONN.close()
             if add_drop == 'add':
                 embed = functions.my_embed('Trending Players', 'Display Current Trending Added Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
                 await ctx.send(embed=embed)
@@ -373,6 +383,7 @@ class Players(commands.Cog, name='Players'):
                                 else:
                                     player = MONGO.players.find_one({'id': i})
                                     starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                            MONGO_CONN.close()
                             embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
                             await ctx.send(embed=embed)
                         if roster_portion == 'all':
@@ -384,6 +395,7 @@ class Players(commands.Cog, name='Players'):
                                     else:
                                         player = MONGO.players.find_one({'id': i})
                                         players_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                                MONGO_CONN.close()
                                 embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
                                 await ctx.send(embed=embed)
                             else:
@@ -400,6 +412,7 @@ class Players(commands.Cog, name='Players'):
                                     else:
                                         player = MONGO.players.find_one({'id': i})
                                         bench_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                                MONGO_CONN.close()
                                 embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
                                 await ctx.send(embed=embed)
                             else:
@@ -424,6 +437,7 @@ async def get_current_matchups():
     week = functions.get_current_week()
     servers = MONGO.servers.find(
                 {})
+    MONGO_CONN.close()
     if servers:
         if week[1] == False:
             for server in servers:
@@ -468,6 +482,7 @@ async def get_current_scoreboards():
     week = functions.get_current_week()
     servers = MONGO.servers.find(
         {})
+    MONGO_CONN.close()
     if servers:
         if week[1] == False:
             for server in servers:
@@ -508,6 +523,7 @@ async def get_current_close_games():
     week = functions.get_current_week()
     servers = MONGO.servers.find(
         {})
+    MONGO_CONN.close()
     if servers:
         if week[1] == False:
             for server in servers:
@@ -562,8 +578,10 @@ def refresh_players():
             "team": team
         }
         MONGO.players.insert_one(player_object)
+    MONGO_CONN.close()
     print(f'Completed player refresh at {pendulum.now()}')
-        
+
+
 
 # Bot Add Cogs
 
