@@ -21,9 +21,9 @@ Default Prefix: $
 
 * Finish setting up by running the following commands:
     * add-league:
-        * $add-league sleeper_league_id
+        * $add-league sleeper_league_id (Example: 726571239501557767)
     * set-channel:
-        * $set-channel discord_channel_id
+        * $set-channel discord_channel_id (Example: 872626056258023484)
     * set-score-type
         * $set-score-type pts_ppr/pts_half_ppr/pts_std
 
