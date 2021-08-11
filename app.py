@@ -11,6 +11,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
 import functions
+import requests
 if os.path.exists("env.py"):
     import env
 
@@ -427,6 +428,38 @@ class Players(commands.Cog, name='Players'):
                 await ctx.send('Please run add-league command, no Sleeper League connected.')
         else:
              await ctx.send('Invalid roster_portion argument. Please use starters, bench, or all.')
+            
+
+## Weather Cog
+
+class Weather(commands.Cog, name='Weather'):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    
+    ### Get Local Forecast
+
+    @commands.command(name='forecast', help='Returns a 3 day forecast for any specific city specified.')
+    async def forecast(self, ctx, city: str):
+        weather_api_key = os.environ.get("WEATHER_API_KEY")
+        forecast = requests.get(
+            'http://api.weatherapi.com/v1/forecast.json',
+            params= {
+                'key': weather_api_key,
+                'q': city,
+                'days': 3
+            }
+        )
+        if forecast.status_code == 200:
+            forecast_string=''
+            for day in forecast.json()["forecast"]["forecastday"]:
+                forecast_string += f'{day["date"]}:\nHigh: {day["day"]["maxtemp_f"]} degrees F\nLow: {day["day"]["mintemp_f"]} degrees F\nWind: {day["day"]["maxwind_mph"]} mph\nPrecipitation Amount: {day["day"]["totalprecip_in"]} in.\nHumidity: {day["day"]["avghumidity"]}%\nChance of Rain: {day["day"]["daily_chance_of_rain"]}%\nChance of Snow: {day["day"]["daily_chance_of_snow"]}%\nGeneral Conditions: {day["day"]["condition"]["text"]}\n\n'
+            embed = functions.my_embed('Weather Forecast', f'3 day forecast for {city}', discord.Colour.blue(), f'Forecast for {city}', forecast_string, False, ctx)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send('Invalid city name, please try again!')
+
 
 
 # Scheduled Messages/Jobs
@@ -588,6 +621,7 @@ def refresh_players():
 bot.add_cog(Setup(bot))
 bot.add_cog(League(bot))
 bot.add_cog(Players(bot))
+bot.add_cog(Weather(bot))
 
 # Bot Run
 
