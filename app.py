@@ -508,7 +508,7 @@ class Help(commands.Cog, name='Help'):
         existing_prefix = MONGO.prefixes.find_one(
                     {"server": str(ctx.message.guild.id)})["prefix"]
         embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
-        embed.add_field(name='Players', value='trending-players, roster', inline=False)
+        embed.add_field(name='Players', value='trending-players, roster, status', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, score-type, set-prefix', inline=False)
         if existing_prefix:
