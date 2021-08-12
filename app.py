@@ -730,14 +730,22 @@ def refresh_players():
         full_name = nfl_players[player]["first_name"] + ' ' + nfl_players[player]["last_name"]
         position = nfl_players[player]["position"]
         team = nfl_players[player]["team"]
-        status = nfl_players[player]["status"]
-        player_object = {
-            "id": player,
-            "name": full_name,
-            "position": position,
-            "team": team,
-            "status": status
-        }
+        try:
+            status = nfl_players[player]["status"]
+            player_object = {
+                "id": player,
+                "name": full_name,
+                "position": position,
+                "team": team,
+                "status": status
+            }
+        except:
+            player_object = {
+                "id": player,
+                "name": full_name,
+                "position": position,
+                "team": team
+            }
         MONGO.players.insert_one(player_object)
     MONGO_CONN.close()
     print(f'Completed player refresh at {pendulum.now()}')
