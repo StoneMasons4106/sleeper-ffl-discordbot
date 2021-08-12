@@ -39,6 +39,15 @@ def get_existing_league(ctx):
     return existing_league
 
 
+# Get Existing Player Object from Mongo
+
+def get_existing_player(args):
+    existing_player = MONGO.players.find_one(
+                {"name": f'{args[0]} {args[1]}', "team": args[2]})
+    MONGO_CONN.close()
+    return existing_player
+
+
 # Set Embed for Discord Bot Responses
 
 def my_embed(title, description, color, name, value, inline, ctx):

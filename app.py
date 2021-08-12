@@ -434,7 +434,24 @@ class Players(commands.Cog, name='Players'):
                 await ctx.send('Please run add-league command, no Sleeper League connected.')
         else:
              await ctx.send('Invalid roster_portion argument. Please use starters, bench, or all.')
+
+
+    ### Get the Roster and Injury Status of a Particular Player
             
+    @commands.command(name='status')
+    async def status(self, ctx, *args):
+        if len(args) == 3:
+            existing_player = functions.get_existing_player(args)
+            if existing_player:
+                embed = functions.my_embed('Status', f'Roster and Injury Status for {args[0]} {args[1]} - {args[2]}', discord.Colour.blue(), 'Roster Status', existing_player["status"], False, ctx)
+                embed.add_field(name='Injury Status', value=existing_player["injury_status"], inline=False)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send('No player found with those specifications, please try again!')
+        else:
+            await ctx.send('Invalid arguments provided. Please use the following format: status <first name> <last name> <team abbreviation in caps>')
+
+
 
 ## Weather Cog
 
@@ -548,6 +565,14 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="roster")
     async def roster(self, ctx):
         embed = functions.my_embed('Roster', 'Returns the list of player on a given players roster based on parameters specified. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>roster [username] [starting, bench, or all]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Status Help
+
+    @help.command(name="status")
+    async def status(self, ctx):
+        embed = functions.my_embed('Status', 'Returns the roster and injury status of a specific player.', discord.Colour.blue(), '**Syntax**', '<prefix>status [first name] [last name] [team abbreviation]', False, ctx)
         await ctx.send(embed=embed)
 
 
