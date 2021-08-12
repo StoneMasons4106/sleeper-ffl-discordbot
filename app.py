@@ -730,11 +730,13 @@ def refresh_players():
         full_name = nfl_players[player]["first_name"] + ' ' + nfl_players[player]["last_name"]
         position = nfl_players[player]["position"]
         team = nfl_players[player]["team"]
+        status = nfl_players[player]["status"]
         player_object = {
             "id": player,
             "name": full_name,
             "position": position,
-            "team": team
+            "team": team,
+            "status": status
         }
         MONGO.players.insert_one(player_object)
     MONGO_CONN.close()
