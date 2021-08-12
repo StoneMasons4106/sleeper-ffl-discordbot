@@ -499,7 +499,7 @@ class Help(commands.Cog, name='Help'):
             embed.add_field(name='Prefix', value=existing_prefix, inline=False)
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
-        embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot)", inline=False)
+        embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
         MONGO_CONN.close()
         await ctx.send(embed=embed)
 
@@ -766,6 +766,7 @@ bot.add_cog(League(bot))
 bot.add_cog(Players(bot))
 bot.add_cog(Weather(bot))
 bot.add_cog(Help(bot))
+
 
 # Bot Run
 
