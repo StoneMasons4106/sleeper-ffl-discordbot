@@ -51,8 +51,8 @@ def my_embed(title, description, color, name, value, inline, ctx):
 # Get Current Week
 
 def get_current_week():
-    today = pendulum.today()
-    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY)
+    today = pendulum.today(tz='America/New_York')
+    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY, tz='America/New_York')
     if starting_week.is_future():
         future = True
         week = 1

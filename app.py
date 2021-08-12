@@ -38,7 +38,7 @@ bot.remove_command("help")
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
-    scheduler = AsyncIOScheduler()
+    scheduler = AsyncIOScheduler(timezone='America/New_York')
     trigger_one = OrTrigger([
         CronTrigger(day_of_week='thu', hour=15)
     ])
@@ -463,7 +463,6 @@ class Weather(commands.Cog, name='Weather'):
             if tuple_test:
                 city_string = ''
                 for word in city:
-                    print(word)
                     city_string += f'{word} '
                 city = city_string
             else:
@@ -755,7 +754,8 @@ def refresh_players():
             }
         MONGO.players.insert_one(player_object)
     MONGO_CONN.close()
-    print(f'Completed player refresh at {pendulum.now()}')
+    now = pendulum.now(tz='America/New_York')
+    print(f'Completed player refresh at {now}')
 
 
 
