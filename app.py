@@ -737,12 +737,14 @@ def refresh_players():
         team = nfl_players[player]["team"]
         try:
             status = nfl_players[player]["status"]
+            injury_status = nfl_players[player]["injury_status"]
             player_object = {
                 "id": player,
                 "name": full_name,
                 "position": position,
                 "team": team,
-                "status": status
+                "status": status,
+                "injury_status": injury_status
             }
         except:
             player_object = {
