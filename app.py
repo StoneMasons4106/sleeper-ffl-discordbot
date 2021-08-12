@@ -379,12 +379,17 @@ class Players(commands.Cog, name='Players'):
                                 continue
                         if roster_portion == 'starters':
                             starters_string = ''
-                            for i in users_roster["starters"]:
-                                if i == '0':
-                                    starters_string += 'None\n'
-                                else:
-                                    player = MONGO.players.find_one({'id': i})
-                                    starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
+                            res = all(i == '0' for i in users_roster["starters"])
+                            print(res)
+                            if res == True:
+                                starters_string += 'None\n'
+                            else:
+                                for i in users_roster["starters"]:
+                                    if i == '0':
+                                        starters_string += 'None\n'
+                                    else:
+                                        player = MONGO.players.find_one({'id': i})
+                                        starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
                             MONGO_CONN.close()
                             embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
                             await ctx.send(embed=embed)
