@@ -457,14 +457,15 @@ class Players(commands.Cog, name='Players'):
              await ctx.send('Invalid roster_portion argument. Please use starters, bench, or all.')
 
 
-    ### Get the Roster and Injury Status of a Particular Player
+    ### Get the Roster, Injury, and Depth Chart Status of a Particular Player
             
     @commands.command(name='status')
     async def status(self, ctx, *args):
         if len(args) == 3:
             existing_player = functions.get_existing_player(args)
             if existing_player:
-                embed = functions.my_embed('Status', f'Roster and Injury Status for {args[0]} {args[1]} - {args[2]}', discord.Colour.blue(), 'Roster Status', existing_player["status"], False, ctx)
+                embed = functions.my_embed('Status', f'Roster, Injury, and Depth Chart Status for {args[0]} {args[1]} - {args[2]}', discord.Colour.blue(), 'Roster Status', existing_player["status"], False, ctx)
+                embed.add_field(name='Depth Chart Order', value=existing_player["depth_chart_order"], inline=False)
                 embed.add_field(name='Injury Status', value=existing_player["injury_status"], inline=False)
                 await ctx.send(embed=embed)
             else:
@@ -643,7 +644,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="status")
     async def status(self, ctx):
-        embed = functions.my_embed('Status', 'Returns the roster and injury status of a specific player.', discord.Colour.blue(), '**Syntax**', '<prefix>status [first name] [last name] [team abbreviation]', False, ctx)
+        embed = functions.my_embed('Status', 'Returns the roster, injury, and depth chart status of a specific player.', discord.Colour.blue(), '**Syntax**', '<prefix>status [first name] [last name] [team abbreviation]', False, ctx)
         await ctx.send(embed=embed)
 
 
