@@ -38,12 +38,6 @@ bot.remove_command("help")
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
-    for guild in bot.guilds:
-        general = find(lambda x: x.name == 'general', guild.text_channels)
-        if guild.name == 'Be the GM':
-            pass
-        else:
-            await general.send('Hello all! I am happy to annouce that I have officially included features such as kick, ban and unban in the bot! However on initial release, I did not have this in mind, so permissions were not granted. If you want to use these commands with this bot, please kick the bot, and reinvite using this link: [Invite]()')
     scheduler = AsyncIOScheduler(timezone='America/New_York')
     trigger_one = OrTrigger([
         CronTrigger(day_of_week='thu', hour=15)
