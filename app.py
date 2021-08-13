@@ -556,14 +556,14 @@ class Help(commands.Cog, name='Help'):
     @commands.group(invoke_without_command=True)
     async def help(self, ctx):
         existing_prefix = MONGO.prefixes.find_one(
-                    {"server": str(ctx.message.guild.id)})["prefix"]
+                    {"server": str(ctx.message.guild.id)})
         embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
         embed.add_field(name='Players', value='trending-players, roster, status', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, score-type, set-prefix', inline=False)
         if existing_prefix:
-            embed.add_field(name='Prefix', value=existing_prefix, inline=False)
+            embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
         embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
