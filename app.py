@@ -493,6 +493,7 @@ class Weather(commands.Cog, name='Weather'):
             await ctx.send('Invalid city name, please try again!')
 
 
+
 ## Manage Cog
 
 class Manage(commands.Cog, name='Manage'):
@@ -513,8 +514,36 @@ class Manage(commands.Cog, name='Manage'):
             await ctx.send('You do not have access to this command.')
     
 
+    ### Ban Command
 
-##Help Command
+    @commands.command(name='ban')
+    @commands.has_permissions(ban_members=True)
+    async def ban(self, ctx, user: discord.Member, *, reason=None):
+        if ctx.author.guild_permissions.administrator:
+            await user.ban(reason=reason)
+            await ctx.send(f"{user} has been exiled for treason!")
+        else:
+            await ctx.send('You do not have access to this command.')
+
+
+    ###Unban Command
+
+    @commands.command(name='unban')
+    async def unban(self, ctx, *, member):
+        if ctx.author.guild_permissions.administrator:
+            banned_users = await ctx.guild.bans()
+            member_name, member_discriminator = member.split('#')
+            for ban_entry in banned_users:
+                user = ban_entry.user
+                if (user.name, user.discriminator) == (member_name, member_discriminator):
+                    await ctx.guild.unban(user)
+                    await ctx.send(f"{user} has been welcomed back! Shower them with gifts!")
+        else:
+            await ctx.send('You do not have access to this command.')
+
+
+
+##Help Cog
 
 class Help(commands.Cog, name='Help'):
 
@@ -531,7 +560,7 @@ class Help(commands.Cog, name='Help'):
         embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
         embed.add_field(name='Players', value='trending-players, roster, status', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
-        embed.add_field(name='Manage', value='kick', inline=False)
+        embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix, inline=False)
@@ -611,6 +640,22 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="kick")
     async def kick(self, ctx):
         embed = functions.my_embed('Kick', 'Kicks specified user from Discord server.', discord.Colour.blue(), '**Syntax**', '<prefix>kick @[username]', False, ctx)
+        await ctx.send(embed=embed)
+
+    
+    ### Ban Help
+
+    @help.command(name="ban")
+    async def ban(self, ctx):
+        embed = functions.my_embed('Ban', 'Bans specified user from Discord server.', discord.Colour.blue(), '**Syntax**', '<prefix>ban @[username]', False, ctx)
+        await ctx.send(embed=embed)
+
+    
+    ### Unban Help
+
+    @help.command(name="unban")
+    async def unban(self, ctx):
+        embed = functions.my_embed('Unban', 'Unbans specified user from Discord server.', discord.Colour.blue(), '**Syntax**', '<prefix>unban [username]#[number]', False, ctx)
         await ctx.send(embed=embed)
 
 
