@@ -38,7 +38,7 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 ## Setup
 
-Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848311382086&permissions=103079267328&scope=bot) to invite the bot to your Discord server.
+Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848311382086&permissions=122340240631&scope=bot) to invite the bot to your Discord server.
 
 Default Prefix: $
 

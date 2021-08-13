@@ -310,6 +310,7 @@ class League(commands.Cog, name='League'):
             await ctx.send('Please run add-league command, no Sleeper League connected.')
 
 
+
 ## Players Cog
 
 class Players(commands.Cog, name='Players'):
@@ -492,6 +493,26 @@ class Weather(commands.Cog, name='Weather'):
             await ctx.send('Invalid city name, please try again!')
 
 
+## Manage Cog
+
+class Manage(commands.Cog, name='Manage'):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    ### Kick Command
+
+    @commands.command(name='kick')
+    @commands.has_permissions(kick_members=True)
+    async def kick(self, ctx, user: discord.Member, *, reason=None):
+        if ctx.author.guild_permissions.administrator:
+            await user.kick(reason=reason)
+            await ctx.send(f"{user} has been ousted for being sassy!")
+        else:
+            await ctx.send('You do not have access to this command.')
+    
+
 
 ##Help Command
 
@@ -510,6 +531,7 @@ class Help(commands.Cog, name='Help'):
         embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
         embed.add_field(name='Players', value='trending-players, roster, status', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
+        embed.add_field(name='Manage', value='kick', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix, inline=False)
@@ -581,6 +603,14 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="forecast")
     async def forecast(self, ctx):
         embed = functions.my_embed('Forecast', 'Returns the 3 day forecast for a given city or zip code.', discord.Colour.blue(), '**Syntax**', '<prefix>forecast [city or zip code]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Kick Help
+
+    @help.command(name="kick")
+    async def kick(self, ctx):
+        embed = functions.my_embed('Kick', 'Kicks specified user from Discord server.', discord.Colour.blue(), '**Syntax**', '<prefix>kick @[username]', False, ctx)
         await ctx.send(embed=embed)
 
 
@@ -790,6 +820,7 @@ bot.add_cog(Setup(bot))
 bot.add_cog(League(bot))
 bot.add_cog(Players(bot))
 bot.add_cog(Weather(bot))
+bot.add_cog(Manage(bot))
 bot.add_cog(Help(bot))
 
 
