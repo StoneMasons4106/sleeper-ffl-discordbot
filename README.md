@@ -2,6 +2,7 @@
 
 This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/SwapnikKatkoori/sleeper-api-wrapper) for providing granular information about one's Sleeper Fantasy Football league, right to Discord. If you wish to donate to the project, here's my [Patreon](https://www.patreon.com/stonemasons).
 
+
 ## Features
 
 * Specific information about your league such as the names and members.
@@ -20,6 +21,9 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 * Custom prefixes, in case you have another bot with the same default prefix.
 
+* Scheduled messages to keep your league up to date and notify you of the latest information following the schedule below:
+
+
 ## Scheduled Messages
 
 * Current Matchups
@@ -30,6 +34,7 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 * Close Games
     * Mondays at 09:00
+
 
 ## Setup
 
@@ -44,6 +49,7 @@ Default Prefix: $
         * $set-channel discord_channel_id (Example: 872626056258023484)
     * set-score-type
         * $set-score-type pts_ppr/pts_half_ppr/pts_std
+
 
 ## Issues
 
