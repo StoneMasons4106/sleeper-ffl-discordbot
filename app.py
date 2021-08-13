@@ -67,6 +67,28 @@ async def on_guild_join(guild):
         await general.send('Happy to be here! Please run the add-league, set-channel, and set-score-type commands to finish setting up!')
 
 
+## On Guild Leave
+
+@bot.event
+async def on_guild_remove(guild):
+    print(guild.id)
+    existing_league = MONGO.servers.find_one(
+                {"server": str(guild.id)})
+    existing_prefix = MONGO.prefixes.find_one(
+                {"server": str(guild.id)})
+    if existing_league:
+        MONGO.servers.delete_one(
+            {"server": str(guild.id)})
+    else:
+        pass
+    if existing_prefix:
+        MONGO.prefixes.delete_one(
+            {"server": str(guild.id)})
+    else:
+        pass
+    MONGO_CONN.close()
+
+
 # Bot Commands
 
 ## Setup Cog
@@ -561,7 +583,7 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='Players', value='trending-players, roster, status', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
-        embed.add_field(name='Setup', value='set-channel, add-league, score-type, set-prefix', inline=False)
+        embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
         else:
@@ -677,7 +699,7 @@ class Help(commands.Cog, name='Help'):
 
     ### Score Type Help
 
-    @help.command(name="score-type")
+    @help.command(name="set-score-type")
     async def score_type(self, ctx):
         embed = functions.my_embed('Score Type', 'Designates the score type that your Sleeper League uses. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>score-type [pts_std, pts_half_ppr, or pts_ppr]', False, ctx)
         await ctx.send(embed=embed)
