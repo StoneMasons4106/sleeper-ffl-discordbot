@@ -71,7 +71,6 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-    print(guild.id)
     existing_league = MONGO.servers.find_one(
                 {"server": str(guild.id)})
     existing_prefix = MONGO.prefixes.find_one(
@@ -403,7 +402,6 @@ class Players(commands.Cog, name='Players'):
                         if roster_portion == 'starters':
                             starters_string = ''
                             res = all(i == '0' for i in users_roster["starters"])
-                            print(res)
                             if res == True:
                                 starters_string += 'None\n'
                             else:
