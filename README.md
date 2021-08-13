@@ -1,6 +1,24 @@
 # Sleeper Fantasy Football Discord Bot
 
-This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/SwapnikKatkoori/sleeper-api-wrapper) for providing granular information about one's Sleeper Fantasy Football league, right to Discord.
+This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/SwapnikKatkoori/sleeper-api-wrapper) for providing granular information about one's Sleeper Fantasy Football league, right to Discord. If you wish to donate to the project, here's my [Patreon](https://www.patreon.com/stonemasons).
+
+## Features
+
+* Specific information about your league such as the names and members.
+
+* See your matchups and scoreboards for the current week.
+
+* Check your current total league standings.
+
+* See what players are trending a certain direction, such as being added or dropped.
+
+* See your league mate's roster, or a portion of it.
+
+* Check on a player's roster and injury status.
+
+* Check the forecast for the area of a game based on city or zip code.
+
+* Custom prefixes, in case you have another bot with the same default prefix.
 
 ## Scheduled Messages
 
