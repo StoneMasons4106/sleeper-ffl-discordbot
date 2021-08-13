@@ -661,7 +661,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="kick")
     async def kick(self, ctx):
-        embed = functions.my_embed('Kick', 'Kicks specified user from Discord server.', discord.Colour.blue(), '**Syntax**', '<prefix>kick @[username]', False, ctx)
+        embed = functions.my_embed('Kick', 'Kicks specified user from Discord server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>kick @[username]', False, ctx)
         await ctx.send(embed=embed)
 
     
@@ -669,7 +669,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="ban")
     async def ban(self, ctx):
-        embed = functions.my_embed('Ban', 'Bans specified user from Discord server.', discord.Colour.blue(), '**Syntax**', '<prefix>ban @[username]', False, ctx)
+        embed = functions.my_embed('Ban', 'Bans specified user from Discord server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>ban @[username]', False, ctx)
         await ctx.send(embed=embed)
 
     
@@ -677,7 +677,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="unban")
     async def unban(self, ctx):
-        embed = functions.my_embed('Unban', 'Unbans specified user from Discord server.', discord.Colour.blue(), '**Syntax**', '<prefix>unban [username]#[number]', False, ctx)
+        embed = functions.my_embed('Unban', 'Unbans specified user from Discord server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>unban [username]#[number]', False, ctx)
         await ctx.send(embed=embed)
 
 
