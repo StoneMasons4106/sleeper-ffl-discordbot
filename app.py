@@ -508,7 +508,7 @@ class Weather(commands.Cog, name='Weather'):
                 pass
             for day in forecast.json()["forecast"]["forecastday"]:
                 forecast_string += f'{day["date"]}:\nHigh: {day["day"]["maxtemp_f"]} degrees F\nLow: {day["day"]["mintemp_f"]} degrees F\nWind: {day["day"]["maxwind_mph"]} mph\nPrecipitation Amount: {day["day"]["totalprecip_in"]} in.\nHumidity: {day["day"]["avghumidity"]}%\nChance of Rain: {day["day"]["daily_chance_of_rain"]}%\nChance of Snow: {day["day"]["daily_chance_of_snow"]}%\nGeneral Conditions: {day["day"]["condition"]["text"]}\n\n'
-            embed = functions.my_embed('Weather Forecast', f'3 day forecast for {city}', discord.Colour.blue(), f'Forecast for {city}', forecast_string, False, ctx)
+            embed = functions.my_embed('Weather Forecast', f'3 day forecast for {forecast.json()["location"]["name"]}, {forecast.json()["location"]["region"]}', discord.Colour.blue(), f'Forecast for {city}', forecast_string, False, ctx)
             await ctx.send(embed=embed)
         else:
             await ctx.send('Invalid city name, please try again!')
