@@ -474,6 +474,54 @@ class Players(commands.Cog, name='Players'):
             await ctx.send('Invalid arguments provided. Please use the following format: status <first name> <last name> <team abbreviation in caps>')
 
 
+    ### See Who Has a Particular Player
+
+    @commands.command(name='who-has')
+    async def who_has(self, ctx, *args):
+        if len(args) == 3:
+            existing_player = functions.get_existing_player(args)
+            existing_league = functions.get_existing_league(ctx)
+            if existing_league:
+                if "league" in existing_league:
+                    if existing_player:
+                        league_id = existing_league["league"]
+                        users = sleeper_wrapper.League(int(league_id)).get_users()
+                        rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                        count = 0
+                        found = False
+                        for roster in rosters:
+                            count = count + 1
+                            for player in roster["players"]:
+                                if player == existing_player["id"]:
+                                    for user in users:
+                                        if user["user_id"] == roster["owner_id"]:
+                                            embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', user["display_name"], False, ctx)
+                                            await ctx.send(embed=embed)
+                                            found = True
+                                            break
+                                        else:
+                                            pass
+                                else:
+                                    pass
+                            if count == len(rosters):
+                                if found == True:
+                                    pass
+                                else:
+                                    embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', 'None', False, ctx)
+                                    await ctx.send(embed=embed)
+                                    break
+                            else:
+                                continue
+                    else:
+                        await ctx.send('No player found with those parameters, please try again!')
+                else:
+                    await ctx.send('Please run add-league command, no Sleeper League connected.')
+            else:
+                await ctx.send('Please run add-league command, no Sleeper League connected.')
+        else:
+            await ctx.send('Invalid arguments provided. Please use the following format: who-has <first name> <last name> <team abbreviation in caps>')
+
+
 
 ## Weather Cog
 
@@ -564,7 +612,7 @@ class Manage(commands.Cog, name='Manage'):
 
 
 
-##Help Cog
+## Help Cog
 
 class Help(commands.Cog, name='Help'):
 
@@ -579,7 +627,7 @@ class Help(commands.Cog, name='Help'):
         existing_prefix = MONGO.prefixes.find_one(
                     {"server": str(ctx.message.guild.id)})
         embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
-        embed.add_field(name='Players', value='trending-players, roster, status', inline=False)
+        embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
@@ -645,6 +693,14 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="status")
     async def status(self, ctx):
         embed = functions.my_embed('Status', 'Returns the roster, injury, and depth chart status of a specific player.', discord.Colour.blue(), '**Syntax**', '<prefix>status [first name] [last name] [team abbreviation]', False, ctx)
+        await ctx.send(embed=embed)
+
+    
+    ### Who Has Help
+
+    @help.command(name="who-has")
+    async def who_has(self, ctx):
+        embed = functions.my_embed('Who Has', 'Returns the owner in your league who has a specific player.', discord.Colour.blue(), '**Syntax**', '<prefix>who-has [first name] [last name] [team abbreviation]', False, ctx)
         await ctx.send(embed=embed)
 
 
