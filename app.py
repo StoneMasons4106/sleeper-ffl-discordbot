@@ -13,6 +13,7 @@ from apscheduler.triggers.combining import OrTrigger
 import functions
 import time
 import requests
+import constants
 if os.path.exists("env.py"):
     import env
 
@@ -646,8 +647,9 @@ class Stats(commands.Cog, name='Stats'):
                         if existing_player:
                             if "sportradar_id" in existing_player:
                                 sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
+                                year = constants.STARTING_YEAR
                                 weekly_schedule = requests.get(
-                                    f'https://api.sportradar.us/nfl/official/trial/v6/en/games/2021/REG/{week}/schedule.json?api_key={sportradar_api_key}'
+                                    f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{year}/REG/{week}/schedule.json?api_key={sportradar_api_key}'
                                 )
                                 if weekly_schedule.status_code == 200:
                                     count = 0
@@ -656,6 +658,10 @@ class Stats(commands.Cog, name='Stats'):
                                         count = count + 1
                                         if args[2] == game["home"]["alias"] or args[2] == game["away"]["alias"]:
                                             if "scoring" in game:
+                                                scoring = True
+                                            else:
+                                                scoring = False
+                                            if scoring == True:
                                                 time.sleep(1)
                                                 found = True
                                                 statistics = requests.get(
@@ -664,49 +670,49 @@ class Stats(commands.Cog, name='Stats'):
                                                 if statistics.status_code == 200:
                                                     statistics_string = ''
                                                     if args[3] == 'K':
-                                                        print(f'{args[0]} {args[1]}')
                                                         if statistics.json()["statistics"]["home"]["alias"] == args[2]:
                                                             for player in statistics.json()["statistics"]["home"]["field_goals"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["made"]}, {player["attempts"]}, {player["longest"]}')
+                                                                    statistics_string += f'Field Goals:\n{player["made"]}/{player["attempts"]}, {player["longest"]} Long\n\n'
                                                             for player in statistics.json()["statistics"]["home"]["extra_points"]["kicks"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["made"]}, {player["attempts"]}')
+                                                                    statistics_string += f'Extra Points:\n{player["made"]}/{player["attempts"]}\n\n'
                                                         else:
                                                             for player in statistics.json()["statistics"]["away"]["field_goals"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["made"]}, {player["attempts"]}, {player["longest"]}')
+                                                                    statistics_string += f'Field Goals:\n{player["made"]}/{player["attempts"]}, {player["longest"]} Long\n\n'
                                                             for player in statistics.json()["statistics"]["away"]["extra_points"]["kicks"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["made"]}, {player["attempts"]}')
+                                                                    statistics_string += f'Extra Points:\n{player["made"]}/{player["attempts"]}\n\n'
                                                     else:
-                                                        print(f'{args[0]} {args[1]}')
                                                         if statistics.json()["statistics"]["home"]["alias"] == args[2]:
                                                             for player in statistics.json()["statistics"]["home"]["rushing"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["avg_yards"]}, {player["attempts"]}, {player["yards"]}, {player["touchdowns"]}')
+                                                                    statistics_string += f'Rushing:\n{player["avg_yards"]} ypc, {player["attempts"]} att, {player["yards"]} yds, {player["touchdowns"]} TD\n\n'
                                                             for player in statistics.json()["statistics"]["home"]["receiving"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["receptions"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}')
+                                                                    statistics_string += f'Receiving:\n{player["receptions"]} rec, {player["yards"]} yds, {player["avg_yards"]} ypr, {player["touchdowns"]} TD\n\n'
                                                             for player in statistics.json()["statistics"]["home"]["passing"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["attempts"]}, {player["completions"]}, {player["cmp_pct"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}, {player["interceptions"]}, {player["sacks"]}')
+                                                                    statistics_string += f'Passing:\n{player["attempts"]} att, {player["completions"]} cmp, {player["cmp_pct"]}% cmp, {player["yards"]} yds, {player["avg_yards"]} ypa, {player["touchdowns"]} TD, {player["interceptions"]} INT, {player["sacks"]} sck\n\n'
                                                             for player in statistics.json()["statistics"]["home"]["fumbles"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["fumbles"]}, {player["lost_fumbles"]}')
+                                                                    statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
                                                         else:
                                                             for player in statistics.json()["statistics"]["away"]["rushing"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["avg_yards"]}, {player["attempts"]}, {player["yards"]}, {player["touchdowns"]}')
+                                                                    statistics_string += f'Rushing:\n{player["avg_yards"]} ypc, {player["attempts"]} att, {player["yards"]} yds, {player["touchdowns"]} TD\n\n'
                                                             for player in statistics.json()["statistics"]["away"]["receiving"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["receptions"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}')
+                                                                    statistics_string += f'Receiving:\n{player["receptions"]} rec, {player["yards"]} yds, {player["avg_yards"]} ypr, {player["touchdowns"]} TD\n\n'
                                                             for player in statistics.json()["statistics"]["away"]["passing"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["attempts"]}, {player["completions"]}, {player["cmp_pct"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}, {player["interceptions"]}, {player["sacks"]}')
+                                                                    statistics_string += f'Passing:\n{player["attempts"]} att, {player["completions"]} cmp, {player["cmp_pct"]}% cmp, {player["yards"]} yds, {player["avg_yards"]} ypa, {player["touchdowns"]} TD, {player["interceptions"]} INT, {player["sacks"]} sck\n\n'
                                                             for player in statistics.json()["statistics"]["away"]["fumbles"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
-                                                                    print(f'{player["fumbles"]}, {player["lost_fumbles"]}')
+                                                                    statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
+                                                    embed = functions.my_embed('Stats', f'Returns available stats for {args[0]} {args[1]} for week {week} of this year.', discord.Colour.blue(), 'Game Stats\n', statistics_string, False, ctx)
+                                                    await ctx.send(embed=embed)    
                                                 else:
                                                     await ctx.send('Unable to connect to the game data at this time. Please try again later.')
                                                     break
