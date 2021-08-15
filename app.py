@@ -724,7 +724,7 @@ class Stats(commands.Cog, name='Stats'):
                                                 if found == True:
                                                     pass
                                                 else:
-                                                    await ctx.send('Team abbreviation provided is invalid. Try again!')
+                                                    await ctx.send('Either the team abbreviation is invalid, or the team had a bye week here. Please double check and try again!')
                                             else:
                                                 continue
                                 else:
@@ -762,6 +762,7 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
+        embed.add_field(name='Premium Stats', value='game-stats', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
@@ -868,6 +869,14 @@ class Help(commands.Cog, name='Help'):
         await ctx.send(embed=embed)
 
 
+    ### Game Stats Help
+
+    @help.command(name="game-stats")
+    async def game_stats(self, ctx):
+        embed = functions.my_embed('Game Stats', 'Returns game stats for a specified player and week of the current NFL season. Must have be premium to use this feature. Currently works best when a player is not traded midseason. Working on a way to get this to work regardless.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [team abbreviation] [position] [week]', False, ctx)
+        await ctx.send(embed=embed)
+
+
     ### Add League Help
 
     @help.command(name="add-league")
@@ -907,7 +916,7 @@ class Help(commands.Cog, name='Help'):
 
 async def get_current_matchups():
     week = functions.get_current_week()
-    if week[0] > 17:
+    if week[0] <= 17:
         if week[1] == False:
             servers = MONGO.servers.find(
                         {})
@@ -955,7 +964,7 @@ async def get_current_matchups():
 
 async def get_current_scoreboards():
     week = functions.get_current_week()
-    if week[0] > 17:
+    if week[0] <= 17:
         if week[1] == False:
             servers = MONGO.servers.find(
                 {})
@@ -999,7 +1008,7 @@ async def get_current_scoreboards():
 
 async def get_current_close_games():
     week = functions.get_current_week()
-    if week[0] > 17:
+    if week[0] <= 17:
         if week[1] == False:
             servers = MONGO.servers.find(
                 {})
