@@ -11,6 +11,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
 import functions
+import time
 import requests
 if os.path.exists("env.py"):
     import env
@@ -491,27 +492,35 @@ class Players(commands.Cog, name='Players'):
                         found = False
                         for roster in rosters:
                             count = count + 1
-                            for player in roster["players"]:
-                                if player == existing_player["id"]:
-                                    for user in users:
-                                        if user["user_id"] == roster["owner_id"]:
-                                            embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', user["display_name"], False, ctx)
-                                            await ctx.send(embed=embed)
-                                            found = True
-                                            break
-                                        else:
-                                            pass
+                            if roster["players"] != None:
+                                for player in roster["players"]:
+                                    if player == existing_player["id"]:
+                                        for user in users:
+                                            if user["user_id"] == roster["owner_id"]:
+                                                embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', user["display_name"], False, ctx)
+                                                await ctx.send(embed=embed)
+                                                found = True
+                                                break
+                                            else:
+                                                pass
+                                    else:
+                                        pass
+                                if count == len(rosters):
+                                    if found == True:
+                                        pass
+                                    else:
+                                        embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', 'None', False, ctx)
+                                        await ctx.send(embed=embed)
+                                        break
                                 else:
-                                    pass
-                            if count == len(rosters):
-                                if found == True:
-                                    pass
-                                else:
+                                    continue
+                            else:
+                                if count == len(rosters):
                                     embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', 'None', False, ctx)
                                     await ctx.send(embed=embed)
                                     break
-                            else:
-                                continue
+                                else:
+                                    continue
                     else:
                         await ctx.send('No player found with those parameters, please try again!')
                 else:
@@ -609,6 +618,123 @@ class Manage(commands.Cog, name='Manage'):
                     await ctx.send(f"{user} has been welcomed back! Shower them with gifts!")
         else:
             await ctx.send('You do not have access to this command.')
+
+
+
+## Stats Cog
+
+class Stats(commands.Cog, name='Stats'):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    ### Game Stats Command
+
+    @commands.command(name='game-stats')
+    async def game_stats(self, ctx, *args):
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            if "premium" in existing_league:
+                if existing_league["premium"] == "1":
+                    if len(args) == 5:
+                        if len(args[4]) == 1:
+                            week = f'0{args[4]}'
+                        else:
+                            week = args[4]
+                        existing_player = functions.get_existing_player(args)
+                        if existing_player:
+                            if "sportradar_id" in existing_player:
+                                sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
+                                weekly_schedule = requests.get(
+                                    f'https://api.sportradar.us/nfl/official/trial/v6/en/games/2021/REG/{week}/schedule.json?api_key={sportradar_api_key}'
+                                )
+                                if weekly_schedule.status_code == 200:
+                                    count = 0
+                                    found = False
+                                    for game in weekly_schedule.json()["week"]["games"]:
+                                        count = count + 1
+                                        if args[2] == game["home"]["alias"] or args[2] == game["away"]["alias"]:
+                                            if "scoring" in game:
+                                                time.sleep(1)
+                                                found = True
+                                                statistics = requests.get(
+                                                    f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{game["id"]}/statistics.json?api_key={sportradar_api_key}'
+                                                )
+                                                if statistics.status_code == 200:
+                                                    statistics_string = ''
+                                                    if args[3] == 'K':
+                                                        print(f'{args[0]} {args[1]}')
+                                                        if statistics.json()["statistics"]["home"]["alias"] == args[2]:
+                                                            for player in statistics.json()["statistics"]["home"]["field_goals"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["made"]}, {player["attempts"]}, {player["longest"]}')
+                                                            for player in statistics.json()["statistics"]["home"]["extra_points"]["kicks"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["made"]}, {player["attempts"]}')
+                                                        else:
+                                                            for player in statistics.json()["statistics"]["away"]["field_goals"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["made"]}, {player["attempts"]}, {player["longest"]}')
+                                                            for player in statistics.json()["statistics"]["away"]["extra_points"]["kicks"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["made"]}, {player["attempts"]}')
+                                                    else:
+                                                        print(f'{args[0]} {args[1]}')
+                                                        if statistics.json()["statistics"]["home"]["alias"] == args[2]:
+                                                            for player in statistics.json()["statistics"]["home"]["rushing"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["avg_yards"]}, {player["attempts"]}, {player["yards"]}, {player["touchdowns"]}')
+                                                            for player in statistics.json()["statistics"]["home"]["receiving"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["receptions"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}')
+                                                            for player in statistics.json()["statistics"]["home"]["passing"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["attempts"]}, {player["completions"]}, {player["cmp_pct"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}, {player["interceptions"]}, {player["sacks"]}')
+                                                            for player in statistics.json()["statistics"]["home"]["fumbles"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["fumbles"]}, {player["lost_fumbles"]}')
+                                                        else:
+                                                            for player in statistics.json()["statistics"]["away"]["rushing"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["avg_yards"]}, {player["attempts"]}, {player["yards"]}, {player["touchdowns"]}')
+                                                            for player in statistics.json()["statistics"]["away"]["receiving"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["receptions"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}')
+                                                            for player in statistics.json()["statistics"]["away"]["passing"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["attempts"]}, {player["completions"]}, {player["cmp_pct"]}, {player["yards"]}, {player["avg_yards"]}, {player["touchdowns"]}, {player["interceptions"]}, {player["sacks"]}')
+                                                            for player in statistics.json()["statistics"]["away"]["fumbles"]["players"]:
+                                                                if existing_player["sportradar_id"] == player["id"]:
+                                                                    print(f'{player["fumbles"]}, {player["lost_fumbles"]}')
+                                                else:
+                                                    await ctx.send('Unable to connect to the game data at this time. Please try again later.')
+                                                    break
+                                            else:
+                                                await ctx.send('Looks like this game did not happen yet, try another week!')
+                                                break
+                                        else:
+                                            if count == len(weekly_schedule.json()["week"]["games"]):
+                                                if found == True:
+                                                    pass
+                                                else:
+                                                    await ctx.send('Team abbreviation provided is invalid. Try again!')
+                                            else:
+                                                continue
+                                else:
+                                    await ctx.send('Looks like this game did not happen yet, try another week!') 
+                            else:
+                                await ctx.send('Can not pull Sportradar information for this player. Please try someone else.') 
+                        else:
+                            await ctx.send('No player found with those parameters, please try again!')
+                    else:
+                        await ctx.send('Invalid arguments provided. Please use the following format: game-stats <first name> <last name> <team abbreviation in caps> <position> <week number>')
+                else:
+                    await ctx.send('You do not pay for premium and do not have access to the Stats API.')
+            else:
+                await ctx.send('You do not pay for premium and do not have access to the Stats API.')
+        else:
+            await ctx.send('Please run add-league command, no Sleeper League connected.')
 
 
 
@@ -947,6 +1073,7 @@ bot.add_cog(League(bot))
 bot.add_cog(Players(bot))
 bot.add_cog(Weather(bot))
 bot.add_cog(Manage(bot))
+bot.add_cog(Stats(bot))
 bot.add_cog(Help(bot))
 
 
