@@ -230,16 +230,20 @@ class League(commands.Cog, name='League'):
     async def my_league_members(self, ctx):
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
-            league_id = existing_league["league"]
-            league = sleeper_wrapper.League(int(league_id)).get_league()
-            users_object = sleeper_wrapper.League(int(league_id)).get_users()
-            users = []
-            for user in users_object:
-                users.append(user["display_name"])
-            embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Name', league["name"], False, ctx)
-            embed.add_field(name='Members', value=", ".join(users), inline=False)
-            embed.add_field(name='Quantity', value=len(users), inline=False)
-            await ctx.send(embed=embed)
+            if "league" in existing_league:
+                league_id = existing_league["league"]
+                league = sleeper_wrapper.League(int(league_id)).get_league()
+                users_object = sleeper_wrapper.League(int(league_id)).get_users()
+                users = []
+                for user in users_object:
+                    users.append(user["display_name"])
+                embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Name', league["name"], False, ctx)
+                embed.add_field(name='Members', value=", ".join(users), inline=False)
+                embed.add_field(name='Quantity', value=len(users), inline=False)
+                await ctx.send(embed=embed)
+            else:
+                embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
+                await ctx.send(embed=embed)
         else:
             embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
             await ctx.send(embed=embed)
@@ -251,23 +255,27 @@ class League(commands.Cog, name='League'):
     async def my_league_standings(self, ctx):
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
-            league_id = existing_league["league"]
-            users_object = sleeper_wrapper.League(int(league_id)).get_users()
-            rosters_object = sleeper_wrapper.League(int(league_id)).get_rosters()
-            filtered_roster_object = []
-            for roster in rosters_object:
-                if roster["owner_id"] != None:
-                    filtered_roster_object.append(roster)
-                else:
-                    pass
-            standings_object = sleeper_wrapper.League(int(league_id)).get_standings(filtered_roster_object, users_object)
-            standings_string = ''
-            count = 0
-            for i in standings_object:
-                count = count + 1
-                standings_string += f'{str(count)}. {i[0]} / Record: {i[1]}-{i[2]} / Points For: {i[3]}\n'
-            embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', standings_string, False, ctx)
-            await ctx.send(embed=embed)
+            if "league" in existing_league:
+                league_id = existing_league["league"]
+                users_object = sleeper_wrapper.League(int(league_id)).get_users()
+                rosters_object = sleeper_wrapper.League(int(league_id)).get_rosters()
+                filtered_roster_object = []
+                for roster in rosters_object:
+                    if roster["owner_id"] != None:
+                        filtered_roster_object.append(roster)
+                    else:
+                        pass
+                standings_object = sleeper_wrapper.League(int(league_id)).get_standings(filtered_roster_object, users_object)
+                standings_string = ''
+                count = 0
+                for i in standings_object:
+                    count = count + 1
+                    standings_string += f'{str(count)}. {i[0]} / Record: {i[1]}-{i[2]} / Points For: {i[3]}\n'
+                embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', standings_string, False, ctx)
+                await ctx.send(embed=embed)
+            else:
+                embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
+                await ctx.send(embed=embed)
         else:
             embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
             await ctx.send(embed=embed)
@@ -316,8 +324,8 @@ class League(commands.Cog, name='League'):
         week = functions.get_current_week()
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
-            league_id = existing_league["league"]
-            if league_id:
+            if "league" in existing_league:
+                league_id = existing_league["league"]
                 if "score_type" in existing_league:
                     users = sleeper_wrapper.League(int(league_id)).get_users()
                     rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
