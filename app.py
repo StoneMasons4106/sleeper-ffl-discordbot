@@ -131,22 +131,26 @@ class Setup(commands.Cog, name='Setup'):
     @commands.command(name='set-channel')
     async def set_channel(self, ctx, channel_id: str):
         if ctx.author.guild_permissions.administrator:
-            existing_channel = MONGO.servers.find_one(
-                    {"server": str(ctx.message.guild.id)})
-            if existing_channel:
-                newvalue = {"$set": {"channel": str(channel_id)}}
-                MONGO.servers.update_one(existing_channel, newvalue)
-                MONGO_CONN.close()
-                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
-                await ctx.send(embed=embed)
+            if channel_id.isnumeric():
+                existing_channel = MONGO.servers.find_one(
+                        {"server": str(ctx.message.guild.id)})
+                if existing_channel:
+                    newvalue = {"$set": {"channel": str(channel_id)}}
+                    MONGO.servers.update_one(existing_channel, newvalue)
+                    MONGO_CONN.close()
+                    embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
+                    await ctx.send(embed=embed)
+                else:
+                    server_channel_object = {
+                        "server": str(ctx.message.guild.id),
+                        "channel": channel_id
+                    }
+                    MONGO.servers.insert_one(server_channel_object)
+                    MONGO_CONN.close()
+                    embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
+                    await ctx.send(embed=embed)
             else:
-                server_channel_object = {
-                    "server": str(ctx.message.guild.id),
-                    "channel": channel_id
-                }
-                MONGO.servers.insert_one(server_channel_object)
-                MONGO_CONN.close()
-                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
+                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Invalid channel ID. Try right clicking the Discord channel and hitting Copy ID.', False, ctx)
                 await ctx.send(embed=embed)
         else:
             embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'You do not have access to this command, request failed.', False, ctx)
@@ -158,22 +162,26 @@ class Setup(commands.Cog, name='Setup'):
     @commands.command(name='add-league')
     async def add_league(self, ctx, league_id: str):
         if ctx.author.guild_permissions.administrator:
-            existing_league = functions.get_existing_league(ctx)
-            if existing_league:
-                newvalue = {"$set": {"league": league_id}}
-                MONGO.servers.update_one(existing_league, newvalue)
-                MONGO_CONN.close()
-                embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
-                await ctx.send(embed=embed)
+            if league_id.isnumeric():
+                existing_league = functions.get_existing_league(ctx)
+                if existing_league:
+                    newvalue = {"$set": {"league": league_id}}
+                    MONGO.servers.update_one(existing_league, newvalue)
+                    MONGO_CONN.close()
+                    embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
+                    await ctx.send(embed=embed)
+                else:
+                    server_league_object = {
+                        "server": str(ctx.message.guild.id),
+                        "league": league_id
+                    }
+                    MONGO.servers.insert_one(server_league_object)
+                    MONGO_CONN.close()
+                    embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
+                    await ctx.send(embed=embed)
             else:
-                server_league_object = {
-                    "server": str(ctx.message.guild.id),
-                    "league": league_id
-                }
-                MONGO.servers.insert_one(server_league_object)
-                MONGO_CONN.close()
-                embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
-                await ctx.send(embed=embed)
+                embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Invalid league ID. Try finding the ID using your league URL like so: https://sleeper.app/leagues/league_id', False, ctx)
+                await ctx.send(embed=embed)    
         else:
             embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'You do not have access to this command, request failed.', False, ctx)
             await ctx.send(embed=embed)
