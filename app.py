@@ -588,6 +588,7 @@ class Weather(commands.Cog, name='Weather'):
             await ctx.send('Invalid city name, please try again!')
 
 
+
 ## Manage Cog
 
 class Manage(commands.Cog, name='Manage'):
@@ -634,6 +635,7 @@ class Manage(commands.Cog, name='Manage'):
                     await ctx.send(f"{user} has been welcomed back! Shower them with gifts!")
         else:
             await ctx.send('You do not have access to this command.')
+
 
 
 ## Stats Cog
@@ -782,7 +784,7 @@ class Help(commands.Cog, name='Help'):
             embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
-        embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
+        embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Top.gg](https://top.gg/bot/871087848311382086), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
         MONGO_CONN.close()
         await ctx.send(embed=embed)
 
@@ -973,6 +975,7 @@ async def get_current_matchups():
         pass
 
 
+
 ## Get Scoreboard for Current Week
 
 async def get_current_scoreboards():
@@ -1012,6 +1015,7 @@ async def get_current_scoreboards():
             pass
     else:
         pass
+
 
 
 ## Get Close Games for Current Week
@@ -1057,6 +1061,7 @@ async def get_current_close_games():
             pass
     else:
         pass
+
 
 
 ## Refresh Player Data in Mongo
