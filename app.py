@@ -165,20 +165,30 @@ class Setup(commands.Cog, name='Setup'):
             if league_id.isnumeric():
                 existing_league = functions.get_existing_league(ctx)
                 if existing_league:
-                    newvalue = {"$set": {"league": league_id}}
-                    MONGO.servers.update_one(existing_league, newvalue)
-                    MONGO_CONN.close()
-                    embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
-                    await ctx.send(embed=embed)
+                    league = sleeper_wrapper.League(int(league_id)).get_league()
+                    if 'league_id' in league:
+                        newvalue = {"$set": {"league": league_id}}
+                        MONGO.servers.update_one(existing_league, newvalue)
+                        MONGO_CONN.close()
+                        embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
+                        await ctx.send(embed=embed)
+                    else:
+                        embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Invalid league ID. Try finding the ID using your league URL like so: https://sleeper.app/leagues/league_id', False, ctx)
+                        await ctx.send(embed=embed)  
                 else:
-                    server_league_object = {
-                        "server": str(ctx.message.guild.id),
-                        "league": league_id
-                    }
-                    MONGO.servers.insert_one(server_league_object)
-                    MONGO_CONN.close()
-                    embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
-                    await ctx.send(embed=embed)
+                    league = sleeper_wrapper.League(int(league_id)).get_league()
+                    if 'league_id' in league:
+                        server_league_object = {
+                            "server": str(ctx.message.guild.id),
+                            "league": league_id
+                        }
+                        MONGO.servers.insert_one(server_league_object)
+                        MONGO_CONN.close()
+                        embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
+                        await ctx.send(embed=embed)
+                    else:
+                        embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Invalid league ID. Try finding the ID using your league URL like so: https://sleeper.app/leagues/league_id', False, ctx)
+                        await ctx.send(embed=embed)  
             else:
                 embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Invalid league ID. Try finding the ID using your league URL like so: https://sleeper.app/leagues/league_id', False, ctx)
                 await ctx.send(embed=embed)    
