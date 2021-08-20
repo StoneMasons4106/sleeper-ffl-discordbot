@@ -132,23 +132,45 @@ class Setup(commands.Cog, name='Setup'):
     async def set_channel(self, ctx, channel_id: str):
         if ctx.author.guild_permissions.administrator:
             if channel_id.isnumeric():
-                existing_channel = MONGO.servers.find_one(
-                        {"server": str(ctx.message.guild.id)})
-                if existing_channel:
-                    newvalue = {"$set": {"channel": str(channel_id)}}
-                    MONGO.servers.update_one(existing_channel, newvalue)
-                    MONGO_CONN.close()
-                    embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
-                    await ctx.send(embed=embed)
-                else:
-                    server_channel_object = {
-                        "server": str(ctx.message.guild.id),
-                        "channel": channel_id
-                    }
-                    MONGO.servers.insert_one(server_channel_object)
-                    MONGO_CONN.close()
-                    embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
-                    await ctx.send(embed=embed)
+                count = 0
+                found = 0
+                for channel in ctx.message.guild.channels:
+                    count = count + 1
+                    if isinstance(channel, discord.channel.TextChannel):
+                        if str(channel.id) == str(channel_id):
+                            found = 1
+                            existing_channel = MONGO.servers.find_one(
+                                    {"server": str(ctx.message.guild.id)})
+                            if existing_channel:
+                                newvalue = {"$set": {"channel": str(channel_id)}}
+                                MONGO.servers.update_one(existing_channel, newvalue)
+                                MONGO_CONN.close()
+                                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
+                                await ctx.send(embed=embed)
+                                break
+                            else:
+                                server_channel_object = {
+                                    "server": str(ctx.message.guild.id),
+                                    "channel": channel_id
+                                }
+                                MONGO.servers.insert_one(server_channel_object)
+                                MONGO_CONN.close()
+                                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
+                                await ctx.send(embed=embed)
+                                break
+                        elif count == len(ctx.message.guild.channels):
+                            if found == 0:
+                                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Invalid channel ID. Try right clicking the Discord channel and hitting Copy ID.', False, ctx)
+                                await ctx.send(embed=embed)
+                            else:
+                                pass
+                        else:
+                            continue
+                    elif count == len(ctx.message.guild.channels):
+                        embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Invalid channel ID. Try right clicking the Discord channel and hitting Copy ID.', False, ctx)
+                        await ctx.send(embed=embed)
+                    else:
+                        continue
             else:
                 embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Invalid channel ID. Try right clicking the Discord channel and hitting Copy ID.', False, ctx)
                 await ctx.send(embed=embed)
