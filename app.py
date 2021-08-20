@@ -807,7 +807,6 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
-        embed.add_field(name='Premium Stats', value='game-stats', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
