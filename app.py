@@ -264,9 +264,11 @@ class League(commands.Cog, name='League'):
                 users = []
                 for user in users_object:
                     users.append(user["display_name"])
-                embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Name', league["name"], False, ctx)
+                embed = functions.my_embed('Sleeper League Info', 'Sleeper League General Information', discord.Colour.blue(), 'Name', league["name"], False, ctx)
                 embed.add_field(name='Members', value=", ".join(users), inline=False)
                 embed.add_field(name='Quantity', value=len(users), inline=False)
+                embed.add_field(name='Trade Deadline', value=f"Week {league['settings']['trade_deadline']}", inline=False)
+                embed.add_field(name='Playoffs Start', value=f"Week {league['settings']['playoff_week_start']}", inline=False)
                 await ctx.send(embed=embed)
             else:
                 embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
@@ -820,7 +822,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="my-league")
     async def my_league(self, ctx):
-        embed = functions.my_embed('My League', 'Returns information about the league such as league name, players, and number of players. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league', False, ctx)
+        embed = functions.my_embed('My League', 'Returns information about the league such as league name, players, number of players, trade deadline, and the week that playoffs start. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league', False, ctx)
         await ctx.send(embed=embed)
 
 
