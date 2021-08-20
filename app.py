@@ -222,19 +222,31 @@ class Setup(commands.Cog, name='Setup'):
             if score_type == 'pts_ppr' or score_type == 'pts_half_ppr' or score_type == 'pts_std': 
                 existing_league = functions.get_existing_league(ctx)
                 if existing_league:
+                    if score_type == 'pts_ppr':
+                        score_type_output = 'PPR'
+                    elif score_type == 'pts_half_ppr':
+                        score_type_output = 'Half PPR'
+                    else:
+                       score_type_output = 'Standard' 
                     newvalue = {"$set": {"score_type": score_type}}
                     MONGO.servers.update_one(existing_league, newvalue)
                     MONGO_CONN.close()
-                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type}!', False, ctx)
+                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type_output}!', False, ctx)
                     await ctx.send(embed=embed)
                 else:
+                    if score_type == 'pts_ppr':
+                        score_type_output = 'PPR'
+                    elif score_type == 'pts_half_ppr':
+                        score_type_output = 'Half PPR'
+                    else:
+                       score_type_output = 'Standard' 
                     score_type_object = {
                         "server": str(ctx.message.guild.id),
                         "score_type": score_type
                     }
                     MONGO.servers.insert_one(score_type_object)
                     MONGO_CONN.close()
-                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type}!', False, ctx)
+                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type_output}!', False, ctx)
                     await ctx.send(embed=embed)
             else:
                 await ctx.send('Invalid score_type argument. Please use either pts_std, pts_ppr, or pts_half_ppr.')
@@ -269,6 +281,15 @@ class League(commands.Cog, name='League'):
                 embed.add_field(name='Quantity', value=len(users), inline=False)
                 embed.add_field(name='Trade Deadline', value=f"Week {league['settings']['trade_deadline']}", inline=False)
                 embed.add_field(name='Playoffs Start', value=f"Week {league['settings']['playoff_week_start']}", inline=False)
+                if "score_type" in existing_league:
+                    if existing_league["score_type"] == 'pts_ppr':
+                        embed.add_field(name='Scoring Type', value='PPR', inline=False)
+                    elif existing_league["score_type"] == 'pts_half_ppr':
+                        embed.add_field(name='Scoring Type', value='Half PPR', inline=False)
+                    elif existing_league["score_type"] == 'pts_std':
+                        embed.add_field(name='Scoring Type', value='Standard', inline=False)
+                else:
+                    pass
                 await ctx.send(embed=embed)
             else:
                 embed = functions.my_embed('Sleeper League Info', 'Sleeper League Name and Member Info', discord.Colour.blue(), 'Members', 'No league specified, run add-league command to complete setup.', False, ctx)
