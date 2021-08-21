@@ -782,7 +782,7 @@ class Stats(commands.Cog, name='Stats'):
                                                                     statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
                                                     ff_points = functions.get_ff_points(existing_player["sportradar_id"], existing_league, statistics, args)
                                                     embed = functions.my_embed('Stats', f'Returns available stats for a specified player for a particular week of this year.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]}\n', statistics_string, False, ctx)
-                                                    embed.add_field(name='Fantasy Points', value=ff_points, inline=False)
+                                                    embed.add_field(name='Fantasy Points', value=str(ff_points), inline=False)
                                                     await ctx.send(embed=embed)    
                                                 else:
                                                     await ctx.send('Looks like this game did not happen yet, try another week!')

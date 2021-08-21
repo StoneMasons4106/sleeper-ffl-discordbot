@@ -74,48 +74,48 @@ def get_current_week():
 # Get Total Fantasy Points for a Particular Player
 
 def get_ff_points(sportradar_id, league, game, args):
-    total = 0
+    total = float(0)
     if args[3] == 'K':
         if game["statistics"]["home"]["alias"] == args[2]:
             for player in game["statistics"]["home"]["field_goals"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total + (league["scoring_settings"]["fgm_0_19"] * player["made_19"]) + (league["scoring_settings"]["fgm_20_29"] * player["made_29"]) + (league["scoring_settings"]["fgm_30_39"] * player["made_39"]) + (league["scoring_settings"]["fgm_40_49"] * player["made_49"]) + (league["scoring_settings"]["fgm_50p"] * player["made_50"]) - (league["scoring_settings"]["fgmiss"] * player["missed"])
+                    total = total + (float(league["scoring_settings"]["fgm_0_19"]) * float(player["made_19"])) + (float(league["scoring_settings"]["fgm_20_29"]) * float(player["made_29"])) + (float(league["scoring_settings"]["fgm_30_39"]) * float(player["made_39"])) + (float(league["scoring_settings"]["fgm_40_49"]) * float(player["made_49"])) + (float(league["scoring_settings"]["fgm_50p"]) * float(player["made_50"])) - (float(league["scoring_settings"]["fgmiss"]) * float(player["missed"]))
             for player in game["statistics"]["home"]["extra_points"]["kicks"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total - (league["scoring_settings"]["xpmiss"] * player["missed"]) + (league["scoring_settings"]["xpm"] * player["made"])
+                    total = total - (float(league["scoring_settings"]["xpmiss"]) * float(player["missed"])) + (float(league["scoring_settings"]["xpm"]) * float(player["made"]))
         else:
             for player in game["statistics"]["away"]["field_goals"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total + (league["scoring_settings"]["fgm_0_19"] * player["made_19"]) + (league["scoring_settings"]["fgm_20_29"] * player["made_29"]) + (league["scoring_settings"]["fgm_30_39"] * player["made_39"]) + (league["scoring_settings"]["fgm_40_49"] * player["made_49"]) + (league["scoring_settings"]["fgm_50p"] * player["made_50"]) - (league["scoring_settings"]["fgmiss"] * player["missed"])
+                    total = total + (float(league["scoring_settings"]["fgm_0_19"]) * float(player["made_19"])) + (float(league["scoring_settings"]["fgm_20_29"]) * float(player["made_29"])) + (float(league["scoring_settings"]["fgm_30_39"]) * float(player["made_39"])) + (float(league["scoring_settings"]["fgm_40_49"]) * float(player["made_49"])) + (float(league["scoring_settings"]["fgm_50p"]) * float(player["made_50"])) - (float(league["scoring_settings"]["fgmiss"]) * float(player["missed"]))
             for player in game["statistics"]["away"]["extra_points"]["kicks"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total - (league["scoring_settings"]["xpmiss"] * player["missed"]) + (league["scoring_settings"]["xpm"] * player["made"])
+                    total = total - (float(league["scoring_settings"]["xpmiss"]) * float(player["missed"])) + (float(league["scoring_settings"]["xpm"]) * float(player["made"]))
     else:
         if game["statistics"]["home"]["alias"] == args[2]:
             for player in game["statistics"]["home"]["rushing"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total + (league["scoring_settings"]["rush_yd"] * player["yards"]) + (league["scoring_settings"]["rush_td"] * player["touchdowns"])
+                    total = total + (float(league["scoring_settings"]["rush_yd"]) * float(player["yards"])) + (float(league["scoring_settings"]["rush_td"]) * float(player["touchdowns"]))
             for player in game["statistics"]["home"]["receiving"]["players"]:
                 if sportradar_id == player["id"]:
-                   total = total + (league["scoring_settings"]["rec"] * player["receptions"]) + (league["scoring_settings"]["rec_td"] * player["touchdowns"]) + (league["scoring_settings"]["rec_yd"] * player["yards"])
+                   total = total + (float(league["scoring_settings"]["rec"]) * float(player["receptions"])) + (float(league["scoring_settings"]["rec_td"]) * float(player["touchdowns"])) + (float(league["scoring_settings"]["rec_yd"]) * float(player["yards"]))
             for player in game["statistics"]["home"]["passing"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total - (league["scoring_settings"]["pass_int"] * player["interceptions"]) + (league["scoring_settings"]["pass_yd"] * player["yards"]) + (league["scoring_settings"]["pass_td"] * player["touchdowns"])
+                    total = total - (float(league["scoring_settings"]["pass_int"]) * float(player["interceptions"])) + (float(league["scoring_settings"]["pass_yd"]) * float(player["yards"])) + (float(league["scoring_settings"]["pass_td"]) * float(player["touchdowns"]))
             for player in game["statistics"]["home"]["fumbles"]["players"]:
                 if sportradar_id == player["id"]:
-                   total = total - (league["scoring_settings"]["fum_lost"] * player["lost_fumbles"]) - (league["scoring_settings"]["fum"] * player["fumbles"])
+                   total = total - (float(league["scoring_settings"]["fum_lost"]) * float(player["lost_fumbles"])) - (float(league["scoring_settings"]["fum"]) * float(player["fumbles"]))
         else:
             for player in game["statistics"]["away"]["rushing"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total 
+                    total = total + (float(league["scoring_settings"]["rush_yd"]) * float(player["yards"])) + (float(league["scoring_settings"]["rush_td"]) * float(player["touchdowns"]))
             for player in game["statistics"]["away"]["receiving"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total + (league["scoring_settings"]["rec"] * player["receptions"]) + (league["scoring_settings"]["rec_td"] * player["touchdowns"]) + (league["scoring_settings"]["rec_yd"] * player["yards"])
+                    total = total + (float(league["scoring_settings"]["rec"]) * float(player["receptions"])) + (float(league["scoring_settings"]["rec_td"]) * float(player["touchdowns"])) + (float(league["scoring_settings"]["rec_yd"]) * float(player["yards"]))
             for player in game["statistics"]["away"]["passing"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total - (league["scoring_settings"]["pass_int"] * player["interceptions"]) + (league["scoring_settings"]["pass_yd"] * player["yards"]) + (league["scoring_settings"]["pass_td"] * player["touchdowns"])
+                    total = total - (float(league["scoring_settings"]["pass_int"]) * float(player["interceptions"])) + (float(league["scoring_settings"]["pass_yd"]) * float(player["yards"])) + (float(league["scoring_settings"]["pass_td"]) * float(player["touchdowns"]))
             for player in game["statistics"]["away"]["fumbles"]["players"]:
                 if sportradar_id == player["id"]:
-                    total = total - (league["scoring_settings"]["fum_lost"] * player["lost_fumbles"]) - (league["scoring_settings"]["fum"] * player["fumbles"])                   
+                    total = total - (float(league["scoring_settings"]["fum_lost"]) * float(player["lost_fumbles"])) - (float(league["scoring_settings"]["fum"]) * float(player["fumbles"]))                   
     
     return total
