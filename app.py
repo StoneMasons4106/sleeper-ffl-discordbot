@@ -720,6 +720,7 @@ class Stats(commands.Cog, name='Stats'):
                                 week = args[4]
                                 weekly_schedule = MONGO.weekly_schedules.find_one(
                                     {"year": int(year), "week.title": str(week)})
+                                MONGO_CONN.close()
                                 if weekly_schedule:
                                     count = 0
                                     found = False
@@ -734,6 +735,7 @@ class Stats(commands.Cog, name='Stats'):
                                                 found = True
                                                 statistics = MONGO.game_stats.find_one(
                                                     {"id": game["id"]})
+                                                MONGO_CONN.close()
                                                 if statistics:
                                                     statistics_string = ''
                                                     if args[3] == 'K':
