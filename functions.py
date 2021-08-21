@@ -71,6 +71,56 @@ def get_current_week():
     return week, future
 
 
+# Get Game Stats for a Particular Player
+
+def get_game_stats(sportradar_id, game, args):
+    statistics_string = ''
+    if args[3] == 'K':
+        if game["statistics"]["home"]["alias"] == args[2]:
+            for player in game["statistics"]["home"]["field_goals"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Field Goals:\n{player["made"]}/{player["attempts"]}, {player["longest"]} Long\n\n'
+            for player in game["statistics"]["home"]["extra_points"]["kicks"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Extra Points:\n{player["made"]}/{player["attempts"]}\n\n'
+        else:
+            for player in game["statistics"]["away"]["field_goals"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Field Goals:\n{player["made"]}/{player["attempts"]}, {player["longest"]} Long\n\n'
+            for player in game["statistics"]["away"]["extra_points"]["kicks"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Extra Points:\n{player["made"]}/{player["attempts"]}\n\n'
+    else:
+        if game["statistics"]["home"]["alias"] == args[2]:
+            for player in game["statistics"]["home"]["rushing"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Rushing:\n{player["avg_yards"]} ypc, {player["attempts"]} att, {player["yards"]} yds, {player["touchdowns"]} TD\n\n'
+            for player in game["statistics"]["home"]["receiving"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Receiving:\n{player["receptions"]} rec, {player["yards"]} yds, {player["avg_yards"]} ypr, {player["touchdowns"]} TD\n\n'
+            for player in game["statistics"]["home"]["passing"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Passing:\n{player["attempts"]} att, {player["completions"]} cmp, {player["cmp_pct"]}% cmp, {player["yards"]} yds, {player["avg_yards"]} ypa, {player["touchdowns"]} TD, {player["interceptions"]} INT, {player["sacks"]} sck\n\n'
+            for player in game["statistics"]["home"]["fumbles"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
+        else:
+            for player in game["statistics"]["away"]["rushing"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Rushing:\n{player["avg_yards"]} ypc, {player["attempts"]} att, {player["yards"]} yds, {player["touchdowns"]} TD\n\n'
+            for player in game["statistics"]["away"]["receiving"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Receiving:\n{player["receptions"]} rec, {player["yards"]} yds, {player["avg_yards"]} ypr, {player["touchdowns"]} TD\n\n'
+            for player in game["statistics"]["away"]["passing"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Passing:\n{player["attempts"]} att, {player["completions"]} cmp, {player["cmp_pct"]}% cmp, {player["yards"]} yds, {player["avg_yards"]} ypa, {player["touchdowns"]} TD, {player["interceptions"]} INT, {player["sacks"]} sck\n\n'
+            for player in game["statistics"]["away"]["fumbles"]["players"]:
+                if sportradar_id == player["id"]:
+                    statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
+    
+    return statistics_string
+
+
 # Get Total Fantasy Points for a Particular Player
 
 def get_ff_points(sportradar_id, league, game, args):

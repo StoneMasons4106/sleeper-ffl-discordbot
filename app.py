@@ -737,49 +737,7 @@ class Stats(commands.Cog, name='Stats'):
                                                     {"id": game["id"]})
                                                 MONGO_CONN.close()
                                                 if statistics:
-                                                    statistics_string = ''
-                                                    if args[3] == 'K':
-                                                        if statistics["statistics"]["home"]["alias"] == args[2]:
-                                                            for player in statistics["statistics"]["home"]["field_goals"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Field Goals:\n{player["made"]}/{player["attempts"]}, {player["longest"]} Long\n\n'
-                                                            for player in statistics["statistics"]["home"]["extra_points"]["kicks"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Extra Points:\n{player["made"]}/{player["attempts"]}\n\n'
-                                                        else:
-                                                            for player in statistics["statistics"]["away"]["field_goals"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Field Goals:\n{player["made"]}/{player["attempts"]}, {player["longest"]} Long\n\n'
-                                                            for player in statistics["statistics"]["away"]["extra_points"]["kicks"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Extra Points:\n{player["made"]}/{player["attempts"]}\n\n'
-                                                    else:
-                                                        if statistics["statistics"]["home"]["alias"] == args[2]:
-                                                            for player in statistics["statistics"]["home"]["rushing"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Rushing:\n{player["avg_yards"]} ypc, {player["attempts"]} att, {player["yards"]} yds, {player["touchdowns"]} TD\n\n'
-                                                            for player in statistics["statistics"]["home"]["receiving"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Receiving:\n{player["receptions"]} rec, {player["yards"]} yds, {player["avg_yards"]} ypr, {player["touchdowns"]} TD\n\n'
-                                                            for player in statistics["statistics"]["home"]["passing"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Passing:\n{player["attempts"]} att, {player["completions"]} cmp, {player["cmp_pct"]}% cmp, {player["yards"]} yds, {player["avg_yards"]} ypa, {player["touchdowns"]} TD, {player["interceptions"]} INT, {player["sacks"]} sck\n\n'
-                                                            for player in statistics["statistics"]["home"]["fumbles"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
-                                                        else:
-                                                            for player in statistics["statistics"]["away"]["rushing"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Rushing:\n{player["avg_yards"]} ypc, {player["attempts"]} att, {player["yards"]} yds, {player["touchdowns"]} TD\n\n'
-                                                            for player in statistics["statistics"]["away"]["receiving"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Receiving:\n{player["receptions"]} rec, {player["yards"]} yds, {player["avg_yards"]} ypr, {player["touchdowns"]} TD\n\n'
-                                                            for player in statistics["statistics"]["away"]["passing"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Passing:\n{player["attempts"]} att, {player["completions"]} cmp, {player["cmp_pct"]}% cmp, {player["yards"]} yds, {player["avg_yards"]} ypa, {player["touchdowns"]} TD, {player["interceptions"]} INT, {player["sacks"]} sck\n\n'
-                                                            for player in statistics["statistics"]["away"]["fumbles"]["players"]:
-                                                                if existing_player["sportradar_id"] == player["id"]:
-                                                                    statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
+                                                    statistics_string = functions.get_game_stats(existing_player["sportradar_id"], statistics, args)
                                                     ff_points = functions.get_ff_points(existing_player["sportradar_id"], existing_league, statistics, args)
                                                     embed = functions.my_embed('Stats', f'Returns available stats for a specified player for a particular week of this year.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]}\n', statistics_string, False, ctx)
                                                     embed.add_field(name='Fantasy Points', value=str(ff_points), inline=False)
