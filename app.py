@@ -1160,7 +1160,6 @@ def get_weekly_game_data():
             year = constants.STARTING_YEAR
             weekly_schedule = MONGO.weekly_schedules.find_one(
                 {"year": int(year), "week.title": str(week[0])})
-            print(weekly_schedule)
             if weekly_schedule:
                 for game in weekly_schedule["week"]["games"]:
                     if "scoring" in game:
