@@ -780,7 +780,9 @@ class Stats(commands.Cog, name='Stats'):
                                                             for player in statistics["statistics"]["away"]["fumbles"]["players"]:
                                                                 if existing_player["sportradar_id"] == player["id"]:
                                                                     statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
-                                                    embed = functions.my_embed('Stats', f'Returns available stats for {args[0]} {args[1]} for week {week} of this year.', discord.Colour.blue(), 'Game Stats\n', statistics_string, False, ctx)
+                                                    ff_points = functions.get_ff_points(existing_player["sportradar_id"], existing_league, statistics, args)
+                                                    embed = functions.my_embed('Stats', f'Returns available stats for a specified player for a particular week of this year.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]}\n', statistics_string, False, ctx)
+                                                    embed.add_field(name='Fantasy Points', value=ff_points, inline=False)
                                                     await ctx.send(embed=embed)    
                                                 else:
                                                     await ctx.send('Looks like this game did not happen yet, try another week!')
