@@ -1163,6 +1163,7 @@ def get_weekly_game_data():
             if weekly_schedule:
                 for game in weekly_schedule["week"]["games"]:
                     if "scoring" in game:
+                        time.sleep(1)
                         statistics = requests.get(
                             f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{game["id"]}/statistics.json?api_key={sportradar_api_key}'
                         )
