@@ -1155,27 +1155,30 @@ def get_weekly_schedule_data():
 def get_weekly_game_data():
     week = functions.get_current_week()
     if week[0] <= 17:
-        sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
-        year = constants.STARTING_YEAR
-        weekly_schedule = MONGO.weekly_schedules.find_one(
-            {"year": int(year), "week.title": str(week[0])})
-        print(weekly_schedule)
-        if weekly_schedule:
-            for game in weekly_schedule["week"]["games"]:
-                if "scoring" in game:
-                    statistics = requests.get(
-                        f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{game["id"]}/statistics.json?api_key={sportradar_api_key}'
-                    )
-                    existing_game = MONGO.game_stats.find_one(
-                        {"id": str(statistics.json()["id"])})
-                    if existing_game:
-                        MONGO.game_stats.delete_one(
+        if week[1] == False:
+            sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
+            year = constants.STARTING_YEAR
+            weekly_schedule = MONGO.weekly_schedules.find_one(
+                {"year": int(year), "week.title": str(week[0])})
+            print(weekly_schedule)
+            if weekly_schedule:
+                for game in weekly_schedule["week"]["games"]:
+                    if "scoring" in game:
+                        statistics = requests.get(
+                            f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{game["id"]}/statistics.json?api_key={sportradar_api_key}'
+                        )
+                        existing_game = MONGO.game_stats.find_one(
                             {"id": str(statistics.json()["id"])})
-                        MONGO.game_stats.insert_one(statistics.json())
+                        if existing_game:
+                            MONGO.game_stats.delete_one(
+                                {"id": str(statistics.json()["id"])})
+                            MONGO.game_stats.insert_one(statistics.json())
+                        else:
+                            MONGO.game_stats.insert_one(statistics.json())
                     else:
-                        MONGO.game_stats.insert_one(statistics.json())
-                else:
-                    pass
+                        pass
+            else:
+                pass
         else:
             pass
     else:
