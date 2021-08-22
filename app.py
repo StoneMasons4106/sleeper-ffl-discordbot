@@ -435,12 +435,14 @@ class Players(commands.Cog, name='Players'):
                     team = db_player["team"]
                 else:
                     team = 'None'
+                if add_drop == 'add':
+                    trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} +{str(change)}\n'
+                else:
+                    trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} -{str(change)}\n'
             if add_drop == 'add':
-                trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} +{str(change)}\n'
                 embed = functions.my_embed('Trending Players', 'Display Current Trending Added Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
                 await ctx.send(embed=embed)
-            else:
-                trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} -{str(change)}\n'    
+            else:   
                 embed = functions.my_embed('Trending Players', 'Display Current Trending Dropped Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
                 await ctx.send(embed=embed)
         else:
