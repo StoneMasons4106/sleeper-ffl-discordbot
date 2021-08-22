@@ -117,7 +117,6 @@ def get_game_stats(sportradar_id, game, args):
             for player in game["statistics"]["away"]["fumbles"]["players"]:
                 if sportradar_id == player["id"]:
                     statistics_string += f'Fumbles:\n{player["fumbles"]} fum, {player["lost_fumbles"]} lost fum\n\n'
-    
     return statistics_string
 
 
@@ -167,5 +166,4 @@ def get_ff_points(sportradar_id, league, game, args):
             for player in game["statistics"]["away"]["fumbles"]["players"]:
                 if sportradar_id == player["id"]:
                     total = total - (float(league["scoring_settings"]["fum_lost"]) * float(player["lost_fumbles"])) - (float(league["scoring_settings"]["fum"]) * float(player["fumbles"]))                   
-    
     return total
