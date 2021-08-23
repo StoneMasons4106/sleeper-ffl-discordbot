@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 from discord.utils import find
 import os
-import pendulum
 import pymongo
 import sleeper_wrapper
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -495,7 +494,7 @@ class Players(commands.Cog, name='Players'):
                             await ctx.send(embed=embed)
                         if roster_portion == 'all':
                             players_string = ''
-                            if users_roster["players"] != None:
+                            if len(users_roster["players"]) != 0:
                                 for i in users_roster["players"]:
                                     if i == '0':
                                         players_string += 'None\n'
@@ -511,7 +510,7 @@ class Players(commands.Cog, name='Players'):
                                 await ctx.send(embed=embed)
                         if roster_portion == 'bench':
                             bench_string = ''
-                            if users_roster["players"] != None:
+                            if len(users_roster["players"]) != 0:
                                 bench_roster = list(set(users_roster["players"]).difference(users_roster["starters"]))
                                 for i in bench_roster:
                                     if i == '0':
@@ -877,7 +876,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="roster")
     async def roster(self, ctx):
-        embed = functions.my_embed('Roster', 'Returns the list of player on a given players roster based on parameters specified. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>roster [username] [starting, bench, or all]', False, ctx)
+        embed = functions.my_embed('Roster', 'Returns the list of player on a given players roster based on parameters specified. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>roster [username] [starters, bench, or all]', False, ctx)
         await ctx.send(embed=embed)
 
 
