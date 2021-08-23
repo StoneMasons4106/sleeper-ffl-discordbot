@@ -283,7 +283,7 @@ class League(commands.Cog, name='League'):
                 users = []
                 for user in users_object:
                     users.append(user["display_name"])
-                embed = functions.my_embed('Sleeper League Info', 'Sleeper League General Information', discord.Colour.blue(), 'Name', league["name"], False, ctx)
+                embed = functions.my_embed('Sleeper League Info', 'Sleeper League General Information', discord.Colour.blue(), 'Name', f'[{league["name"]}](https://sleeper.app/leagues/{league_id})', False, ctx)
                 embed.add_field(name='Members', value=", ".join(users), inline=False)
                 embed.add_field(name='Quantity', value=len(users), inline=False)
                 embed.add_field(name='Trade Deadline', value=f"Week {league['settings']['trade_deadline']}", inline=False)
