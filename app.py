@@ -646,7 +646,35 @@ class Weather(commands.Cog, name='Weather'):
             embed = functions.my_embed('Weather Forecast', f'3 day forecast for {forecast.json()["location"]["name"]}, {forecast.json()["location"]["region"]}', discord.Colour.blue(), f'Forecast for {city}', forecast_string, False, ctx)
             await ctx.send(embed=embed)
         else:
-            await ctx.send('Invalid city name, please try again!')
+            await ctx.send('Invalid city name or zip code, please try again!')
+
+
+    ### Get Current Weather
+
+    @commands.command(name='current-weather')
+    async def current_weather(self, ctx, *city: str):
+        weather_api_key = os.environ.get("WEATHER_API_KEY")
+        current_weather = requests.get(
+            'http://api.weatherapi.com/v1/current.json',
+            params= {
+                'key': weather_api_key,
+                'q': city
+            }
+        )
+        if current_weather.status_code == 200:
+            tuple_test = type(city) is tuple
+            if tuple_test:
+                city_string = ''
+                for word in city:
+                    city_string += f'{word} '
+                city = city_string
+            else:
+                pass
+            current_weather_string = f'Local Time: {current_weather.json()["location"]["localtime"]}\nTemperature: {current_weather.json()["current"]["temp_f"]} degrees F\nFeels like: {current_weather.json()["current"]["feelslike_f"]} degrees F\nCurrent condition: {current_weather.json()["current"]["condition"]["text"]}\nWind: {current_weather.json()["current"]["wind_mph"]} mph\nWind Direction: {current_weather.json()["current"]["wind_dir"]}\nGust Speed: {current_weather.json()["current"]["gust_mph"]} mph\nHumidity: {current_weather.json()["current"]["humidity"]}%\n'
+            embed = functions.my_embed('Current Weather', f'Current weather for {current_weather.json()["location"]["name"]}, {current_weather.json()["location"]["region"]}', discord.Colour.blue(), f'Current Weather for {city}', current_weather_string, False, ctx)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send('Invalid city name or zip code, please try again!')
 
 
 

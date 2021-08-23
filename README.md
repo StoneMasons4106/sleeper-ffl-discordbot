@@ -17,7 +17,7 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 * Check on a player's roster and injury status.
 
-* Check the forecast for the area of a game based on city or zip code powered by [WeatherAPI](https://www.weatherapi.com/).
+* Check the current weather or forecast for the area of a game based on city or zip code powered by [WeatherAPI](https://www.weatherapi.com/).
 
 * Custom prefixes, in case you have another bot with the same default prefix.
 
