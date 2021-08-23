@@ -820,7 +820,7 @@ class Help(commands.Cog, name='Help'):
                     {"server": str(ctx.message.guild.id)})
         embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
-        embed.add_field(name='Weather', value='forecast', inline=False)
+        embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
         embed.add_field(name='Premium Stats', value='game-stats', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
@@ -902,6 +902,14 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="forecast")
     async def forecast(self, ctx):
         embed = functions.my_embed('Forecast', 'Returns the 3 day forecast for a given city or zip code.', discord.Colour.blue(), '**Syntax**', '<prefix>forecast [city or zip code]', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Current Weather Help
+
+    @help.command(name="current-weather")
+    async def current_weather(self, ctx):
+        embed = functions.my_embed('Current Weather', 'Returns the current weather for a given city or zip code.', discord.Colour.blue(), '**Syntax**', '<prefix>current-weather [city or zip code]', False, ctx)
         await ctx.send(embed=embed)
 
 
