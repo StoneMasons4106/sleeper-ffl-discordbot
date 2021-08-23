@@ -23,6 +23,8 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 * See who has a specific player.
 
+* Premium Stats API which shows a player's stats for a given game, and estimated fantasy points based on your Sleeper league settings.
+
 * Scheduled messages to keep your league up to date and notify you of the latest information following the schedule below:
 
 
