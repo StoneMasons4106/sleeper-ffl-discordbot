@@ -861,6 +861,7 @@ class Help(commands.Cog, name='Help'):
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
         embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Top.gg](https://top.gg/bot/871087848311382086), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
+        embed.add_field(name='Interested in Premium?', value="Premium provides access to our Stats API powered by [Sportradar](https://sportradar.com/), and is the only part of this bot that requires a monthly subscription to use. Mind you, it is still in beta testing currently. If you'd like to sign up, add and DM me on Discord at StoneMasons#5854.", inline=False)
         MONGO_CONN.close()
         await ctx.send(embed=embed)
 
