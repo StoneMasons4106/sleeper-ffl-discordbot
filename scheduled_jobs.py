@@ -24,7 +24,7 @@ MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 def get_weekly_schedule_data():
     week = functions.get_current_week()
-    if week[0] <= 17:
+    if week[0] <= 18:
         if week[1] == False:
             sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
             nfl_state = requests.get(
@@ -94,7 +94,7 @@ def refresh_players():
 
 def get_weekly_game_data():
     week = functions.get_current_week()
-    if week[0] <= 17:
+    if week[0] <= 18:
         if week[1] == False:
             sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
             nfl_state = requests.get(
@@ -134,7 +134,7 @@ def get_weekly_game_data():
 
 async def get_current_close_games(bot):
     week = functions.get_current_week()
-    if week[0] <= 17:
+    if week[0] <= 18:
         if week[1] == False:
             print(week[1])
             servers = MONGO.servers.find(
@@ -181,7 +181,7 @@ async def get_current_close_games(bot):
 
 async def get_current_matchups(bot):
     week = functions.get_current_week()
-    if week[0] <= 17:
+    if week[0] <= 18:
         if week[1] == False:
             servers = MONGO.servers.find(
                         {})
@@ -229,7 +229,7 @@ async def get_current_matchups(bot):
 
 async def get_current_scoreboards(bot):
     week = functions.get_current_week()
-    if week[0] <= 17:
+    if week[0] <= 18:
         if week[1] == False:
             servers = MONGO.servers.find(
                 {})
