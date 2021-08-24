@@ -12,7 +12,6 @@ from apscheduler.triggers.combining import OrTrigger
 import functions
 import scheduled_jobs
 import requests
-import constants
 if os.path.exists("env.py"):
     import env
 
@@ -779,7 +778,10 @@ class Stats(commands.Cog, name='Stats'):
                         existing_player = functions.get_existing_player(args)
                         if existing_player:
                             if "sportradar_id" in existing_player:
-                                year = constants.STARTING_YEAR
+                                nfl_state = requests.get(
+                                    'https://api.sleeper.app/v1/state/nfl'
+                                )
+                                year = nfl_state.json()["season"]
                                 week = args[4]
                                 weekly_schedule = MONGO.weekly_schedules.find_one(
                                     {"year": int(year), "week.title": str(week)})

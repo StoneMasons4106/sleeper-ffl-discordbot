@@ -8,7 +8,6 @@ import sleeper_wrapper
 import functions
 import time
 import requests
-import constants
 if os.path.exists("env.py"):
     import env
 
@@ -28,9 +27,12 @@ def get_weekly_schedule_data():
     if week[0] <= 17:
         if week[1] == False:
             sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
-            year = constants.STARTING_YEAR
+            nfl_state = requests.get(
+                'https://api.sleeper.app/v1/state/nfl'
+            )
+            year = nfl_state.json()["season"]
             weekly_schedule = requests.get(
-                f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{year}/REG/{week[0]}/schedule.json?api_key={sportradar_api_key}'
+                f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{int(year)}/REG/{week[0]}/schedule.json?api_key={sportradar_api_key}'
             )
             weekly_schedule_id = str(weekly_schedule.json()["id"])
             existing_schedule = MONGO.weekly_schedules.find_one(
@@ -95,7 +97,10 @@ def get_weekly_game_data():
     if week[0] <= 17:
         if week[1] == False:
             sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
-            year = constants.STARTING_YEAR
+            nfl_state = requests.get(
+                'https://api.sleeper.app/v1/state/nfl'
+            )
+            year = nfl_state.json()["season"]
             weekly_schedule = MONGO.weekly_schedules.find_one(
                 {"year": int(year), "week.title": str(week[0])})
             if weekly_schedule:

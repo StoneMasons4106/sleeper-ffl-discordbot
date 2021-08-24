@@ -4,7 +4,7 @@ import discord
 import os
 import pymongo
 import pendulum
-import constants
+import requests
 if os.path.exists("env.py"):
     import env
 
@@ -61,7 +61,11 @@ def my_embed(title, description, color, name, value, inline, ctx):
 
 def get_current_week():
     today = pendulum.today(tz='America/New_York')
-    starting_week = pendulum.datetime(constants.STARTING_YEAR, constants.STARTING_MONTH, constants.STARTING_DAY, tz='America/New_York')
+    nfl_state = requests.get(
+        'https://api.sleeper.app/v1/state/nfl'
+    )
+    nfl_date_list = nfl_state.json()["season_start_date"].split("-")
+    starting_week = pendulum.datetime(int(nfl_date_list[0]), int(nfl_date_list[1]), int(nfl_date_list[2]), tz='America/New_York')
     if starting_week.is_future():
         future = True
         week = 1
