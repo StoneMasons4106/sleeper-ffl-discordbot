@@ -33,12 +33,6 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 * Current Matchups
     * Thursdays at 15:00 EST
 
-* Current Scoreboard
-    * Tuesdays at 09:00 EST
-
-* Close Games
-    * Mondays at 09:00 EST
-
 
 ## Setup
 

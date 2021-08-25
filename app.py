@@ -813,7 +813,7 @@ class Help(commands.Cog, name='Help'):
     async def help(self, ctx):
         existing_prefix = MONGO.prefixes.find_one(
                     {"server": str(ctx.message.guild.id)})
-        embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
+        embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-standings', False, ctx)
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
@@ -842,14 +842,6 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="my-league-standings")
     async def my_league_standings(self, ctx):
         embed = functions.my_embed('My League Standings', 'Returns current league standings. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-standings', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### My League Scoreboard Help
-
-    @help.command(name="my-league-scoreboard")
-    async def my_league_scoreboard(self, ctx):
-        embed = functions.my_embed('My League Scoreboard', 'Returns scoreboard for the current week. If the league is pre-draft, it will return week 1 scoreboard. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-scoreboard', False, ctx)
         await ctx.send(embed=embed)
 
 
