@@ -6,8 +6,6 @@ import pendulum
 import pymongo
 import sleeper_wrapper
 import functions
-import time
-import requests
 if os.path.exists("env.py"):
     import env
 
@@ -19,37 +17,6 @@ MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
 # Scheduled Messages/Jobs
-
-## Get and Refresh Weekly Schedule Data from Sportradar in Mongo
-
-def get_weekly_schedule_data():
-    week = functions.get_current_week()
-    if week[0] <= 18:
-        if week[1] == False:
-            sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
-            nfl_state = requests.get(
-                'https://api.sleeper.app/v1/state/nfl'
-            )
-            year = nfl_state.json()["season"]
-            weekly_schedule = requests.get(
-                f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{int(year)}/REG/{week[0]}/schedule.json?api_key={sportradar_api_key}'
-            )
-            weekly_schedule_id = str(weekly_schedule.json()["id"])
-            existing_schedule = MONGO.weekly_schedules.find_one(
-                    {"id": weekly_schedule_id})
-            if existing_schedule:
-                MONGO.weekly_schedules.delete_one(
-                    {"id": weekly_schedule_id})
-                MONGO.weekly_schedules.insert_one(weekly_schedule.json())
-                MONGO_CONN.close()
-            else:
-                MONGO.weekly_schedules.insert_one(weekly_schedule.json())
-                MONGO_CONN.close()
-        else:
-            pass
-    else:
-        pass
-
 
 
 ## Refresh Player Data in Mongo
@@ -87,46 +54,6 @@ def refresh_players():
     MONGO_CONN.close()
     now = pendulum.now(tz='America/New_York')
     print(f'Completed player refresh at {now}')
-
-
-
-## Get and Refresh Game Data for Current Week
-
-def get_weekly_game_data():
-    week = functions.get_current_week()
-    if week[0] <= 18:
-        if week[1] == False:
-            sportradar_api_key = os.environ.get("SPORTRADAR_API_KEY")
-            nfl_state = requests.get(
-                'https://api.sleeper.app/v1/state/nfl'
-            )
-            year = nfl_state.json()["season"]
-            weekly_schedule = MONGO.weekly_schedules.find_one(
-                {"year": int(year), "week.title": str(week[0])})
-            if weekly_schedule:
-                for game in weekly_schedule["week"]["games"]:
-                    if "scoring" in game:
-                        time.sleep(1)
-                        statistics = requests.get(
-                            f'https://api.sportradar.us/nfl/official/trial/v6/en/games/{game["id"]}/statistics.json?api_key={sportradar_api_key}'
-                        )
-                        existing_game = MONGO.game_stats.find_one(
-                            {"id": str(statistics.json()["id"])})
-                        if existing_game:
-                            MONGO.game_stats.delete_one(
-                                {"id": str(statistics.json()["id"])})
-                            MONGO.game_stats.insert_one(statistics.json())
-                        else:
-                            MONGO.game_stats.insert_one(statistics.json())
-                    else:
-                        pass
-            else:
-                pass
-        else:
-            pass
-    else:
-        pass
-    MONGO_CONN.close()
 
 
 

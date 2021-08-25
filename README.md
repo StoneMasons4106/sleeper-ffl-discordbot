@@ -5,6 +5,9 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 ## Features
 
+* Help command with full list of commands, categories, and helpful links to Github, Patreon and Top.gg.
+    * Use the syntax (prefix)help (command) to get details on a specific command, and expected syntax.
+
 * Specific information about your league such as the names, members, trade deadline, and starting week of the playoffs.
 
 * See your matchups and scoreboards for the current week.
@@ -23,7 +26,7 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 * See who has a specific player.
 
-* Premium Stats API which shows a player's stats for a given game, and estimated fantasy points based on your Sleeper league settings.
+* Access to a fantasy-points command which will be available only to patrons on Patreon meeting the Advanced Tier.
 
 * Scheduled messages to keep your league up to date and notify you of the latest information following the schedule below:
 

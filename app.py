@@ -46,19 +46,11 @@ async def on_ready():
         CronTrigger(hour=4)
     ])
     trigger_three = OrTrigger([
-        CronTrigger(hour=3)
-    ])
-    trigger_four = OrTrigger([
-        CronTrigger(hour=3, minute=30)
-    ])
-    trigger_five = OrTrigger([
         CronTrigger(day_of_week='tue', hour=12)
     ])
     scheduler.add_job(scheduled_jobs.get_current_matchups, trigger_one, [bot], misfire_grace_time=None)
     scheduler.add_job(scheduled_jobs.refresh_players, trigger_two, misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.get_weekly_schedule_data, trigger_three, misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.get_weekly_game_data, trigger_four, misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.get_current_scoreboard, trigger_five, [bot], misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.get_current_scoreboard, trigger_three, [bot], misfire_grace_time=None)
     scheduler.start()
 
 
@@ -779,73 +771,47 @@ class Stats(commands.Cog, name='Stats'):
 
     ### Game Stats Command
 
-    @commands.command(name='game-stats')
-    async def game_stats(self, ctx, *args):
-        existing_league = functions.get_existing_league(ctx)
-        if existing_league:
-            if "premium" in existing_league:
-                if existing_league["premium"] == "1":
-                    if len(args) == 5:
-                        existing_player = functions.get_existing_player(args)
-                        if existing_player:
-                            if "sportradar_id" in existing_player:
-                                nfl_state = requests.get(
-                                    'https://api.sleeper.app/v1/state/nfl'
-                                )
-                                year = nfl_state.json()["season"]
-                                week = args[4]
-                                weekly_schedule = MONGO.weekly_schedules.find_one(
-                                    {"year": int(year), "week.title": str(week)})
-                                MONGO_CONN.close()
-                                if weekly_schedule:
-                                    count = 0
-                                    found = False
-                                    for game in weekly_schedule["week"]["games"]:
-                                        count = count + 1
-                                        if args[2] == game["home"]["alias"] or args[2] == game["away"]["alias"]:
-                                            if "scoring" in game:
-                                                scoring = True
-                                            else:
-                                                scoring = False
-                                            if scoring == True:
-                                                found = True
-                                                statistics = MONGO.game_stats.find_one(
-                                                    {"id": game["id"]})
-                                                MONGO_CONN.close()
-                                                if statistics:
-                                                    statistics_string = functions.get_game_stats(existing_player["sportradar_id"], statistics, args)
-                                                    ff_points = functions.get_ff_points(existing_player["sportradar_id"], existing_league, statistics, args)
-                                                    embed = functions.my_embed('Stats', f'Returns available stats for a specified player for a particular week of this year.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]}\n', statistics_string, False, ctx)
-                                                    embed.add_field(name='Fantasy Points', value=str(ff_points), inline=False)
-                                                    await ctx.send(embed=embed)    
-                                                else:
-                                                    await ctx.send('Looks like this game did not happen yet, try another week!')
+    @commands.command(name='fantasy-points')
+    async def fantasy_points(self, ctx, *args):
+        if args[3].isnumeric():
+            if int(args[3]) <= 18 and int(args[3]) >= 1:
+                existing_league = functions.get_existing_league(ctx)
+                if existing_league:
+                    if "patron" in existing_league:
+                        if existing_league["patron"] == "1":
+                            if "league" in existing_league:
+                                league_id = existing_league["league"]
+                                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(args[3]))
+                                existing_player = functions.get_existing_player(args)
+                                if existing_player:
+                                    if matchups:
+                                        fantasy_points = ''
+                                        for matchup in matchups:
+                                            starters_points = zip(matchup["starters"], matchup["starters_points"])
+                                            for point in starters_points:
+                                                if point[0] == existing_player["id"]:
+                                                    fantasy_points += str(point[1])
                                                     break
-                                            else:
-                                                await ctx.send('Looks like this game did not happen yet, try another week!')
-                                                break
-                                        else:
-                                            if count == len(weekly_schedule["week"]["games"]):
-                                                if found == True:
-                                                    pass
                                                 else:
-                                                    await ctx.send('Either the team abbreviation is invalid, or the team had a bye week here. Please double check and try again!')
-                                            else:
-                                                continue
+                                                    pass
+                                        embed = functions.my_embed('Fantasy Points', f'Returns the points scored by a player for a specific week. Only available for players who started during said week.', discord.Colour.blue(), f'Fantasy Points for {args[0]} {args[1]} for Week {args[3]}', fantasy_points, False, ctx)
+                                        await ctx.send(embed=embed)
+                                    else:
+                                        await ctx.send('There are no matchups this week, try this command again during the season!')
                                 else:
-                                    await ctx.send('Looks like this game did not happen yet, try another week!') 
+                                    await ctx.send('No players are found with these parameters, please try again!')
                             else:
-                                await ctx.send('Can not pull Sportradar information for this player. Please try someone else.') 
+                                await ctx.send('Please run add-league command, no Sleeper League connected.')
                         else:
-                            await ctx.send('No player found with those parameters, please try again!')
+                            await ctx.send('You do not have access to this command, it is reserved for patrons only!')
                     else:
-                        await ctx.send('Invalid arguments provided. Please use the following format: game-stats <first name> <last name> <team abbreviation in caps> <position> <week number>')
+                        await ctx.send('You do not have access to this command, it is reserved for patrons only!')    
                 else:
-                    await ctx.send('You do not pay for premium and do not have access to the Stats API.')
+                    await ctx.send('Please run add-league command, no Sleeper League connected.')
             else:
-                await ctx.send('You do not pay for premium and do not have access to the Stats API.')
+                await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
         else:
-            await ctx.send('Please run add-league command, no Sleeper League connected.')
+            await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
 
 
 
@@ -867,14 +833,13 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
-        embed.add_field(name='Premium Stats', value='game-stats', inline=False)
+        embed.add_field(name='Patron Only', value='fantasy-points', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
         embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Top.gg](https://top.gg/bot/871087848311382086), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
-        embed.add_field(name='Interested in Premium?', value="Premium provides access to our Stats API powered by [Sportradar](https://sportradar.com/), and is the only part of this bot that requires a monthly subscription to use. If you'd like to sign up, add and DM me on Discord at StoneMasons#5854.", inline=False)
         MONGO_CONN.close()
         await ctx.send(embed=embed)
 
@@ -983,11 +948,11 @@ class Help(commands.Cog, name='Help'):
         await ctx.send(embed=embed)
 
 
-    ### Game Stats Help
+    ### Fantasy Points Help
 
-    @help.command(name="game-stats")
+    @help.command(name="fantasy-points")
     async def game_stats(self, ctx):
-        embed = functions.my_embed('Game Stats', 'Returns game stats for a specified player and week of the current NFL season. Must have be premium to use this feature. Currently works best when a player is not traded midseason. Working on a way to get this to work regardless.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [team abbreviation] [position] [week]', False, ctx)
+        embed = functions.my_embed('Fantasy Points', 'Returns game stats for a specified player and week of the current NFL season. Must have be premium to use this feature. Currently works best when a player is not traded midseason. Working on a way to get this to work regardless.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [team abbreviation] [position] [week]', False, ctx)
         await ctx.send(embed=embed)
 
 
