@@ -32,6 +32,7 @@ def refresh_players():
             status = nfl_players[player]["status"]
             injury_status = nfl_players[player]["injury_status"]
             depth_chart_order = nfl_players[player]["depth_chart_order"]
+            espn_id = nfl_players[player]["espn_id"]
             player_object = {
                 "id": player,
                 "name": full_name,
@@ -39,7 +40,8 @@ def refresh_players():
                 "team": team,
                 "status": status,
                 "injury_status": injury_status,
-                "depth_chart_order": depth_chart_order
+                "depth_chart_order": depth_chart_order,
+                "espn_id": espn_id
             }
         except:
             player_object = {

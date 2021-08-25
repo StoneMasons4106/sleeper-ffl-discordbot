@@ -769,7 +769,7 @@ class Patron(commands.Cog, name='Patron'):
         self.bot = bot
 
 
-    ### Game Stats Command
+    ### Starter Fantasy Points Command
 
     @commands.command(name='starter-fantasy-points')
     async def starter_fantasy_points(self, ctx, *args):

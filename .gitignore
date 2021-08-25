@@ -2,3 +2,4 @@ env.py
 __pycache__/
 sportsradar_responses/*
 sleeper_responses/*
+espn_responses/*
