@@ -952,7 +952,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="fantasy-points")
     async def game_stats(self, ctx):
-        embed = functions.my_embed('Fantasy Points', 'Returns game stats for a specified player and week of the current NFL season. Must have be premium to use this feature. Currently works best when a player is not traded midseason. Working on a way to get this to work regardless.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [team abbreviation] [week]', False, ctx)
+        embed = functions.my_embed('Fantasy Points', 'Returns fantasy points for the specified player for the specified week. Only available for starting players in a specific week due to structure of Sleeper API. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [team abbreviation] [week]', False, ctx)
         await ctx.send(embed=embed)
 
 
