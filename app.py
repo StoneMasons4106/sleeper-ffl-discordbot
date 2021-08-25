@@ -337,15 +337,14 @@ class League(commands.Cog, name='League'):
     ### Get Current Week Matchups
 
     @commands.command(name='my-league-matchups')
-    async def my_league_matchups(self, ctx):
-        week = functions.get_current_week()
+    async def my_league_matchups(self, ctx, week: str):
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
             if "league" in existing_league:
                 league_id = existing_league["league"]
                 users = sleeper_wrapper.League(int(league_id)).get_users()
                 rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
+                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
                 if matchups:
                     sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
                     matchups_string = ''
@@ -360,7 +359,7 @@ class League(commands.Cog, name='League'):
                             matchups_string += f'{user["display_name"]}\n'
                         else:
                             matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
-                    embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week[0])}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
+                    embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {week}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send('There are no matchups this week, try this command again during the season!')
@@ -888,7 +887,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="my-league-matchups")
     async def my_league_matchups(self, ctx):
-        embed = functions.my_embed('My League Matchups', 'Returns matchups for the current week. If the league is pre-draft, it will return week 1 scoreboard. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-matchups', False, ctx)
+        embed = functions.my_embed('My League Matchups', 'Returns matchups for the specified week. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-matchups [week]', False, ctx)
         await ctx.send(embed=embed)
 
 
