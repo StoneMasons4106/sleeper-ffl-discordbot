@@ -365,6 +365,41 @@ class League(commands.Cog, name='League'):
         else:
             await ctx.send('Please run add-league command, no Sleeper League connected.')
 
+    
+    ### Get Current Week Scoreboard
+
+    @commands.command(name='my-league-scoreboard')
+    async def my_league_scoreboard(self, ctx, week: str):
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            if "league" in existing_league:
+                league_id = existing_league["league"]
+                users = sleeper_wrapper.League(int(league_id)).get_users()
+                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
+                if matchups:
+                    sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                    matchups_string = ''
+                    count = 0
+                    matchup_count = 1
+                    for matchup in sorted_matchups:
+                        count = count + 1
+                        roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                        user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                        if (count % 2) == 0:
+                            matchup_count = matchup_count + 1
+                            matchups_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                        else:
+                            matchups_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
+                    embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week[0])}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
+                    await ctx.send(embed=embed)
+                else:
+                    await ctx.send('There are no matchups this week, try this command again during the season!')
+            else:
+                await ctx.send('Please run add-league command, no Sleeper League connected.')
+        else:
+            await ctx.send('Please run add-league command, no Sleeper League connected.')
+
 
 
 ## Players Cog
@@ -813,7 +848,7 @@ class Help(commands.Cog, name='Help'):
     async def help(self, ctx):
         existing_prefix = MONGO.prefixes.find_one(
                     {"server": str(ctx.message.guild.id)})
-        embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-standings', False, ctx)
+        embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
@@ -850,6 +885,14 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="my-league-matchups")
     async def my_league_matchups(self, ctx):
         embed = functions.my_embed('My League Matchups', 'Returns matchups for the current week. If the league is pre-draft, it will return week 1 scoreboard. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-matchups', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### My League Scoreboard Help
+
+    @help.command(name="my-league-scoreboard")
+    async def my_league_scoreboard(self, ctx):
+        embed = functions.my_embed('My League Scoreboard', 'Returns scoreboard for the specified week. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-scoreboard [week]', False, ctx)
         await ctx.send(embed=embed)
 
 
