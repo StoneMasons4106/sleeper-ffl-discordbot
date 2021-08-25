@@ -761,9 +761,9 @@ class Manage(commands.Cog, name='Manage'):
 
 
 
-## Stats Cog
+## Patron Cog
 
-class Stats(commands.Cog, name='Stats'):
+class Patron(commands.Cog, name='Patron'):
 
     def __init__(self, bot):
         self.bot = bot
@@ -996,7 +996,7 @@ bot.add_cog(League(bot))
 bot.add_cog(Players(bot))
 bot.add_cog(Weather(bot))
 bot.add_cog(Manage(bot))
-bot.add_cog(Stats(bot))
+bot.add_cog(Patron(bot))
 bot.add_cog(Help(bot))
 
 
