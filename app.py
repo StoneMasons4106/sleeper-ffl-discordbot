@@ -771,47 +771,57 @@ class Patron(commands.Cog, name='Patron'):
 
     ### Game Stats Command
 
-    @commands.command(name='fantasy-points')
-    async def fantasy_points(self, ctx, *args):
-        if args[3].isnumeric():
-            if int(args[3]) <= 18 and int(args[3]) >= 1:
-                existing_league = functions.get_existing_league(ctx)
-                if existing_league:
-                    if "patron" in existing_league:
-                        if existing_league["patron"] == "1":
-                            if "league" in existing_league:
-                                league_id = existing_league["league"]
-                                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(args[3]))
-                                existing_player = functions.get_existing_player(args)
-                                if existing_player:
-                                    if matchups:
-                                        fantasy_points = ''
-                                        for matchup in matchups:
-                                            starters_points = zip(matchup["starters"], matchup["starters_points"])
-                                            for point in starters_points:
-                                                if point[0] == existing_player["id"]:
-                                                    fantasy_points += str(point[1])
-                                                    break
-                                                else:
-                                                    pass
-                                        embed = functions.my_embed('Fantasy Points', f'Returns the points scored by a player for a specific week. Only available for players who started during said week.', discord.Colour.blue(), f'Fantasy Points for {args[0]} {args[1]} for Week {args[3]}', fantasy_points, False, ctx)
-                                        await ctx.send(embed=embed)
+    @commands.command(name='starter-fantasy-points')
+    async def starter_fantasy_points(self, ctx, *args):
+        if len(args) == 4:
+            if args[3].isnumeric():
+                if int(args[3]) <= 18 and int(args[3]) >= 1:
+                    existing_league = functions.get_existing_league(ctx)
+                    if existing_league:
+                        if "patron" in existing_league:
+                            if existing_league["patron"] == "1":
+                                if "league" in existing_league:
+                                    league_id = existing_league["league"]
+                                    matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(args[3]))
+                                    existing_player = functions.get_existing_player(args)
+                                    if existing_player:
+                                        if matchups:
+                                            fantasy_points = ''
+                                            count = 0
+                                            found = 0
+                                            for matchup in matchups:
+                                                count = count + 1
+                                                starters_points = zip(matchup["starters"], matchup["starters_points"])
+                                                for point in starters_points:
+                                                    if point[0] == existing_player["id"]:
+                                                        fantasy_points += str(point[1])
+                                                        found = 1
+                                                        break
+                                                    else:
+                                                        pass
+                                            if found == 1:
+                                                embed = functions.my_embed('Starter Fantasy Points', f'Returns the points scored by a starting player for a specific week. Only available for players who started during said week.', discord.Colour.blue(), f'Fantasy Points for {args[0]} {args[1]} for Week {args[3]}', fantasy_points, False, ctx)
+                                                await ctx.send(embed=embed)
+                                            else:
+                                                await ctx.send('No starters were found with this information. Please try again!')
+                                        else:
+                                            await ctx.send('There are no matchups this week, try this command again during the season!')
                                     else:
-                                        await ctx.send('There are no matchups this week, try this command again during the season!')
+                                        await ctx.send('No players are found with these parameters, please try again!')
                                 else:
-                                    await ctx.send('No players are found with these parameters, please try again!')
+                                    await ctx.send('Please run add-league command, no Sleeper League connected.')
                             else:
-                                await ctx.send('Please run add-league command, no Sleeper League connected.')
+                                await ctx.send('You do not have access to this command, it is reserved for patrons only!')
                         else:
-                            await ctx.send('You do not have access to this command, it is reserved for patrons only!')
+                            await ctx.send('You do not have access to this command, it is reserved for patrons only!')    
                     else:
-                        await ctx.send('You do not have access to this command, it is reserved for patrons only!')    
+                        await ctx.send('Please run add-league command, no Sleeper League connected.')
                 else:
-                    await ctx.send('Please run add-league command, no Sleeper League connected.')
+                    await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
             else:
                 await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
         else:
-            await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
+            await ctx.send('Invalid arguments. Please use the format [prefix]starter-fantasy-points [first name] [last name] [team abbreviation] [week]')
 
 
 
@@ -833,7 +843,7 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
-        embed.add_field(name='Patron Only', value='fantasy-points', inline=False)
+        embed.add_field(name='Patron Only', value='starter-fantasy-points', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
@@ -948,11 +958,11 @@ class Help(commands.Cog, name='Help'):
         await ctx.send(embed=embed)
 
 
-    ### Fantasy Points Help
+    ### Starter Fantasy Points Help
 
-    @help.command(name="fantasy-points")
-    async def game_stats(self, ctx):
-        embed = functions.my_embed('Fantasy Points', 'Returns fantasy points for the specified player for the specified week. Only available for starting players in a specific week due to structure of Sleeper API. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [team abbreviation] [week]', False, ctx)
+    @help.command(name="starter-fantasy-points")
+    async def starter_fantasy_points(self, ctx):
+        embed = functions.my_embed('Starter Fantasy Points', 'Returns fantasy points for the specified player for the specified week. Only available for starting players in a specific week due to structure of Sleeper API. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>starter-fantasy-points [first name] [last name] [team abbreviation] [week]', False, ctx)
         await ctx.send(embed=embed)
 
 
