@@ -338,70 +338,82 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-matchups')
     async def my_league_matchups(self, ctx, week: str):
-        existing_league = functions.get_existing_league(ctx)
-        if existing_league:
-            if "league" in existing_league:
-                league_id = existing_league["league"]
-                users = sleeper_wrapper.League(int(league_id)).get_users()
-                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
-                if matchups:
-                    sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
-                    matchups_string = ''
-                    count = 0
-                    matchup_count = 1
-                    for matchup in sorted_matchups:
-                        count = count + 1
-                        roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                        user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                        if (count % 2) == 0:
-                            matchup_count = matchup_count + 1
-                            matchups_string += f'{user["display_name"]}\n'
+        if week.isnumeric():
+            if int(week) <= 18 and int(week) >= 1:
+                existing_league = functions.get_existing_league(ctx)
+                if existing_league:
+                    if "league" in existing_league:
+                        league_id = existing_league["league"]
+                        users = sleeper_wrapper.League(int(league_id)).get_users()
+                        rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                        matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
+                        if matchups:
+                            sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                            matchups_string = ''
+                            count = 0
+                            matchup_count = 1
+                            for matchup in sorted_matchups:
+                                count = count + 1
+                                roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                if (count % 2) == 0:
+                                    matchup_count = matchup_count + 1
+                                    matchups_string += f'{user["display_name"]}\n'
+                                else:
+                                    matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
+                            embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {week}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
+                            await ctx.send(embed=embed)
                         else:
-                            matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
-                    embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {week}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
-                    await ctx.send(embed=embed)
+                            await ctx.send('There are no matchups this week, try this command again during the season!')
+                    else:
+                        await ctx.send('Please run add-league command, no Sleeper League connected.')
                 else:
-                    await ctx.send('There are no matchups this week, try this command again during the season!')
+                    await ctx.send('Please run add-league command, no Sleeper League connected.')
             else:
-                await ctx.send('Please run add-league command, no Sleeper League connected.')
+                await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
         else:
-            await ctx.send('Please run add-league command, no Sleeper League connected.')
+            await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
 
     
     ### Get Current Week Scoreboard
 
     @commands.command(name='my-league-scoreboard')
     async def my_league_scoreboard(self, ctx, week: str):
-        existing_league = functions.get_existing_league(ctx)
-        if existing_league:
-            if "league" in existing_league:
-                league_id = existing_league["league"]
-                users = sleeper_wrapper.League(int(league_id)).get_users()
-                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
-                if matchups:
-                    sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
-                    scoreboard_string = ''
-                    count = 0
-                    matchup_count = 1
-                    for matchup in sorted_matchups:
-                        count = count + 1
-                        roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                        user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                        if (count % 2) == 0:
-                            matchup_count = matchup_count + 1
-                            scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
+        if week.isnumeric():
+            if int(week) <= 18 and int(week) >= 1:
+                existing_league = functions.get_existing_league(ctx)
+                if existing_league:
+                    if "league" in existing_league:
+                        league_id = existing_league["league"]
+                        users = sleeper_wrapper.League(int(league_id)).get_users()
+                        rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                        matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
+                        if matchups:
+                            sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                            scoreboard_string = ''
+                            count = 0
+                            matchup_count = 1
+                            for matchup in sorted_matchups:
+                                count = count + 1
+                                roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                if (count % 2) == 0:
+                                    matchup_count = matchup_count + 1
+                                    scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                                else:
+                                    scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
+                            embed = functions.my_embed(f'Week {week} Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, ctx)
+                            await ctx.send(embed=embed)
                         else:
-                            scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
-                    embed = functions.my_embed(f'Week {week} Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, ctx)
-                    await ctx.send(embed=embed)
+                            await ctx.send('There are no matchups this week, try this command again during the season!')
+                    else:
+                        await ctx.send('Please run add-league command, no Sleeper League connected.')
                 else:
-                    await ctx.send('There are no matchups this week, try this command again during the season!')
+                    await ctx.send('Please run add-league command, no Sleeper League connected.')
             else:
-                await ctx.send('Please run add-league command, no Sleeper League connected.')
+                await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
         else:
-            await ctx.send('Please run add-league command, no Sleeper League connected.')
+            await ctx.send('Invalid week number given. Choose a valid week between 1 and 18.')
 
 
 
