@@ -51,10 +51,14 @@ async def on_ready():
     trigger_four = OrTrigger([
         CronTrigger(hour=3, minute=30)
     ])
+    trigger_five = OrTrigger([
+        CronTrigger(day_of_week='tue', hour=12)
+    ])
     scheduler.add_job(scheduled_jobs.get_current_matchups, trigger_one, [bot], misfire_grace_time=None)
     scheduler.add_job(scheduled_jobs.refresh_players, trigger_two, misfire_grace_time=None)
     scheduler.add_job(scheduled_jobs.get_weekly_schedule_data, trigger_three, misfire_grace_time=None)
     scheduler.add_job(scheduled_jobs.get_weekly_game_data, trigger_four, misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.get_current_scoreboard, trigger_five, [bot], misfire_grace_time=None)
     scheduler.start()
 
 
@@ -376,10 +380,10 @@ class League(commands.Cog, name='League'):
                 league_id = existing_league["league"]
                 users = sleeper_wrapper.League(int(league_id)).get_users()
                 rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
+                matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
                 if matchups:
                     sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
-                    matchups_string = ''
+                    scoreboard_string = ''
                     count = 0
                     matchup_count = 1
                     for matchup in sorted_matchups:
@@ -388,10 +392,10 @@ class League(commands.Cog, name='League'):
                         user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
                         if (count % 2) == 0:
                             matchup_count = matchup_count + 1
-                            matchups_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                            scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
                         else:
-                            matchups_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
-                    embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week[0])}', discord.Colour.blue(), 'Matchups', matchups_string, False, ctx)
+                            scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
+                    embed = functions.my_embed(f'Week {week} Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, ctx)
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send('There are no matchups this week, try this command again during the season!')
