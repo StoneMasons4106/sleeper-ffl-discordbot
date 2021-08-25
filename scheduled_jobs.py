@@ -130,53 +130,6 @@ def get_weekly_game_data():
 
 
 
-## Get Close Games for Current Week
-
-async def get_current_close_games(bot):
-    week = functions.get_current_week()
-    if week[0] <= 18:
-        if week[1] == False:
-            print(week[1])
-            servers = MONGO.servers.find(
-                {})
-            MONGO_CONN.close()
-            if servers:
-                for server in servers:
-                    if "league" in server and "score_type" in server and "channel" in server:
-                        score_type = server["score_type"]
-                        league_id = server["league"]
-                        users = sleeper_wrapper.League(int(league_id)).get_users()
-                        rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                        matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
-                        scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, score_type, week[0])
-                        if scoreboard:
-                            close_games = sleeper_wrapper.League(int(league_id)).get_close_games(scoreboard, 5)
-                            if close_games:
-                                channel = await bot.fetch_channel(int(server["channel"]))
-                                close_games_string = ''
-                                count = 0
-                                for score in close_games:
-                                    count = count + 1
-                                    close_games_string += f'{str(count)}. {close_games[score][0][0]} - {str(close_games[score][0][1])} / {close_games[score][1][0]} - {str(close_games[score][1][1])}\n'
-                                embed = discord.Embed(title='Current Week Close Games', description=f'Close Games for Week {str(week[0])}', color=discord.Colour.blue())
-                                embed.add_field(name='Close Games', value=close_games_string, inline=False)
-                                await channel.send(f'Things are heating up! Here are the close games heading into tonight:')
-                                await channel.send(embed=embed)
-                            else:
-                                pass
-                        else:
-                            pass
-                    else:
-                        pass
-            else:
-                pass
-        else:
-            pass
-    else:
-        pass
-
-
-
 ## Get Matchups for Current Week
 
 async def get_current_matchups(bot):
@@ -211,48 +164,6 @@ async def get_current_matchups(bot):
                             embed = discord.Embed(title='Current Week Matchups', description=f'Matchups for Week {str(week[0])}', color=discord.Colour.blue())
                             embed.add_field(name='Matchups', value=matchups_string, inline=False)
                             await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week[0])} in our league:')
-                            await channel.send(embed=embed)
-                        else:
-                            pass
-                    else:
-                        pass
-            else:
-                pass
-        else:
-            pass
-    else:
-        pass
-
-
-
-## Get Scoreboard for Current Week
-
-async def get_current_scoreboards(bot):
-    week = functions.get_current_week()
-    if week[0] <= 18:
-        if week[1] == False:
-            servers = MONGO.servers.find(
-                {})
-            MONGO_CONN.close()
-            if servers:
-                for server in servers:
-                    if "league" in server and "score_type" in server and "channel" in server:
-                        score_type = server["score_type"]
-                        league_id = server["league"]
-                        users = sleeper_wrapper.League(int(league_id)).get_users()
-                        rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                        matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
-                        scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, score_type, week[0])
-                        if scoreboard:
-                            channel = await bot.fetch_channel(int(server["channel"]))
-                            scoreboard_string = ''
-                            count = 0
-                            for score in scoreboard:
-                                count = count + 1
-                                scoreboard_string += f'{str(count)}. {scoreboard[score][0][0]} - {str(scoreboard[score][0][1])} / {scoreboard[score][1][0]} - {str(scoreboard[score][1][1])}\n'
-                            embed = discord.Embed(title='Current Week Scoreboard', description=f'Scoreboard for Week {str(week[0])}', color=discord.Colour.blue())
-                            embed.add_field(name='Scoreboard', value=scoreboard_string, inline=False)
-                            await channel.send(f'Another week, another round of football! Here are the results for week {str(week[0])} in our league:')
                             await channel.send(embed=embed)
                         else:
                             pass

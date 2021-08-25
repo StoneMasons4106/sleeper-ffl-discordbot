@@ -33,7 +33,7 @@ bot.remove_command("help")
 
 # Bot Events
 
-## On Ready - Rich Presence
+## On Ready - Rich Presence / Schedule Jobs
 
 @bot.event
 async def on_ready():
@@ -43,26 +43,18 @@ async def on_ready():
         CronTrigger(day_of_week='thu', hour=15)
     ])
     trigger_two = OrTrigger([
-        CronTrigger(day_of_week='tue', hour=9)
-    ])
-    trigger_three = OrTrigger([
-        CronTrigger(day_of_week='mon', hour=9)
-    ])
-    trigger_four = OrTrigger([
         CronTrigger(hour=4)
     ])
-    trigger_five = OrTrigger([
+    trigger_three = OrTrigger([
         CronTrigger(hour=3)
     ])
-    trigger_six = OrTrigger([
+    trigger_four = OrTrigger([
         CronTrigger(hour=3, minute=30)
     ])
     scheduler.add_job(scheduled_jobs.get_current_matchups, trigger_one, [bot], misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.get_current_scoreboards, trigger_two, [bot], misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.get_current_close_games, trigger_three, [bot], misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.refresh_players, trigger_four, misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.get_weekly_schedule_data, trigger_five, misfire_grace_time=None)
-    scheduler.add_job(scheduled_jobs.get_weekly_game_data, trigger_six, misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.refresh_players, trigger_two, misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.get_weekly_schedule_data, trigger_three, misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.get_weekly_game_data, trigger_four, misfire_grace_time=None)
     scheduler.start()
 
 
@@ -75,7 +67,7 @@ async def on_guild_join(guild):
         await general.send('Happy to be here! Please run the add-league, set-channel, and set-score-type commands to finish setting up!')
 
 
-## On Guild Leave
+## On Guild Leave - Remove Prefix and Server Info from DB
 
 @bot.event
 async def on_guild_remove(guild):
@@ -261,6 +253,7 @@ class Setup(commands.Cog, name='Setup'):
             await ctx.send(embed=embed)
 
 
+
 ## League Cog
 
 class League(commands.Cog, name='League'):
@@ -367,38 +360,6 @@ class League(commands.Cog, name='League'):
                     await ctx.send(embed=embed)
                 else:
                     await ctx.send('There are no matchups this week, try this command again during the season!')
-            else:
-                await ctx.send('Please run add-league command, no Sleeper League connected.')
-        else:
-            await ctx.send('Please run add-league command, no Sleeper League connected.')
-    
-
-    ### Get Current Week Scoreboard
-
-    @commands.command(name='my-league-scoreboard')
-    async def my_league_scoreboard(self, ctx):
-        week = functions.get_current_week()
-        existing_league = functions.get_existing_league(ctx)
-        if existing_league:
-            if "league" in existing_league:
-                league_id = existing_league["league"]
-                if "score_type" in existing_league:
-                    users = sleeper_wrapper.League(int(league_id)).get_users()
-                    rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                    matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
-                    scoreboard = sleeper_wrapper.League(int(league_id)).get_scoreboards(rosters, matchups, users, existing_league["score_type"], week[0])
-                    if scoreboard:
-                        scoreboard_string = ''
-                        count = 0
-                        for score in scoreboard:
-                            count = count + 1
-                            scoreboard_string += f'{str(count)}. {scoreboard[score][0][0]} - {str(scoreboard[score][0][1])} / {scoreboard[score][1][0]} - {str(scoreboard[score][1][1])}\n'
-                        embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week[0])}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, ctx)
-                        await ctx.send(embed=embed)
-                    else:
-                        await ctx.send('There is no scoreboard this week, try this command again during the season!')
-                else:
-                    await ctx.send('Please run set-score-type command, no score type specified.')
             else:
                 await ctx.send('Please run add-league command, no Sleeper League connected.')
         else:
