@@ -1135,6 +1135,7 @@ class Help(commands.Cog, name='Help'):
     async def help(self, ctx):
         existing_prefix = MONGO.prefixes.find_one(
                     {"server": str(ctx.message.guild.id)})
+        MONGO_CONN.close()
         embed = functions.my_embed('Help', 'Use help <command> for detailed information.', discord.Colour.blue(), 'League', 'my-league, my-league-matchups, my-league-scoreboard, my-league-standings', False, ctx)
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
@@ -1146,7 +1147,7 @@ class Help(commands.Cog, name='Help'):
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
         embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Top.gg](https://top.gg/bot/871087848311382086), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
-        MONGO_CONN.close()
+        embed.add_field(name='Interested in Becoming a Patron for Enhanced Content?', value='Click the link to Patreon in the Helpful Links section to get started.', inline=False)
         await ctx.send(embed=embed)
 
     
