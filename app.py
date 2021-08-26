@@ -1109,7 +1109,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="game-stats")
     async def game_stats(self, ctx):
-        embed = functions.my_embed('Game Stats', 'Returns game stats for the specified player for the specified year and date. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [current team abbreviation] [year] [date in mm/dd format, if month or day is single number such as 9, use 9 not 09 (10/9)]', False, ctx)
+        embed = functions.my_embed('Game Stats', 'Returns game stats for the specified player for the specified year and date. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [current team abbreviation] [year] [date in mm/dd format]', False, ctx)
         await ctx.send(embed=embed)
 
 
