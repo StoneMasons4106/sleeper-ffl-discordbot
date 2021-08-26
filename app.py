@@ -864,7 +864,17 @@ class Patron(commands.Cog, name='Patron'):
                                 row_split_two = row_split[1].split(" ")
                                 row_split_three = row_split_two[1].split("</td>")
                                 week_one_date_month = row_split_three[0].split("/")
-                                week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), int(week_one_date_month[1]))
+                                if row_split_two[0] == "Thu":
+                                    day = int(week_one_date_month[1]) + 3
+                                    week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
+                                elif row_split_two[0] == "Fri":
+                                    day = int(week_one_date_month[1]) + 2
+                                    week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
+                                elif row_split_two[0] == "Sat":
+                                    day = int(week_one_date_month[1]) + 1
+                                    week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
+                                else:
+                                    week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), int(week_one_date_month[1]))
                                 for game in games:
                                     row_split = str(game).split('<td class="Table__TD">')
                                     row_split_two = row_split[1].split(" ")
@@ -877,12 +887,19 @@ class Patron(commands.Cog, name='Patron'):
                                         week_current = pendulum.datetime(int(args[3]), int(current_week[0]), int(current_week[1]))
                                     week_num = week_current.diff(week_one).in_weeks() + 1
                                     if row_split_two[0] == "Sat" or row_split_two[0] == "Thu" or row_split_two == "Fri":
-                                        week_num = week_num + 1
-                                        if str(week_num) == str(args[4]):
-                                            game_data = game
-                                            break
+                                        if week_num == 1:
+                                            if str(week_num) == str(args[4]):
+                                                game_data = game
+                                                break
+                                            else:
+                                                continue 
                                         else:
-                                            continue
+                                            week_num = week_num + 1
+                                            if str(week_num) == str(args[4]):
+                                                game_data = game
+                                                break
+                                            else:
+                                                continue
                                     elif str(week_num) == str(args[4]):
                                         game_data = game
                                         break
@@ -910,7 +927,7 @@ class Patron(commands.Cog, name='Patron'):
                                         rush_td = game_data_split[18].split("</td>")[0]
                                         rush_long = game_data_split[19].split("</td>")[0]
                                         game_data_string = f'{cmp}/{att} ({cmp_pct}%), {pass_yds} yards, {ypa} yards per att, {pass_td} TD, {intercept} INT, {long} long, {sack} sacks, {rating} rating, {qbr} QBR\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for week {args[4]}', game_data_string, False, ctx)
                                         await ctx.send(embed=embed)
                                     elif existing_player["position"] == "RB":
                                         rush_att = game_data_split[4].split("</td>")[0]
@@ -927,7 +944,7 @@ class Patron(commands.Cog, name='Patron'):
                                         fum = game_data_split[15].split("</td>")[0]
                                         lost_fum = game_data_split[16].split("</td>")[0]
                                         game_data_string = f'{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{fum} fum, {lost_fum} lost'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for week {args[4]}', game_data_string, False, ctx)
                                         await ctx.send(embed=embed)
                                     elif existing_player["position"] == "WR" or existing_player["position"] == "TE":
                                         rec = game_data_split[4].split("</td>")[0]
@@ -944,7 +961,7 @@ class Patron(commands.Cog, name='Patron'):
                                         fum = game_data_split[15].split("</td>")[0]
                                         lost_fum = game_data_split[16].split("</td>")[0]
                                         game_data_string = f'{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{fum} fum, {lost_fum} lost'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for week {args[4]}', game_data_string, False, ctx)
                                         await ctx.send(embed=embed)
                                     elif existing_player["position"] == "K":
                                         long = game_data_split[9].split("</td>")[0]
@@ -954,7 +971,7 @@ class Patron(commands.Cog, name='Patron'):
                                         xp = game_data_split[13].split("</td>")[0]
                                         pts = game_data_split[14].split("</td>")[0]
                                         game_data_string = f'{fg} FG, ({fg_pct}%), {avg} avg, {long} long, {xp} XP, {pts} points'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for week {args[4]}', game_data_string, False, ctx)
                                         await ctx.send(embed=embed)
                                         pass
                                     else:
