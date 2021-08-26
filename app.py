@@ -1117,7 +1117,7 @@ class Patron(commands.Cog, name='Patron'):
             else:
                 await ctx.send('Please run add-league command, no Sleeper League connected.')
         else:
-            await ctx.send('Invalid arguments. Please use the format [prefix]game-stats [first name] [last name] [team abbreviation] [year] [date in mm/dd format]')
+            await ctx.send('Invalid arguments. Please use the format [prefix]game-stats [first name] [last name] [team abbreviation] [year] [date in mm/dd format], or [prefix]game-stats [first name] [last name] [team abbreviation].')
 
 
 
