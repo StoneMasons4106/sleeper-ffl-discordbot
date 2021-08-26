@@ -16,3 +16,5 @@ setuptools==52.0.0
 tzlocal==2.1
 pendulum==2.1.2
 pytzdata==2020.1
+beautifulsoup4 == 4.9.3
+soupsieve == 2.2.1
