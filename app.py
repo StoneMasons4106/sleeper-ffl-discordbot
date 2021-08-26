@@ -873,6 +873,12 @@ class Patron(commands.Cog, name='Patron'):
                                 elif row_split_two[0] == "Sat":
                                     day = int(week_one_date_month[1]) + 1
                                     week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
+                                elif row_split_two[0] == "Mon":
+                                    day = int(week_one_date_month[1]) - 1
+                                    week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
+                                elif row_split_two[0] == "Tue":
+                                    day = int(week_one_date_month[1]) - 2
+                                    week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
                                 else:
                                     week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), int(week_one_date_month[1]))
                                 for game in games:
