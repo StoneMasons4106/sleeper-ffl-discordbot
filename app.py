@@ -834,104 +834,125 @@ class Patron(commands.Cog, name='Patron'):
             if existing_league:
                 if "patron" in existing_league:
                     if existing_league["patron"] == "1":
-                        existing_player = functions.get_existing_player(args)
-                        if existing_player:
-                            if "espn_id" in existing_player:
-                                res = requests.get(
-                                    f'https://www.espn.com/nfl/player/gamelog/_/id/{existing_player["espn_id"]}/type/nfl/year/{args[3]}'
-                                )
-                                soup = bs4(res.text, 'html.parser')
-                                search_data = soup.find_all('tr')
-                                game_data = None
-                                for tr in search_data:
-                                    row_split = str(tr).split('<td class="Table__TD">')
-                                    try:
-                                        row_split_two = row_split[1].split(" ")
-                                    except:
-                                        continue
-                                    try:
-                                        row_split_three = row_split_two[1].split("</td>")
-                                    except:
-                                        continue
-                                    if row_split_three[0] == args[4]:
-                                        game_data = tr
-                                    else:
-                                        continue
-                                if game_data == None:
-                                    await ctx.send(f'Looks like {args[0]} {args[1]} did not play on the date specified, please try again!')
-                                else:
-                                    game_data_split = str(game_data).split('<td class="Table__TD">')
-                                    if existing_player["position"] == "QB":
-                                        cmp = game_data_split[4].split("</td>")[0]
-                                        att = game_data_split[5].split("</td>")[0]
-                                        pass_yds = game_data_split[6].split("</td>")[0]
-                                        cmp_pct = game_data_split[7].split("</td>")[0]
-                                        ypa = game_data_split[8].split("</td>")[0]
-                                        pass_td = game_data_split[9].split("</td>")[0]
-                                        int = game_data_split[10].split("</td>")[0]
-                                        long = game_data_split[11].split("</td>")[0]
-                                        sack = game_data_split[12].split("</td>")[0]
-                                        rating = game_data_split[13].split("</td>")[0]
-                                        qbr = game_data_split[14].split("</td>")[0]
-                                        rush_att = game_data_split[15].split("</td>")[0]
-                                        rush_yds = game_data_split[16].split("</td>")[0]
-                                        rush_avg = game_data_split[17].split("</td>")[0]
-                                        rush_td = game_data_split[18].split("</td>")[0]
-                                        rush_long = game_data_split[19].split("</td>")[0]
-                                        game_data_string = f'{cmp}/{att} ({cmp_pct}%), {pass_yds} yards, {ypa} yards per att, {pass_td} TD, {int} INT, {long} long, {sack} sacks, {rating} rating, {qbr} QBR\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
-                                        await ctx.send(embed=embed)
-                                    elif existing_player["position"] == "RB":
-                                        rush_att = game_data_split[4].split("</td>")[0]
-                                        rush_yds = game_data_split[5].split("</td>")[0]
-                                        rush_avg = game_data_split[6].split("</td>")[0]
-                                        rush_td = game_data_split[7].split("</td>")[0]
-                                        rush_long = game_data_split[8].split("</td>")[0]
-                                        rec = game_data_split[9].split("</td>")[0]
-                                        tgts = game_data_split[10].split("</td>")[0]
-                                        rec_yds = game_data_split[11].split("</td>")[0]
-                                        rec_avg = game_data_split[12].split("</td>")[0]
-                                        rec_td = game_data_split[13].split("</td>")[0]
-                                        rec_long = game_data_split[14].split("</td>")[0]
-                                        fum = game_data_split[15].split("</td>")[0]
-                                        lost_fum = game_data_split[16].split("</td>")[0]
-                                        game_data_string = f'{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{fum} fum, {lost_fum} lost'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
-                                        await ctx.send(embed=embed)
-                                    elif existing_player["position"] == "WR" or existing_player["position"] == "TE":
-                                        rec = game_data_split[4].split("</td>")[0]
-                                        tgts = game_data_split[5].split("</td>")[0]
-                                        rec_yds = game_data_split[6].split("</td>")[0]
-                                        rec_avg = game_data_split[7].split("</td>")[0]
-                                        rec_td = game_data_split[8].split("</td>")[0]
-                                        rec_long = game_data_split[9].split("</td>")[0]
-                                        rush_att = game_data_split[10].split("</td>")[0]
-                                        rush_yds = game_data_split[11].split("</td>")[0]
-                                        rush_avg = game_data_split[12].split("</td>")[0]
-                                        rush_long = game_data_split[13].split("</td>")[0]
-                                        rush_td = game_data_split[14].split("</td>")[0]
-                                        fum = game_data_split[15].split("</td>")[0]
-                                        lost_fum = game_data_split[16].split("</td>")[0]
-                                        game_data_string = f'{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{fum} fum, {lost_fum} lost'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
-                                        await ctx.send(embed=embed)
-                                    elif existing_player["position"] == "K":
-                                        long = game_data_split[9].split("</td>")[0]
-                                        fg_pct = game_data_split[10].split("</td>")[0]
-                                        fg = game_data_split[11].split("</td>")[0]
-                                        avg = game_data_split[12].split("</td>")[0]
-                                        xp = game_data_split[13].split("</td>")[0]
-                                        pts = game_data_split[14].split("</td>")[0]
-                                        game_data_string = f'{fg} FG, ({fg_pct}%), {avg} avg, {long} long, {xp} XP, {pts} points'
-                                        embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
-                                        await ctx.send(embed=embed)
-                                        pass
-                                    else:
-                                        await ctx.send('Game stats unavailable for this position, please try again!')
+                        if "/" in args[4]:
+                            date_split = args[4].split("/")
+                            if len(date_split[0]) == 1:
+                                month = date_split[0]
                             else:
-                                await ctx.send('Game stats unavailable for this player, please try again!')
+                                month_slice = date_split[0][:1]
+                                if month_slice == "0":
+                                    month = date_split[0][1:2]
+                                else:
+                                    month = date_split[0]
+                            if len(date_split[1]) == 1:
+                                day = date_split[1]
+                            else:
+                                day_slice = date_split[1][:1]
+                                if day_slice == "0":
+                                    day = date_split[1][1:2]
+                                else:
+                                    day = date_split[1]
+                            formatted_date = f'{month}/{day}'
+                            existing_player = functions.get_existing_player(args)
+                            if existing_player:
+                                if "espn_id" in existing_player:
+                                    res = requests.get(
+                                        f'https://www.espn.com/nfl/player/gamelog/_/id/{existing_player["espn_id"]}/type/nfl/year/{args[3]}'
+                                    )
+                                    soup = bs4(res.text, 'html.parser')
+                                    search_data = soup.find_all('tr')
+                                    game_data = None
+                                    for tr in search_data:
+                                        row_split = str(tr).split('<td class="Table__TD">')
+                                        try:
+                                            row_split_two = row_split[1].split(" ")
+                                        except:
+                                            continue
+                                        try:
+                                            row_split_three = row_split_two[1].split("</td>")
+                                        except:
+                                            continue
+                                        if row_split_three[0] == formatted_date:
+                                            game_data = tr
+                                        else:
+                                            continue
+                                    if game_data == None:
+                                        await ctx.send(f'Looks like {args[0]} {args[1]} did not play on the date specified, please try again!')
+                                    else:
+                                        game_data_split = str(game_data).split('<td class="Table__TD">')
+                                        if existing_player["position"] == "QB":
+                                            cmp = game_data_split[4].split("</td>")[0]
+                                            att = game_data_split[5].split("</td>")[0]
+                                            pass_yds = game_data_split[6].split("</td>")[0]
+                                            cmp_pct = game_data_split[7].split("</td>")[0]
+                                            ypa = game_data_split[8].split("</td>")[0]
+                                            pass_td = game_data_split[9].split("</td>")[0]
+                                            int = game_data_split[10].split("</td>")[0]
+                                            long = game_data_split[11].split("</td>")[0]
+                                            sack = game_data_split[12].split("</td>")[0]
+                                            rating = game_data_split[13].split("</td>")[0]
+                                            qbr = game_data_split[14].split("</td>")[0]
+                                            rush_att = game_data_split[15].split("</td>")[0]
+                                            rush_yds = game_data_split[16].split("</td>")[0]
+                                            rush_avg = game_data_split[17].split("</td>")[0]
+                                            rush_td = game_data_split[18].split("</td>")[0]
+                                            rush_long = game_data_split[19].split("</td>")[0]
+                                            game_data_string = f'{cmp}/{att} ({cmp_pct}%), {pass_yds} yards, {ypa} yards per att, {pass_td} TD, {int} INT, {long} long, {sack} sacks, {rating} rating, {qbr} QBR\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long'
+                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                            await ctx.send(embed=embed)
+                                        elif existing_player["position"] == "RB":
+                                            rush_att = game_data_split[4].split("</td>")[0]
+                                            rush_yds = game_data_split[5].split("</td>")[0]
+                                            rush_avg = game_data_split[6].split("</td>")[0]
+                                            rush_td = game_data_split[7].split("</td>")[0]
+                                            rush_long = game_data_split[8].split("</td>")[0]
+                                            rec = game_data_split[9].split("</td>")[0]
+                                            tgts = game_data_split[10].split("</td>")[0]
+                                            rec_yds = game_data_split[11].split("</td>")[0]
+                                            rec_avg = game_data_split[12].split("</td>")[0]
+                                            rec_td = game_data_split[13].split("</td>")[0]
+                                            rec_long = game_data_split[14].split("</td>")[0]
+                                            fum = game_data_split[15].split("</td>")[0]
+                                            lost_fum = game_data_split[16].split("</td>")[0]
+                                            game_data_string = f'{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{fum} fum, {lost_fum} lost'
+                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                            await ctx.send(embed=embed)
+                                        elif existing_player["position"] == "WR" or existing_player["position"] == "TE":
+                                            rec = game_data_split[4].split("</td>")[0]
+                                            tgts = game_data_split[5].split("</td>")[0]
+                                            rec_yds = game_data_split[6].split("</td>")[0]
+                                            rec_avg = game_data_split[7].split("</td>")[0]
+                                            rec_td = game_data_split[8].split("</td>")[0]
+                                            rec_long = game_data_split[9].split("</td>")[0]
+                                            rush_att = game_data_split[10].split("</td>")[0]
+                                            rush_yds = game_data_split[11].split("</td>")[0]
+                                            rush_avg = game_data_split[12].split("</td>")[0]
+                                            rush_long = game_data_split[13].split("</td>")[0]
+                                            rush_td = game_data_split[14].split("</td>")[0]
+                                            fum = game_data_split[15].split("</td>")[0]
+                                            lost_fum = game_data_split[16].split("</td>")[0]
+                                            game_data_string = f'{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{fum} fum, {lost_fum} lost'
+                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                            await ctx.send(embed=embed)
+                                        elif existing_player["position"] == "K":
+                                            long = game_data_split[9].split("</td>")[0]
+                                            fg_pct = game_data_split[10].split("</td>")[0]
+                                            fg = game_data_split[11].split("</td>")[0]
+                                            avg = game_data_split[12].split("</td>")[0]
+                                            xp = game_data_split[13].split("</td>")[0]
+                                            pts = game_data_split[14].split("</td>")[0]
+                                            game_data_string = f'{fg} FG, ({fg_pct}%), {avg} avg, {long} long, {xp} XP, {pts} points'
+                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and date.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for {args[4]}/{args[3]}', game_data_string, False, ctx)
+                                            await ctx.send(embed=embed)
+                                            pass
+                                        else:
+                                            await ctx.send('Game stats unavailable for this position, please try again!')
+                                else:
+                                    await ctx.send('Game stats unavailable for this player, please try again!')
+                            else:
+                                await ctx.send('No players are found with these parameters, please try again!')
                         else:
-                            await ctx.send('No players are found with these parameters, please try again!')
+                            await ctx.send('Invalid date format, please use mm/dd.')    
                     else:
                         await ctx.send('You do not have access to this command, it is reserved for patrons only!')  
                 else:
