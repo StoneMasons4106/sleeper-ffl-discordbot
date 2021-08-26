@@ -5,6 +5,7 @@ import os
 import pymongo
 import pendulum
 import requests
+import re
 if os.path.exists("env.py"):
     import env
 
@@ -43,7 +44,8 @@ def get_existing_league(ctx):
 
 def get_existing_player(args):
     existing_player = MONGO.players.find_one(
-                {"name": f'{args[0]} {args[1]}', "team": args[2]})
+                {"name": re.compile(f'{args[0]} {args[1]}', re.IGNORECASE), "team": re.compile(args[2], re.IGNORECASE)})
+    print(existing_player)
     MONGO_CONN.close()
     return existing_player
 
