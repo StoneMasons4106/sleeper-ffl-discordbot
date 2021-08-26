@@ -45,7 +45,6 @@ def get_existing_league(ctx):
 def get_existing_player(args):
     existing_player = MONGO.players.find_one(
                 {"name": re.compile(f'{args[0]} {args[1]}', re.IGNORECASE), "team": re.compile(args[2], re.IGNORECASE)})
-    print(existing_player)
     MONGO_CONN.close()
     return existing_player
 
