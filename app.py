@@ -1057,7 +1057,7 @@ class Patron(commands.Cog, name='Patron'):
                                     rush_td = game_data_split[18].split("</td>")[0]
                                     rush_long = game_data_split[19].split("</td>")[0]
                                     game_data_string = f'{cmp}/{att} ({cmp_pct}%), {pass_yds} yards, {ypa} yards per att, {pass_td} TD, {intercept} INT, {long} long, {sack} sacks, {rating} rating, {qbr} QBR\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long'
-                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the most current game.', game_data_string, False, ctx)
+                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the last game', game_data_string, False, ctx)
                                     await ctx.send(embed=embed)
                                 elif existing_player["position"] == "RB":
                                     rush_att = game_data_split[4].split("</td>")[0]
@@ -1074,7 +1074,7 @@ class Patron(commands.Cog, name='Patron'):
                                     fum = game_data_split[15].split("</td>")[0]
                                     lost_fum = game_data_split[16].split("</td>")[0]
                                     game_data_string = f'{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{fum} fum, {lost_fum} lost'
-                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the most current game.', game_data_string, False, ctx)
+                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the last game', game_data_string, False, ctx)
                                     await ctx.send(embed=embed)
                                 elif existing_player["position"] == "WR" or existing_player["position"] == "TE":
                                     rec = game_data_split[4].split("</td>")[0]
@@ -1091,7 +1091,7 @@ class Patron(commands.Cog, name='Patron'):
                                     fum = game_data_split[15].split("</td>")[0]
                                     lost_fum = game_data_split[16].split("</td>")[0]
                                     game_data_string = f'{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{fum} fum, {lost_fum} lost'
-                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the most current game.', game_data_string, False, ctx)
+                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the last game', game_data_string, False, ctx)
                                     await ctx.send(embed=embed)
                                 elif existing_player["position"] == "K":
                                     long = game_data_split[9].split("</td>")[0]
@@ -1101,7 +1101,7 @@ class Patron(commands.Cog, name='Patron'):
                                     xp = game_data_split[13].split("</td>")[0]
                                     pts = game_data_split[14].split("</td>")[0]
                                     game_data_string = f'{fg} FG, ({fg_pct}%), {avg} avg, {long} long, {xp} XP, {pts} points'
-                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the most current game.', game_data_string, False, ctx)
+                                    embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for the last game', game_data_string, False, ctx)
                                     await ctx.send(embed=embed)
                                     pass
                                 else:
