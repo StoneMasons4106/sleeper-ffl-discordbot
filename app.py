@@ -870,9 +870,20 @@ class Patron(commands.Cog, name='Patron'):
                                     row_split_two = row_split[1].split(" ")
                                     row_split_three = row_split_two[1].split("</td>")
                                     current_week = row_split_three[0].split("/")
-                                    week_current = pendulum.datetime(int(args[3]), int(current_week[0]), int(current_week[1]))
+                                    if current_week[0] == "1" or current_week[0] == "2":
+                                        year = int(args[3]) + 1
+                                        week_current = pendulum.datetime(year, int(current_week[0]), int(current_week[1]))
+                                    else:
+                                        week_current = pendulum.datetime(int(args[3]), int(current_week[0]), int(current_week[1]))
                                     week_num = week_current.diff(week_one).in_weeks() + 1
-                                    if str(week_num) == str(args[4]):
+                                    if row_split_two[0] == "Sat" or row_split_two[0] == "Thu" or row_split_two == "Fri":
+                                        week_num = week_num + 1
+                                        if str(week_num) == str(args[4]):
+                                            game_data = game
+                                            break
+                                        else:
+                                            continue
+                                    elif str(week_num) == str(args[4]):
                                         game_data = game
                                         break
                                     else:
