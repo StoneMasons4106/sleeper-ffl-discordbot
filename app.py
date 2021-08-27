@@ -13,7 +13,7 @@ import functions
 import scheduled_jobs
 import requests
 import pendulum
-from sleeper_bot_commands import league
+from sleeper_bot_commands import league, setup
 from bs4 import BeautifulSoup as bs4
 if os.path.exists("env.py"):
     import env
@@ -96,161 +96,40 @@ class Setup(commands.Cog, name='Setup'):
     def __init__(self, bot):
         self.bot = bot
 
+
     ### Set Custom Prefix
 
     @commands.command(name='set-prefix')
     async def set_prefix(self, ctx, prefix: str):
-        if ctx.author.guild_permissions.administrator:
-            existing_prefix = MONGO.prefixes.find_one(
-                    {"server": str(ctx.message.guild.id)})
-            if existing_prefix:
-                newvalue = {"$set": {"prefix": prefix}}
-                MONGO.prefixes.update_one(existing_prefix, newvalue)
-                MONGO_CONN.close()
-                embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
-                await ctx.send(embed=embed)
-            else:
-                server_prefix_object = {
-                    "server": str(ctx.message.guild.id),
-                    "prefix": prefix
-                }
-                MONGO.prefixes.insert_one(server_prefix_object)
-                MONGO_CONN.close()
-                embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
-                await ctx.send(embed=embed)
-        else:
-            embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'You do not have access to this command, request failed.', False, ctx)
-            await ctx.send(embed=embed)
+        message = setup.set_prefix(ctx, prefix)
+        await ctx.send(embed=message)
 
 
     ### Set Channel to Send Timed Messages in
 
     @commands.command(name='set-channel')
     async def set_channel(self, ctx, channel_id: str):
-        if ctx.author.guild_permissions.administrator:
-            if channel_id.isnumeric():
-                count = 0
-                found = 0
-                for channel in ctx.message.guild.channels:
-                    count = count + 1
-                    if isinstance(channel, discord.channel.TextChannel):
-                        if str(channel.id) == str(channel_id):
-                            found = 1
-                            existing_channel = MONGO.servers.find_one(
-                                    {"server": str(ctx.message.guild.id)})
-                            if existing_channel:
-                                newvalue = {"$set": {"channel": str(channel_id)}}
-                                MONGO.servers.update_one(existing_channel, newvalue)
-                                MONGO_CONN.close()
-                                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
-                                await ctx.send(embed=embed)
-                                break
-                            else:
-                                server_channel_object = {
-                                    "server": str(ctx.message.guild.id),
-                                    "channel": channel_id
-                                }
-                                MONGO.servers.insert_one(server_channel_object)
-                                MONGO_CONN.close()
-                                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Successfully updated your channel to '+str(channel_id)+'!', False, ctx)
-                                await ctx.send(embed=embed)
-                                break
-                        elif count == len(ctx.message.guild.channels):
-                            if found == 0:
-                                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Invalid channel ID. Try right clicking the Discord channel and hitting Copy ID.', False, ctx)
-                                await ctx.send(embed=embed)
-                            else:
-                                pass
-                        else:
-                            continue
-                    elif count == len(ctx.message.guild.channels):
-                        embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Invalid channel ID. Try right clicking the Discord channel and hitting Copy ID.', False, ctx)
-                        await ctx.send(embed=embed)
-                    else:
-                        continue
-            else:
-                embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'Invalid channel ID. Try right clicking the Discord channel and hitting Copy ID.', False, ctx)
-                await ctx.send(embed=embed)
-        else:
-            embed = functions.my_embed('Channel Connection Status', 'Result of Channel Connection request', discord.Colour.blue(), 'Channel', 'You do not have access to this command, request failed.', False, ctx)
-            await ctx.send(embed=embed)
+        message = setup.set_channel(ctx, channel_id)
+        await ctx.send(embed=message)
 
 
     ### Set League ID in MongoDB
 
     @commands.command(name='add-league')
     async def add_league(self, ctx, league_id: str):
-        if ctx.author.guild_permissions.administrator:
-            if league_id.isnumeric():
-                league = sleeper_wrapper.League(int(league_id)).get_league()
-                if hasattr(league, 'response'):
-                    embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Invalid league ID. Try finding the ID using your league URL like so: https://sleeper.app/leagues/league_id', False, ctx)
-                    await ctx.send(embed=embed)  
-                else:
-                    existing_league = functions.get_existing_league(ctx)
-                    if existing_league:
-                        newvalue = {"$set": {"league": league_id}}
-                        MONGO.servers.update_one(existing_league, newvalue)
-                        MONGO_CONN.close()
-                        embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
-                        await ctx.send(embed=embed) 
-                    else:
-                        server_league_object = {
-                            "server": str(ctx.message.guild.id),
-                            "league": league_id
-                        }
-                        MONGO.servers.insert_one(server_league_object)
-                        MONGO_CONN.close()
-                        embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, ctx)
-                        await ctx.send(embed=embed)
-            else:
-                embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Invalid league ID. Try finding the ID using your league URL like so: https://sleeper.app/leagues/league_id', False, ctx)
-                await ctx.send(embed=embed)    
-        else:
-            embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'You do not have access to this command, request failed.', False, ctx)
-            await ctx.send(embed=embed)
+        message = setup.add_league(ctx, league_id)
+        await ctx.send(embed=message)
 
 
     ### Set Score Type in MongoDB
 
     @commands.command(name='set-score-type')
     async def set_score_type(self, ctx, score_type: str):
-        if ctx.author.guild_permissions.administrator:
-            if score_type == 'pts_ppr' or score_type == 'pts_half_ppr' or score_type == 'pts_std': 
-                existing_league = functions.get_existing_league(ctx)
-                if existing_league:
-                    if score_type == 'pts_ppr':
-                        score_type_output = 'PPR'
-                    elif score_type == 'pts_half_ppr':
-                        score_type_output = 'Half PPR'
-                    else:
-                       score_type_output = 'Standard' 
-                    newvalue = {"$set": {"score_type": score_type}}
-                    MONGO.servers.update_one(existing_league, newvalue)
-                    MONGO_CONN.close()
-                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type_output}!', False, ctx)
-                    await ctx.send(embed=embed)
-                else:
-                    if score_type == 'pts_ppr':
-                        score_type_output = 'PPR'
-                    elif score_type == 'pts_half_ppr':
-                        score_type_output = 'Half PPR'
-                    else:
-                       score_type_output = 'Standard' 
-                    score_type_object = {
-                        "server": str(ctx.message.guild.id),
-                        "score_type": score_type
-                    }
-                    MONGO.servers.insert_one(score_type_object)
-                    MONGO_CONN.close()
-                    embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', f'Successfully updated your score type to {score_type_output}!', False, ctx)
-                    await ctx.send(embed=embed)
-            else:
-                await ctx.send('Invalid score_type argument. Please use either pts_std, pts_ppr, or pts_half_ppr.')
-        else:
-            embed = functions.my_embed('Sleeper League Score Type', 'Result of attempt to update score type for your League', discord.Colour.blue(), 'Score Type Request Status', 'You do not have access to this command.', False, ctx)
-            await ctx.send(embed=embed)
-
+        message = setup.set_score_type(ctx, score_type)
+        if type(message) is str:
+           await ctx.send(message)
+        else: 
+            await ctx.send(embed=message)
 
 
 ## League Cog
@@ -268,12 +147,14 @@ class League(commands.Cog, name='League'):
         message = league.my_league_members(ctx)
         await ctx.send(embed=message)
     
+
     ### Get League Standings Sorted by Most to Least Wins
 
     @commands.command(name='my-league-standings')
     async def my_league_standings(self, ctx):
         message = league.my_league_standings(self, ctx)
         await ctx.send(embed=message)
+
 
     ### Get Current Week Matchups
 
@@ -284,6 +165,7 @@ class League(commands.Cog, name='League'):
            await ctx.send(message)
         else: 
             await ctx.send(embed=message)
+
 
     ### Get Current Week Scoreboard
 
