@@ -13,7 +13,7 @@ import functions
 import scheduled_jobs
 import requests
 import pendulum
-from sleeper_bot_commands import league, setup, weather
+from sleeper_bot_commands import league, setup, weather, players
 from bs4 import BeautifulSoup as bs4
 if os.path.exists("env.py"):
     import env
@@ -152,7 +152,7 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-standings')
     async def my_league_standings(self, ctx):
-        message = league.my_league_standings(self, ctx)
+        message = league.my_league_standings(ctx)
         await ctx.send(embed=message)
 
 
@@ -160,7 +160,7 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-matchups')
     async def my_league_matchups(self, ctx, week: str):
-        message = league.my_league_matchups(self, ctx, week)
+        message = league.my_league_matchups(ctx, week)
         if type(message) is str:
            await ctx.send(message)
         else: 
@@ -171,7 +171,7 @@ class League(commands.Cog, name='League'):
 
     @commands.command(name='my-league-scoreboard')
     async def my_league_scoreboard(self, ctx, week: str):
-        message = league.my_league_scoreboard(self, ctx, week)
+        message = league.my_league_scoreboard(ctx, week)
         if type(message) is str:
             await ctx.send(message)
         else:
@@ -191,226 +191,44 @@ class Players(commands.Cog, name='Players'):
 
     @commands.command(name='trending-players')
     async def trending_players(self, ctx, add_drop: str):
-        if add_drop == 'add' or add_drop == 'drop':
-            trending_players = sleeper_wrapper.Players().get_trending_players('nfl', add_drop, 24, 10)
-            trending_string = ''
-            count = 0
-            for player in trending_players:
-                count = count + 1
-                player_id = player["player_id"]
-                change = player["count"]
-                db_player = MONGO.players.find_one(
-                    {"id": str(player_id)})
-                MONGO_CONN.close()
-                if db_player["team"]:
-                    team = db_player["team"]
-                else:
-                    team = 'None'
-                if add_drop == 'add':
-                    trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} +{str(change)}\n'
-                else:
-                    trending_string += f'{str(count)}. {db_player["name"]} {db_player["position"]} - {team} -{str(change)}\n'
-            if add_drop == 'add':
-                embed = functions.my_embed('Trending Players', 'Display Current Trending Added Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
-                await ctx.send(embed=embed)
-            else:   
-                embed = functions.my_embed('Trending Players', 'Display Current Trending Dropped Players', discord.Colour.blue(), 'Players', trending_string, False, ctx)
-                await ctx.send(embed=embed)
+        message = players.trending_players(ctx, add_drop)
+        if type(message) is str:
+            await ctx.send(message)
         else:
-            await ctx.send('Invalid add_drop argument. Please use either add or drop to get trending players.')  
+            await ctx.send(embed=message)
 
     
     ### Get Roster of Team in Your League
 
     @commands.command(name='roster')
     async def roster(self, ctx, username: str, roster_portion: str):
-        if roster_portion == 'starters' or roster_portion == 'bench' or roster_portion == 'all':
-            existing_league = functions.get_existing_league(ctx)
-            if existing_league:
-                if "league" in existing_league:
-                    league_id = existing_league["league"]
-                    users = sleeper_wrapper.League(int(league_id)).get_users()
-                    rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                    count = 0
-                    for i in users:
-                        count = count + 1
-                        if i["display_name"] == username:
-                            user = i
-                            break
-                        else:
-                            if count == len(users):
-                                user = False
-                            else:
-                                continue
-                    if user:
-                        for roster in rosters:
-                            if roster["owner_id"] == user["user_id"]:
-                                users_roster = roster
-                                break
-                            else:
-                                continue
-                        if roster_portion == 'starters':
-                            starters_string = ''
-                            res = all(i == '0' for i in users_roster["starters"])
-                            if res == True:
-                                starters_string += 'None\n'
-                            else:
-                                for i in users_roster["starters"]:
-                                    if i == '0':
-                                        starters_string += 'None\n'
-                                    else:
-                                        player = MONGO.players.find_one({'id': i})
-                                        starters_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                            MONGO_CONN.close()
-                            embed = functions.my_embed('Roster', f'Starting Roster for {user["display_name"]}', discord.Colour.blue(), 'Starting Roster', starters_string, False, ctx)
-                            await ctx.send(embed=embed)
-                        if roster_portion == 'all':
-                            players_string = ''
-                            try:
-                                if len(users_roster["players"]) != 0:
-                                    for i in users_roster["players"]:
-                                        if i == '0':
-                                            players_string += 'None\n'
-                                        else:
-                                            player = MONGO.players.find_one({'id': i})
-                                            players_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                                    MONGO_CONN.close()
-                                    embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                                else:
-                                    players_string = 'None'
-                                    embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                            except:
-                                if users_roster["players"] != None:
-                                    for i in users_roster["players"]:
-                                        if i == '0':
-                                            players_string += 'None\n'
-                                        else:
-                                            player = MONGO.players.find_one({'id': i})
-                                            players_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                                    MONGO_CONN.close()
-                                    embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                                else:
-                                    players_string = 'None'
-                                    embed = functions.my_embed('Roster', f'Complete Roster for {user["display_name"]}', discord.Colour.blue(), 'Full Roster', players_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                        if roster_portion == 'bench':
-                            bench_string = ''
-                            try:
-                                if len(users_roster["players"]) != 0:
-                                    bench_roster = list(set(users_roster["players"]).difference(users_roster["starters"]))
-                                    for i in bench_roster:
-                                        if i == '0':
-                                            bench_string += 'None\n'
-                                        else:
-                                            player = MONGO.players.find_one({'id': i})
-                                            bench_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                                    MONGO_CONN.close()
-                                    embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                                else:
-                                    bench_string = 'None'
-                                    embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                            except:
-                                if users_roster["players"] != None:
-                                    bench_roster = list(set(users_roster["players"]).difference(users_roster["starters"]))
-                                    for i in bench_roster:
-                                        if i == '0':
-                                            bench_string += 'None\n'
-                                        else:
-                                            player = MONGO.players.find_one({'id': i})
-                                            bench_string += f'{player["name"]} {player["position"]} - {player["team"]}\n'
-                                    MONGO_CONN.close()
-                                    embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                                else:
-                                    bench_string = 'None'
-                                    embed = functions.my_embed('Roster', f'Bench for {user["display_name"]}', discord.Colour.blue(), 'Bench', bench_string, False, ctx)
-                                    await ctx.send(embed=embed)
-                    else:
-                        await ctx.send('Invalid username. Double check for any typos and try again.')
-                else:
-                    await ctx.send('Please run add-league command, no Sleeper League connected.')
-            else:
-                await ctx.send('Please run add-league command, no Sleeper League connected.')
+        message = players.roster(ctx, username, roster_portion)
+        if type(message) is str:
+            await ctx.send(message)
         else:
-            await ctx.send('Invalid roster_portion argument. Please use starters, bench, or all.')
+            await ctx.send(embed=message)
 
 
     ### Get the Roster, Injury, and Depth Chart Status of a Particular Player
             
     @commands.command(name='status')
     async def status(self, ctx, *args):
-        if len(args) == 3:
-            existing_player = functions.get_existing_player(args)
-            if existing_player:
-                embed = functions.my_embed('Status', f'Roster, Injury, and Depth Chart Status for {args[0]} {args[1]} - {args[2]}', discord.Colour.blue(), 'Roster Status', existing_player["status"], False, ctx)
-                embed.add_field(name='Depth Chart Order', value=existing_player["depth_chart_order"], inline=False)
-                embed.add_field(name='Injury Status', value=existing_player["injury_status"], inline=False)
-                await ctx.send(embed=embed)
-            else:
-                await ctx.send('No player found with those specifications, please try again!')
+        message = players.status(ctx, *args)
+        if type(message) is str:
+            await ctx.send(message)
         else:
-            await ctx.send('Invalid arguments provided. Please use the following format: status <first name> <last name> <team abbreviation in caps>')
+            await ctx.send(embed=message)
 
 
     ### See Who Has a Particular Player
 
     @commands.command(name='who-has')
     async def who_has(self, ctx, *args):
-        if len(args) == 3:
-            existing_player = functions.get_existing_player(args)
-            existing_league = functions.get_existing_league(ctx)
-            if existing_league:
-                if "league" in existing_league:
-                    if existing_player:
-                        league_id = existing_league["league"]
-                        users = sleeper_wrapper.League(int(league_id)).get_users()
-                        rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                        count = 0
-                        found = False
-                        for roster in rosters:
-                            count = count + 1
-                            if roster["players"] != None:
-                                for player in roster["players"]:
-                                    if player == existing_player["id"]:
-                                        for user in users:
-                                            if user["user_id"] == roster["owner_id"]:
-                                                embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', user["display_name"], False, ctx)
-                                                await ctx.send(embed=embed)
-                                                found = True
-                                                break
-                                            else:
-                                                pass
-                                    else:
-                                        pass
-                                if count == len(rosters):
-                                    if found == True:
-                                        pass
-                                    else:
-                                        embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', 'None', False, ctx)
-                                        await ctx.send(embed=embed)
-                                        break
-                                else:
-                                    continue
-                            else:
-                                if count == len(rosters):
-                                    embed = functions.my_embed('Who Has...', f'Command to find who currently has a particular player on their roster.', discord.Colour.blue(), f'Owner of {args[0]} {args[1]}', 'None', False, ctx)
-                                    await ctx.send(embed=embed)
-                                    break
-                                else:
-                                    continue
-                    else:
-                        await ctx.send('No player found with those parameters, please try again!')
-                else:
-                    await ctx.send('Please run add-league command, no Sleeper League connected.')
-            else:
-                await ctx.send('Please run add-league command, no Sleeper League connected.')
+        message = players.who_has(ctx, *args)
+        if type(message) is str:
+            await ctx.send(message)
         else:
-            await ctx.send('Invalid arguments provided. Please use the following format: who-has <first name> <last name> <team abbreviation in caps>')
+            await ctx.send(embed=message)
 
 
 
