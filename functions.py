@@ -74,3 +74,15 @@ def get_current_week():
         future = False
         week = today.diff(starting_week).in_weeks() + 1
     return week, future
+
+
+# Check if a Server Has Patron Status
+
+def is_patron(existing_league):
+    if "patron" in existing_league:
+        if existing_league["patron"] == "1":
+            return True
+        else:
+            return False
+    else:
+        return False

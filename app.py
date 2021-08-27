@@ -5,14 +5,11 @@ from discord.ext import commands
 from discord.utils import find
 import os
 import pymongo
-import sleeper_wrapper
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
 import functions
 import scheduled_jobs
-import requests
-import pendulum
 from sleeper_bot_commands import league, setup, weather, players, help, manage, patron
 from bs4 import BeautifulSoup as bs4
 if os.path.exists("env.py"):
