@@ -158,37 +158,39 @@ async def get_current_scoreboard(bot):
 async def send_waiver_clear(bot):
     week = functions.get_current_week()
     if week[0] <= 18:
-        servers = MONGO.servers.find(
-                    {})
-        MONGO_CONN.close()
-        if servers:
-            for server in servers:
-                if "league" in server and "channel" in server:
-                    if functions.is_patron(server):
-                        league_id = server["league"]
-                        league = sleeper_wrapper.League(int(league_id)).get_league()
-                        waiver_day = league["settings"]["waiver_day_of_week"]
-                        today = pendulum.now()
-                        print(waiver_day, (today.day_of_week - 1))
-                        if waiver_day == (today.day_of_week - 1):
-                            channel = await bot.fetch_channel(int(server["channel"]))
-                            rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                            sorted_rosters = sorted(rosters, key=lambda i: i["settings"]["waiver_position"])
-                            waiver_order_string = ''
-                            count = 0
-                            for roster in sorted_rosters:
-                                count = count + 1
-                                user = sleeper_wrapper.User(roster["owner_id"]).get_user()
-                                waiver_order_string += f'{str(count)}. {user["display_name"]}\n'
-                            embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False)
-                            await channel.send(f'Time to check your waiver claims, looks like they cleared last night! Here is a quick look at the current waiver order after the claims went through:')
-                            await channel.send(embed=embed)
+        if week[1] == False:
+            servers = MONGO.servers.find(
+                        {})
+            MONGO_CONN.close()
+            if servers:
+                for server in servers:
+                    if "league" in server and "channel" in server:
+                        if functions.is_patron(server):
+                            league_id = server["league"]
+                            league = sleeper_wrapper.League(int(league_id)).get_league()
+                            waiver_day = league["settings"]["waiver_day_of_week"]
+                            today = pendulum.now()
+                            if waiver_day == (today.day_of_week - 1):
+                                channel = await bot.fetch_channel(int(server["channel"]))
+                                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                                sorted_rosters = sorted(rosters, key=lambda i: i["settings"]["waiver_position"])
+                                waiver_order_string = ''
+                                count = 0
+                                for roster in sorted_rosters:
+                                    count = count + 1
+                                    user = sleeper_wrapper.User(roster["owner_id"]).get_user()
+                                    waiver_order_string += f'{str(count)}. {user["display_name"]}\n'
+                                embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False)
+                                await channel.send(f'Time to check your waiver claims, looks like they cleared last night! Here is a quick look at the current waiver order after the claims went through:')
+                                await channel.send(embed=embed)
+                            else:
+                                continue
                         else:
                             continue
                     else:
                         continue
-                else:
-                    continue
+            else:
+                pass
         else:
             pass
     else:
