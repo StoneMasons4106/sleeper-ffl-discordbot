@@ -13,7 +13,7 @@ import functions
 import scheduled_jobs
 import requests
 import pendulum
-from sleeper_bot_commands import league, setup, weather, players, help
+from sleeper_bot_commands import league, setup, weather, players, help, manage
 from bs4 import BeautifulSoup as bs4
 if os.path.exists("env.py"):
     import env
@@ -276,11 +276,8 @@ class Manage(commands.Cog, name='Manage'):
     @commands.command(name='kick')
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, user: discord.Member, *, reason=None):
-        if ctx.author.guild_permissions.administrator:
-            await user.kick(reason=reason)
-            await ctx.send(f"{user} has been ousted for being sassy!")
-        else:
-            await ctx.send('You do not have access to this command.')
+        message = await manage.kick(ctx, user, reason=None)
+        await ctx.send(message)
     
 
     ### Ban Command
@@ -288,27 +285,16 @@ class Manage(commands.Cog, name='Manage'):
     @commands.command(name='ban')
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, user: discord.Member, *, reason=None):
-        if ctx.author.guild_permissions.administrator:
-            await user.ban(reason=reason)
-            await ctx.send(f"{user} has been exiled for treason!")
-        else:
-            await ctx.send('You do not have access to this command.')
+        message = await manage.ban(ctx, user, reason=None)
+        await ctx.send(message)
 
 
     ###Unban Command
 
     @commands.command(name='unban')
     async def unban(self, ctx, *, member):
-        if ctx.author.guild_permissions.administrator:
-            banned_users = await ctx.guild.bans()
-            member_name, member_discriminator = member.split('#')
-            for ban_entry in banned_users:
-                user = ban_entry.user
-                if (user.name, user.discriminator) == (member_name, member_discriminator):
-                    await ctx.guild.unban(user)
-                    await ctx.send(f"{user} has been welcomed back! Shower them with gifts!")
-        else:
-            await ctx.send('You do not have access to this command.')
+        message = await manage.unban(ctx, member)
+        await ctx.send(message)
 
 
 
