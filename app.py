@@ -13,7 +13,7 @@ import functions
 import scheduled_jobs
 import requests
 import pendulum
-from sleeper_bot_commands import league, setup
+from sleeper_bot_commands import league, setup, weather
 from bs4 import BeautifulSoup as bs4
 if os.path.exists("env.py"):
     import env
@@ -426,59 +426,22 @@ class Weather(commands.Cog, name='Weather'):
 
     @commands.command(name='forecast')
     async def forecast(self, ctx, *city: str):
-        weather_api_key = os.environ.get("WEATHER_API_KEY")
-        forecast = requests.get(
-            'http://api.weatherapi.com/v1/forecast.json',
-            params= {
-                'key': weather_api_key,
-                'q': city,
-                'days': 3
-            }
-        )
-        if forecast.status_code == 200:
-            forecast_string=''
-            tuple_test = type(city) is tuple
-            if tuple_test:
-                city_string = ''
-                for word in city:
-                    city_string += f'{word} '
-                city = city_string
-            else:
-                pass
-            for day in forecast.json()["forecast"]["forecastday"]:
-                forecast_string += f'{day["date"]}:\nHigh: {day["day"]["maxtemp_f"]} degrees F\nLow: {day["day"]["mintemp_f"]} degrees F\nWind: {day["day"]["maxwind_mph"]} mph\nPrecipitation Amount: {day["day"]["totalprecip_in"]} in.\nHumidity: {day["day"]["avghumidity"]}%\nChance of Rain: {day["day"]["daily_chance_of_rain"]}%\nChance of Snow: {day["day"]["daily_chance_of_snow"]}%\nGeneral Conditions: {day["day"]["condition"]["text"]}\n\n'
-            embed = functions.my_embed('Weather Forecast', f'3 day forecast for {forecast.json()["location"]["name"]}, {forecast.json()["location"]["region"]}', discord.Colour.blue(), f'Forecast for {city}', forecast_string, False, ctx)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send('Invalid city name or zip code, please try again!')
+        message = weather.forecast(ctx, *city)
+        if type(message) is str:
+           await ctx.send(message)
+        else: 
+            await ctx.send(embed=message)
 
 
     ### Get Current Weather
 
     @commands.command(name='current-weather')
     async def current_weather(self, ctx, *city: str):
-        weather_api_key = os.environ.get("WEATHER_API_KEY")
-        current_weather = requests.get(
-            'http://api.weatherapi.com/v1/current.json',
-            params= {
-                'key': weather_api_key,
-                'q': city
-            }
-        )
-        if current_weather.status_code == 200:
-            tuple_test = type(city) is tuple
-            if tuple_test:
-                city_string = ''
-                for word in city:
-                    city_string += f'{word} '
-                city = city_string
-            else:
-                pass
-            current_weather_string = f'Local Time: {current_weather.json()["location"]["localtime"]}\nTemperature: {current_weather.json()["current"]["temp_f"]} degrees F\nFeels like: {current_weather.json()["current"]["feelslike_f"]} degrees F\nCurrent condition: {current_weather.json()["current"]["condition"]["text"]}\nWind: {current_weather.json()["current"]["wind_mph"]} mph\nWind Direction: {current_weather.json()["current"]["wind_dir"]}\nGust Speed: {current_weather.json()["current"]["gust_mph"]} mph\nHumidity: {current_weather.json()["current"]["humidity"]}%\n'
-            embed = functions.my_embed('Current Weather', f'Current weather for {current_weather.json()["location"]["name"]}, {current_weather.json()["location"]["region"]}', discord.Colour.blue(), f'Current Weather for {city}', current_weather_string, False, ctx)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send('Invalid city name or zip code, please try again!')
+        message = weather.current_weather(ctx, *city)
+        if type(message) is str:
+           await ctx.send(message)
+        else: 
+            await ctx.send(embed=message)
 
 
 
