@@ -1133,9 +1133,11 @@ class Patron(commands.Cog, name='Patron'):
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                         sorted_rosters = sorted(rosters, key=lambda i: i["settings"]["waiver_position"])
                         waiver_order_string = ''
+                        count = 0
                         for roster in sorted_rosters:
+                            count = count + 1
                             user = sleeper_wrapper.User(roster["owner_id"]).get_user()
-                            waiver_order_string += f'{roster["settings"]["waiver_position"]}. {user["display_name"]}\n'
+                            waiver_order_string += f'{str(count)}. {user["display_name"]}\n'
                         embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False, ctx)
                         await ctx.send(embed=embed)
                     else:
