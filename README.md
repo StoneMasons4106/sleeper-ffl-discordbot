@@ -37,6 +37,9 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
     * Thursdays at 15:00 EST
 * Current Scoreboard
     * Tuesdays at 12:00 EST
+* Waiver Clearing Notifications
+    * Tuesdays, Wednesdays, or Thursdays at 11:00 EST, depending on league settings
+    * Only patrons will get this message
 
 
 ## Setup

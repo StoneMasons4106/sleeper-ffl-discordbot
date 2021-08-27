@@ -9,7 +9,7 @@ if os.path.exists("env.py"):
 
 
 
-def my_league_members(ctx):
+def my_league(ctx):
     existing_league = functions.get_existing_league(ctx)
     if existing_league:
         if "league" in existing_league:

@@ -48,9 +48,21 @@ async def on_ready():
     trigger_three = OrTrigger([
         CronTrigger(day_of_week='tue', hour=12)
     ])
+    trigger_four = OrTrigger([
+        CronTrigger(day_of_week='tue', hour=11)
+    ])
+    trigger_five = OrTrigger([
+        CronTrigger(day_of_week='wed', hour=11)
+    ])
+    trigger_six = OrTrigger([
+        CronTrigger(day_of_week='thu', hour=11)
+    ])
     scheduler.add_job(scheduled_jobs.get_current_matchups, trigger_one, [bot], misfire_grace_time=None)
     scheduler.add_job(scheduled_jobs.refresh_players, trigger_two, misfire_grace_time=None)
     scheduler.add_job(scheduled_jobs.get_current_scoreboard, trigger_three, [bot], misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.send_waiver_clear, trigger_four, [bot], misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.send_waiver_clear, trigger_five, [bot], misfire_grace_time=None)
+    scheduler.add_job(scheduled_jobs.send_waiver_clear, trigger_six, [bot], misfire_grace_time=None)
     scheduler.start()
 
 
@@ -140,8 +152,8 @@ class League(commands.Cog, name='League'):
     ### Get League Name and Member Info
 
     @commands.command(name='my-league')
-    async def my_league_members(self, ctx):
-        message = league.my_league_members(ctx)
+    async def my_league(self, ctx):
+        message = league.my_league(ctx)
         await ctx.send(embed=message)
     
 
