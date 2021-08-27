@@ -49,6 +49,15 @@ def get_existing_player(args):
     return existing_player
 
 
+# Get All Server Objects from Mongo
+
+def get_all_servers():
+    servers = MONGO.servers.find(
+                        {})
+    MONGO_CONN.close()
+    return servers
+
+
 # Set Embed for Discord Bot Responses
 
 def my_embed(title, description, color, name, value, inline, ctx):
