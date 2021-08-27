@@ -936,7 +936,7 @@ class Patron(commands.Cog, name='Patron'):
                                             rush_td = game_data_split[18].split("</td>")[0]
                                             rush_long = game_data_split[19].split("</td>")[0]
                                             game_data_string = f'{cmp}/{att} ({cmp_pct}%), {pass_yds} yards, {ypa} yards per att, {pass_td} TD, {intercept} INT, {long} long, {sack} sacks, {rating} rating, {qbr} QBR\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long'
-                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for week {args[4]}, {args[3]}', game_data_string, False, ctx)
+                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for Week {args[4]}, {args[3]}', game_data_string, False, ctx)
                                             await ctx.send(embed=embed)
                                         elif existing_player["position"] == "RB":
                                             rush_att = game_data_split[4].split("</td>")[0]
@@ -953,7 +953,7 @@ class Patron(commands.Cog, name='Patron'):
                                             fum = game_data_split[15].split("</td>")[0]
                                             lost_fum = game_data_split[16].split("</td>")[0]
                                             game_data_string = f'{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{fum} fum, {lost_fum} lost'
-                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for week {args[4]}, {args[3]}', game_data_string, False, ctx)
+                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for Week {args[4]}, {args[3]}', game_data_string, False, ctx)
                                             await ctx.send(embed=embed)
                                         elif existing_player["position"] == "WR" or existing_player["position"] == "TE":
                                             rec = game_data_split[4].split("</td>")[0]
@@ -970,7 +970,7 @@ class Patron(commands.Cog, name='Patron'):
                                             fum = game_data_split[15].split("</td>")[0]
                                             lost_fum = game_data_split[16].split("</td>")[0]
                                             game_data_string = f'{rec} rec, {tgts} targets, {rec_yds} yards, {rec_avg} per catch, {rec_td} TD, {rec_long} long\n\n{rush_att} rush att, {rush_yds} rush yards, {rush_avg} per carry, {rush_td} TD, {rush_long} long\n\n{fum} fum, {lost_fum} lost'
-                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for week {args[4]}, {args[3]}', game_data_string, False, ctx)
+                                            embed = functions.my_embed('Game Stats', f'Returns the game stats for a player for the specified year and week.', discord.Colour.blue(), f'Game Stats for {args[0]} {args[1]} for Week {args[4]}, {args[3]}', game_data_string, False, ctx)
                                             await ctx.send(embed=embed)
                                         elif existing_player["position"] == "K":
                                             long = game_data_split[9].split("</td>")[0]
@@ -1120,6 +1120,34 @@ class Patron(commands.Cog, name='Patron'):
             await ctx.send('Invalid arguments. Please use the format [prefix]game-stats [first name] [last name] [team abbreviation] [year] [date in mm/dd format], or [prefix]game-stats [first name] [last name] [team abbreviation].')
 
 
+    ### Waiver Order Command
+
+    @commands.command(name='waiver-order')
+    async def starter_fantasy_points(self, ctx):
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            if "patron" in existing_league:
+                if existing_league["patron"] == "1":
+                    if "league" in existing_league:
+                        league_id = existing_league["league"]
+                        rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                        sorted_rosters = sorted(rosters, key=lambda i: i["settings"]["waiver_position"])
+                        waiver_order_string = ''
+                        for roster in sorted_rosters:
+                            user = sleeper_wrapper.User(roster["owner_id"]).get_user()
+                            waiver_order_string += f'{roster["settings"]["waiver_position"]}. {user["display_name"]}\n'
+                        embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False, ctx)
+                        await ctx.send(embed=embed)
+                    else:
+                        await ctx.send('Please run add-league command, no Sleeper League connected.')
+                else:
+                    await ctx.send('You do not have access to this command, it is reserved for patrons only!')
+            else:
+                await ctx.send('You do not have access to this command, it is reserved for patrons only!')    
+        else:
+            await ctx.send('Please run add-league command, no Sleeper League connected.')
+
+
 
 ## Help Cog
 
@@ -1140,14 +1168,14 @@ class Help(commands.Cog, name='Help'):
         embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
         embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
         embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
-        embed.add_field(name='Patron Only', value='starter-fantasy-points, game-stats', inline=False)
+        embed.add_field(name='Patron Only', value='starter-fantasy-points, game-stats, waiver-order', inline=False)
         embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
         if existing_prefix:
             embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)
         else:
             embed.add_field(name='Prefix', value="$", inline=False)
         embed.add_field(name='Helpful Links', value="[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Top.gg](https://top.gg/bot/871087848311382086), [Patreon](https://www.patreon.com/stonemasons)", inline=False)
-        embed.add_field(name='Interested in Becoming a Patron for Enhanced Content?', value='Click the link to Patreon in the Helpful Links section to get started.', inline=False)
+        embed.add_field(name='Interested in Becoming a Patron for Increased Functionality?', value='Click the link to Patreon in the Helpful Links section to get started.', inline=False)
         await ctx.send(embed=embed)
 
     
@@ -1268,6 +1296,14 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="game-stats")
     async def game_stats(self, ctx):
         embed = functions.my_embed('Game Stats', 'Returns game stats for the specified player for the specified year and week. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [current team abbreviation] [year] [week], use <prefix>game-stats [first name] [last name] [current team abbreviation] for most current game', False, ctx)
+        await ctx.send(embed=embed)
+
+    
+    ### Waiver Order Help
+
+    @help.command(name="waiver-order")
+    async def waiver_order(self, ctx):
+        embed = functions.my_embed('Waiver Order', 'Returns your current waiver order. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>waiver-order', False, ctx)
         await ctx.send(embed=embed)
 
 
