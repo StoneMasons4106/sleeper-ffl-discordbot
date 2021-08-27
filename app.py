@@ -285,7 +285,7 @@ class Manage(commands.Cog, name='Manage'):
     @commands.command(name='ban')
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, user: discord.Member, *, reason=None):
-        message = await manage.ban(ctx, user, reason=None)
+        message = await manage.ban(ctx, user, reason=reason)
         await ctx.send(message)
 
 
