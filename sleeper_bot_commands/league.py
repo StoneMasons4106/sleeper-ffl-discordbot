@@ -40,7 +40,7 @@ def my_league(ctx):
     return embed
 
 
-def my_league_standings(self, ctx):
+def my_league_standings(ctx):
     existing_league = functions.get_existing_league(ctx)
     if existing_league:
         if "league" in existing_league:
@@ -66,7 +66,8 @@ def my_league_standings(self, ctx):
         embed = functions.my_embed('Sleeper League Standings', 'Display Current Standings of Sleeper League', discord.Colour.blue(), 'Standings', 'No league specified, run add-league command to complete setup.', False, ctx)
     return embed
 
-def my_league_matchups(self, ctx, week: str):
+
+def my_league_matchups(ctx, week: str):
     if week.isnumeric():
         if int(week) <= 18 and int(week) >= 1:
             existing_league = functions.get_existing_league(ctx)
@@ -104,7 +105,7 @@ def my_league_matchups(self, ctx, week: str):
     return embed
 
 
-def my_league_scoreboard(self, ctx, week: str):
+def my_league_scoreboard(ctx, week: str):
     if week.isnumeric():
         if int(week) <= 18 and int(week) >= 1:
             existing_league = functions.get_existing_league(ctx)
