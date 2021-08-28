@@ -27,7 +27,9 @@ MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 # Define Bot and Bot Prefix/Remove Default Help
 
-bot = commands.Bot(command_prefix=functions.get_prefix)
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix=functions.get_prefix, intents=intents)
 bot.remove_command("help")
 
 
