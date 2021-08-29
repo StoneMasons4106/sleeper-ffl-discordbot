@@ -99,28 +99,20 @@ def game_stats(ctx, *args):
                         if not games:
                             embed = f'Looks like {args[0]} {args[1]} did not play on the week specified, please try again!'
                         else:
-                            first_game = games[-1]
-                            row_split = str(first_game).split('<td class="Table__TD">')
-                            row_split_two = row_split[1].split(" ")
-                            row_split_three = row_split_two[1].split("</td>")
-                            week_one_date_month = row_split_three[0].split("/")
-                            if row_split_two[0] == "Thu":
-                                day = int(week_one_date_month[1]) + 3
-                                week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
-                            elif row_split_two[0] == "Fri":
-                                day = int(week_one_date_month[1]) + 2
-                                week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
-                            elif row_split_two[0] == "Sat":
-                                day = int(week_one_date_month[1]) + 1
-                                week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
-                            elif row_split_two[0] == "Mon":
-                                day = int(week_one_date_month[1]) - 1
-                                week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
-                            elif row_split_two[0] == "Tue":
-                                day = int(week_one_date_month[1]) - 2
-                                week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), day)
-                            else:
-                                week_one = pendulum.datetime(int(args[3]), int(week_one_date_month[0]), int(week_one_date_month[1]))
+                            res2 = res = requests.get(
+                                f'https://www.espn.com/nfl/schedule/_/year/{args[3]}'
+                            )
+                            soup2 = bs4(res2.text, 'html.parser')
+                            search_data = soup2.find_all('h2', class_="table-caption")
+                            for h2 in search_data:
+                                h2_split = str(h2).split('<h2 class="table-caption">')
+                                h2_split_two = h2_split[1].split("</h2>")
+                                h2_split_three = h2_split_two[0].split(", ")
+                                if h2_split_three[0] == "Sunday":
+                                    h2_split_four = h2_split_three[1].split(" ")
+                                    week_one = pendulum.datetime(int(args[3]), 9, int(h2_split_four[1]))
+                                else:
+                                    continue
                             for game in games:
                                 row_split = str(game).split('<td class="Table__TD">')
                                 row_split_two = row_split[1].split(" ")
