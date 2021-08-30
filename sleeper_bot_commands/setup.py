@@ -20,16 +20,23 @@ def set_prefix(ctx, prefix: str):
         existing_prefix = MONGO.prefixes.find_one(
                 {"server": str(ctx.message.guild.id)})
         if existing_prefix:
-            newvalue = {"$set": {"prefix": prefix}}
-            MONGO.prefixes.update_one(existing_prefix, newvalue)
+            if prefix == "$":
+                MONGO.prefixes.delete_one(
+                  {"server": str(ctx.message.guild.id)})
+            else:
+                newvalue = {"$set": {"prefix": prefix}}
+                MONGO.prefixes.update_one(existing_prefix, newvalue)
             MONGO_CONN.close()
             embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
         else:
-            server_prefix_object = {
-                "server": str(ctx.message.guild.id),
-                "prefix": prefix
-            }
-            MONGO.prefixes.insert_one(server_prefix_object)
+            if prefix == "$":
+                pass
+            else:
+                server_prefix_object = {
+                    "server": str(ctx.message.guild.id),
+                    "prefix": prefix
+                }
+                MONGO.prefixes.insert_one(server_prefix_object)
             MONGO_CONN.close()
             embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
     else:
