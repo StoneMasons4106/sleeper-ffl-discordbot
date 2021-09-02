@@ -27,7 +27,7 @@ def set_prefix(ctx, prefix: str):
                 newvalue = {"$set": {"prefix": prefix}}
                 MONGO.prefixes.update_one(existing_prefix, newvalue)
             MONGO_CONN.close()
-            embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
+            embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix, False, ctx)
         else:
             if prefix == "$":
                 pass
@@ -38,7 +38,7 @@ def set_prefix(ctx, prefix: str):
                 }
                 MONGO.prefixes.insert_one(server_prefix_object)
             MONGO_CONN.close()
-            embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix+'!', False, ctx)
+            embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'Successfully updated your prefix to '+prefix, False, ctx)
     else:
         embed = functions.my_embed('Prefix Change Status', 'Result of Prefix change request', discord.Colour.blue(), 'Prefix', 'You do not have access to this command, request failed.', False, ctx)
     return embed
