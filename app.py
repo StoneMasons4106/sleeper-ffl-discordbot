@@ -350,6 +350,17 @@ class Patron(commands.Cog, name='Patron'):
             await ctx.send(embed=message)
 
 
+    ### Transactions Command
+
+    @commands.command(name='transactions')
+    async def transactions(self, ctx, week: int):
+        message = patron.transactions(ctx, week)
+        if type(message) is str:
+           await ctx.send(message)
+        else: 
+            await ctx.send(embed=message)
+
+
 
 ## Help Cog
 
@@ -492,6 +503,14 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="waiver-order")
     async def waiver_order(self, ctx):
         embed = functions.my_embed('Waiver Order', 'Returns your current waiver order. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>waiver-order', False, ctx)
+        await ctx.send(embed=embed)
+
+
+    ### Transactions Help
+
+    @help.command(name="transactions")
+    async def transactions(self, ctx):
+        embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>transactions [week]', False, ctx)
         await ctx.send(embed=embed)
 
 

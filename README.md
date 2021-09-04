@@ -26,7 +26,7 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 * See who has a specific player.
 
-* Access to starter-fantasy-points, and game-stats commands which will be available only to patrons on Patreon meeting the Patron Tier.
+* Access to starter-fantasy-points, game-stats, waiver-order, and transactions commands which will be available only to patrons on Patreon meeting the Patron Tier.
 
 * Scheduled messages to keep your league up to date and notify you of the latest information following the schedule below:
 
