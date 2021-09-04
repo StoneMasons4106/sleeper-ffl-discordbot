@@ -365,81 +365,31 @@ def waiver_order(ctx):
 
 
 def transactions(ctx, week):
-    existing_league = functions.get_existing_league(ctx)
-    if existing_league:
-        if functions.is_patron(existing_league):
-            if "league" in existing_league:
-                league_id = existing_league["league"]
-                users = sleeper_wrapper.League(int(league_id)).get_users()
-                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                transactions = sleeper_wrapper.League(int(league_id)).get_transactions(week)
-                transactions_string = ''
-                count = 0
-                if len(transactions) == 0:
-                    transactions_string = 'None'
-                    embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
-                else:
-                    for transaction in transactions:
-                        count = count + 1
-                        if count == 21:
-                            break
-                        elif transaction["type"] == 'free_agent':
-                            for drop in transaction["drops"]:
-                                existing_player = MONGO.players.find_one({"id": str(drop)})
-                                roster_id = transaction["drops"][drop]
-                                for roster in rosters:
-                                    if roster["roster_id"] == roster_id:
-                                        this_roster = roster
-                                        break
-                                    else:
-                                        continue
-                                for user in users:
-                                    if this_roster["owner_id"] == user["user_id"]:
-                                        username = user["display_name"]
-                                        transactions_string += f'{username} dropped {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n\n'
-                                    else:
-                                        continue
-                                MONGO_CONN.close()
-                        elif transaction["type"] == 'waiver':
-                            for add in transaction["adds"]:
-                                existing_player = MONGO.players.find_one({"id": str(add)})
-                                roster_id = transaction["adds"][add]
-                                for roster in rosters:
-                                    if roster["roster_id"] == roster_id:
-                                        this_roster = roster
-                                        break
-                                    else:
-                                        continue
-                                for user in users:
-                                    if this_roster["owner_id"] == user["user_id"]:
-                                        username = user["display_name"]
-                                        transactions_string += f'{username} added {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n\n'
-                                    else:
-                                        continue
-                                MONGO_CONN.close()
-                        else:
-                            second_transactions_string = 'Trade:\n'
-                            for add in transaction["adds"]:
-                                existing_player = MONGO.players.find_one({"id": str(add)})
-                                roster_id = transaction["adds"][add]
-                                for roster in rosters:
-                                    if roster["roster_id"] == roster_id:
-                                        this_roster = roster
-                                        break
-                                    else:
-                                        continue
-                                for user in users:
-                                    if this_roster["owner_id"] == user["user_id"]:
-                                        username = user["display_name"]
-                                        second_transactions_string += f'{username} received {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n'
-                                        break
-                                    else:
-                                        continue
-                                MONGO_CONN.close()
-                            if len(transaction["draft_picks"]) != 0:
-                                for draft_pick in transaction["draft_picks"]:
+    if week.isnumeric() and int(week) > 0 and int(week) < 19:
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            if functions.is_patron(existing_league):
+                if "league" in existing_league:
+                    league_id = existing_league["league"]
+                    users = sleeper_wrapper.League(int(league_id)).get_users()
+                    rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                    transactions = sleeper_wrapper.League(int(league_id)).get_transactions(int(week))
+                    transactions_string = ''
+                    count = 0
+                    if len(transactions) == 0:
+                        transactions_string = 'None'
+                        embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
+                    else:
+                        for transaction in transactions:
+                            count = count + 1
+                            if count == 21:
+                                break
+                            elif transaction["type"] == 'free_agent':
+                                for drop in transaction["drops"]:
+                                    existing_player = MONGO.players.find_one({"id": str(drop)})
+                                    roster_id = transaction["drops"][drop]
                                     for roster in rosters:
-                                        if roster["roster_id"] == draft_pick["owner_id"]:
+                                        if roster["roster_id"] == roster_id:
                                             this_roster = roster
                                             break
                                         else:
@@ -447,18 +397,71 @@ def transactions(ctx, week):
                                     for user in users:
                                         if this_roster["owner_id"] == user["user_id"]:
                                             username = user["display_name"]
-                                            second_transactions_string += f'{username} received a draft pick in round {draft_pick["round"]} in the {draft_pick["season"]} season\n'
+                                            transactions_string += f'{username} dropped {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n\n'
+                                        else:
+                                            continue
+                                    MONGO_CONN.close()
+                            elif transaction["type"] == 'waiver':
+                                for add in transaction["adds"]:
+                                    existing_player = MONGO.players.find_one({"id": str(add)})
+                                    roster_id = transaction["adds"][add]
+                                    for roster in rosters:
+                                        if roster["roster_id"] == roster_id:
+                                            this_roster = roster
                                             break
                                         else:
-                                            continue 
+                                            continue
+                                    for user in users:
+                                        if this_roster["owner_id"] == user["user_id"]:
+                                            username = user["display_name"]
+                                            transactions_string += f'{username} added {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n\n'
+                                        else:
+                                            continue
+                                    MONGO_CONN.close()
                             else:
-                                pass
-                            transactions_string += f'{second_transactions_string}\n'
-                    embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
+                                second_transactions_string = 'Trade:\n'
+                                for add in transaction["adds"]:
+                                    existing_player = MONGO.players.find_one({"id": str(add)})
+                                    roster_id = transaction["adds"][add]
+                                    for roster in rosters:
+                                        if roster["roster_id"] == roster_id:
+                                            this_roster = roster
+                                            break
+                                        else:
+                                            continue
+                                    for user in users:
+                                        if this_roster["owner_id"] == user["user_id"]:
+                                            username = user["display_name"]
+                                            second_transactions_string += f'{username} received {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n'
+                                            break
+                                        else:
+                                            continue
+                                    MONGO_CONN.close()
+                                if len(transaction["draft_picks"]) != 0:
+                                    for draft_pick in transaction["draft_picks"]:
+                                        for roster in rosters:
+                                            if roster["roster_id"] == draft_pick["owner_id"]:
+                                                this_roster = roster
+                                                break
+                                            else:
+                                                continue
+                                        for user in users:
+                                            if this_roster["owner_id"] == user["user_id"]:
+                                                username = user["display_name"]
+                                                second_transactions_string += f'{username} received a draft pick in round {draft_pick["round"]} in the {draft_pick["season"]} season\n'
+                                                break
+                                            else:
+                                                continue 
+                                else:
+                                    pass
+                                transactions_string += f'{second_transactions_string}\n'
+                        embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
+                else:
+                    embed = 'Please run add-league command, no Sleeper League connected.'    
             else:
-                embed = 'Please run add-league command, no Sleeper League connected.'    
+                embed = 'You do not have access to this command, it is reserved for patrons only!'  
         else:
-            embed = 'You do not have access to this command, it is reserved for patrons only!'  
+            embed = 'Please run add-league command, no Sleeper League connected.'
     else:
-        embed = 'Please run add-league command, no Sleeper League connected.'
+        embed = 'Please use a valid week number between 1 and 18.'
     return embed

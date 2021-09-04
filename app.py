@@ -353,7 +353,7 @@ class Patron(commands.Cog, name='Patron'):
     ### Transactions Command
 
     @commands.command(name='transactions')
-    async def transactions(self, ctx, week: int):
+    async def transactions(self, ctx, week: str):
         message = patron.transactions(ctx, week)
         if type(message) is str:
            await ctx.send(message)
