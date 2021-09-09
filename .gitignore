@@ -2,3 +2,8 @@ env.py
 __pycache__/
 sleeper_responses/*
 espn_responses/*
+.env
+app.js
+node_modules
+package-lock.json
+package.json

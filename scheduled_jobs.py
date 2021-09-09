@@ -72,24 +72,27 @@ async def get_current_matchups(bot):
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                         matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
                         if matchups:
-                            channel = await bot.fetch_channel(int(server["channel"]))
-                            sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
-                            matchups_string = ''
-                            count = 0
-                            matchup_count = 1
-                            for matchup in sorted_matchups:
-                                count = count + 1
-                                roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                                user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                                if (count % 2) == 0:
-                                    matchup_count = matchup_count + 1
-                                    matchups_string += f'{user["display_name"]}\n'
-                                else:
-                                    matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
-                            embed = discord.Embed(title='Current Week Matchups', description=f'Matchups for Week {str(week[0])}', color=discord.Colour.blue())
-                            embed.add_field(name='Matchups', value=matchups_string, inline=False)
-                            await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week[0])} in our league:')
-                            await channel.send(embed=embed)
+                            try:
+                                channel = await bot.fetch_channel(int(server["channel"]))
+                                sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                                matchups_string = ''
+                                count = 0
+                                matchup_count = 1
+                                for matchup in sorted_matchups:
+                                    count = count + 1
+                                    roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                    user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                    if (count % 2) == 0:
+                                        matchup_count = matchup_count + 1
+                                        matchups_string += f'{user["display_name"]}\n'
+                                    else:
+                                        matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
+                                embed = discord.Embed(title='Current Week Matchups', description=f'Matchups for Week {str(week[0])}', color=discord.Colour.blue())
+                                embed.add_field(name='Matchups', value=matchups_string, inline=False)
+                                await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week[0])} in our league:')
+                                await channel.send(embed=embed)
+                            except:
+                                pass
                         else:
                             pass
                     else:
@@ -118,24 +121,27 @@ async def get_current_scoreboard(bot):
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                         matchups = sleeper_wrapper.League(int(league_id)).get_matchups(week[0])
                         if matchups:
-                            channel = await bot.fetch_channel(int(server["channel"]))
-                            sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
-                            scoreboard_string = ''
-                            count = 0
-                            matchup_count = 1
-                            for matchup in sorted_matchups:
-                                count = count + 1
-                                roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                                user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                                if (count % 2) == 0:
-                                    matchup_count = matchup_count + 1
-                                    scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
-                                else:
-                                    scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
-                            embed = discord.Embed(title='Current Week Scoreboard', description=f'Scoreboard for Week {str(week[0])}', color=discord.Colour.blue())
-                            embed.add_field(name='Scoreboard', value=scoreboard_string, inline=False)
-                            await channel.send(f'Another week in the books! Here is the scoreboard for week {str(week[0])} in our league:')
-                            await channel.send(embed=embed)
+                            try:
+                                channel = await bot.fetch_channel(int(server["channel"]))
+                                sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                                scoreboard_string = ''
+                                count = 0
+                                matchup_count = 1
+                                for matchup in sorted_matchups:
+                                    count = count + 1
+                                    roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                    user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                    if (count % 2) == 0:
+                                        matchup_count = matchup_count + 1
+                                        scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                                    else:
+                                        scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
+                                embed = discord.Embed(title='Current Week Scoreboard', description=f'Scoreboard for Week {str(week[0])}', color=discord.Colour.blue())
+                                embed.add_field(name='Scoreboard', value=scoreboard_string, inline=False)
+                                await channel.send(f'Another week in the books! Here is the scoreboard for week {str(week[0])} in our league:')
+                                await channel.send(embed=embed)
+                            except:
+                                pass
                         else:
                             pass
                     else:
@@ -165,18 +171,21 @@ async def send_waiver_clear(bot):
                             waiver_day = league["settings"]["waiver_day_of_week"]
                             today = pendulum.now()
                             if waiver_day == (today.day_of_week - 1):
-                                channel = await bot.fetch_channel(int(server["channel"]))
-                                rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                                sorted_rosters = sorted(rosters, key=lambda i: i["settings"]["waiver_position"])
-                                waiver_order_string = ''
-                                count = 0
-                                for roster in sorted_rosters:
-                                    count = count + 1
-                                    user = sleeper_wrapper.User(roster["owner_id"]).get_user()
-                                    waiver_order_string += f'{str(count)}. {user["display_name"]}\n'
-                                embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False)
-                                await channel.send(f'Time to check your waiver claims, looks like they cleared last night! Here is a quick look at the current waiver order after the claims went through:')
-                                await channel.send(embed=embed)
+                                try:
+                                    channel = await bot.fetch_channel(int(server["channel"]))
+                                    rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
+                                    sorted_rosters = sorted(rosters, key=lambda i: i["settings"]["waiver_position"])
+                                    waiver_order_string = ''
+                                    count = 0
+                                    for roster in sorted_rosters:
+                                        count = count + 1
+                                        user = sleeper_wrapper.User(roster["owner_id"]).get_user()
+                                        waiver_order_string += f'{str(count)}. {user["display_name"]}\n'
+                                    embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False)
+                                    await channel.send(f'Time to check your waiver claims, looks like they cleared last night! Here is a quick look at the current waiver order after the claims went through:')
+                                    await channel.send(embed=embed)
+                                except:
+                                    pass
                             else:
                                 continue
                         else:
