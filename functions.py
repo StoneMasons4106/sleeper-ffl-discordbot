@@ -63,7 +63,7 @@ def get_all_servers():
 def my_embed(title, description, color, name, value, inline, ctx):
     embed = discord.Embed(title=title, description=description, color=color)
     embed.add_field(name=name, value=value, inline=inline)
-    embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar)
+    embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url)
     return embed
 
 
