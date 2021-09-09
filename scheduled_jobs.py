@@ -63,7 +63,7 @@ async def get_current_matchups(bot):
     week = functions.get_current_week()
     if week[0] <= 18:
         if week[1] == False:
-            servers = functions.get_all_servers()
+            servers = functions.get_all_servers().sort("patron", -1)
             if servers:
                 for server in servers:
                     if "league" in server and "channel" in server:
@@ -112,7 +112,7 @@ async def get_current_scoreboard(bot):
     week = functions.get_current_week()
     if week[0] <= 18:
         if week[1] == False:
-            servers = functions.get_all_servers()
+            servers = functions.get_all_servers().sort("patron", -1)
             if servers:
                 for server in servers:
                     if "league" in server and "channel" in server:
@@ -161,7 +161,7 @@ async def send_waiver_clear(bot):
     week = functions.get_current_week()
     if week[0] <= 18:
         if week[1] == False:
-            servers = functions.get_all_servers()
+            servers = functions.get_all_servers().sort("patron", -1)
             if servers:
                 for server in servers:
                     if "league" in server and "channel" in server:
