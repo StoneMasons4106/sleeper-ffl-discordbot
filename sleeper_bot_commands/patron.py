@@ -1,7 +1,4 @@
-from sleeper_bot_commands.players import roster
 import discord
-from discord.ext import commands
-from discord.utils import find
 import os
 import pymongo
 import sleeper_wrapper
