@@ -2,6 +2,9 @@
 
 This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/SwapnikKatkoori/sleeper-api-wrapper) for providing granular information about one's Sleeper Fantasy Football league, right to Discord. If you wish to donate to the project, here's my [Patreon](https://www.patreon.com/stonemasons).
 
+* IMPORTANT:
+    * Please make sure that the Permissions for Slash Commands are enabled, or recent development of the bot WON'T WORK in your server. If you already have the bot in your server, go to server settings, roles, Sleeper-FFL, and under Permissions, search Application Commands. Allow and save.
+
 
 ## Features
 
@@ -44,7 +47,7 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 ## Setup
 
-Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848311382086&permissions=122340240631&scope=bot) to invite the bot to your Discord server.
+Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848311382086&permissions=122340240631&scope=bot%20applications.commands) to invite the bot to your Discord server.
 
 Default Prefix: $
 
