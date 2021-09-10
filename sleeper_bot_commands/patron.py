@@ -406,11 +406,11 @@ def transactions(ctx, week):
                     count = 0
                     if len(transactions) == 0:
                         transactions_string = 'None'
-                        embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
+                        embed = functions.my_embed('Transactions', 'Returns the last 10 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
                     else:
                         for transaction in transactions:
                             count = count + 1
-                            if count == 16:
+                            if count == 11:
                                 break
                             elif transaction["type"] == 'free_agent':
                                 for drop in transaction["drops"]:
