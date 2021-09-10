@@ -483,7 +483,7 @@ def transactions(ctx, week):
                                 else:
                                     pass
                                 transactions_string += f'{second_transactions_string}\n'
-                        embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
+                        embed = functions.my_embed('Transactions', 'Returns the last 10 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, ctx)
                 else:
                     embed = 'Please run add-league command, no Sleeper League connected.'    
             else:
