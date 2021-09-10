@@ -22,7 +22,7 @@ def help(ctx):
     embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
     embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
     embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
-    embed.add_field(name='Patron Only', value='starter-fantasy-points, game-stats, waiver-order, transactions', inline=False)
+    embed.add_field(name='Patron Only', value='game-stats, waiver-order, transactions', inline=False)
     embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
     if existing_prefix:
         embed.add_field(name='Prefix', value=existing_prefix["prefix"], inline=False)

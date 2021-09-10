@@ -317,17 +317,6 @@ class Patron(commands.Cog, name='Patron'):
         self.bot = bot
 
 
-    ### Starter Fantasy Points Command
-
-    @commands.command(name='starter-fantasy-points')
-    async def starter_fantasy_points(self, ctx, *args):
-        message = patron.starter_fantasy_points(ctx, *args)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
     ### Game Stats Command
 
     @commands.command(name='game-stats')
@@ -479,14 +468,6 @@ class Help(commands.Cog, name='Help'):
     @help.command(name="unban")
     async def unban(self, ctx):
         embed = functions.my_embed('Unban', 'Unbans specified user from Discord server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>unban [username]#[number]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Starter Fantasy Points Help
-
-    @help.command(name="starter-fantasy-points")
-    async def starter_fantasy_points(self, ctx):
-        embed = functions.my_embed('Starter Fantasy Points', 'Returns fantasy points for the specified player for the specified week. Only available for starting players in a specific week due to structure of Sleeper API. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>starter-fantasy-points [first name] [last name] [team abbreviation] [week]', False, ctx)
         await ctx.send(embed=embed)
 
 

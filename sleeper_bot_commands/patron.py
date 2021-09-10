@@ -16,55 +16,6 @@ MONGO_CONN = pymongo.MongoClient(MONGO_URI)
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
-def starter_fantasy_points(ctx, *args):
-    if len(args) == 4:
-        if args[3].isnumeric():
-            if int(args[3]) <= 18 and int(args[3]) >= 1:
-                existing_league = functions.get_existing_league(ctx)
-                if existing_league:
-                    if functions.is_patron(existing_league):
-                        if "league" in existing_league:
-                            league_id = existing_league["league"]
-                            matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(args[3]))
-                            existing_player = functions.get_existing_player(args)
-                            if existing_player:
-                                if matchups:
-                                    fantasy_points = ''
-                                    count = 0
-                                    found = 0
-                                    for matchup in matchups:
-                                        count = count + 1
-                                        starters_points = zip(matchup["starters"], matchup["starters_points"])
-                                        for point in starters_points:
-                                            if point[0] == existing_player["id"]:
-                                                fantasy_points += str(point[1])
-                                                found = 1
-                                                break
-                                            else:
-                                                pass
-                                    if found == 1:
-                                        embed = functions.my_embed('Starter Fantasy Points', f'Returns the points scored by a starting player for a specific week. Only available for players who started during said week.', discord.Colour.blue(), f'Fantasy Points for {args[0]} {args[1]} for Week {args[3]}', fantasy_points, False, ctx)
-                                    else:
-                                        embed = 'No starters were found with this information. Please try again!'
-                                else:
-                                    embed = 'There are no matchups this week, try this command again during the season!'
-                            else:
-                                embed = 'No players are found with these parameters, please try again!'
-                        else:
-                            embed = 'Please run add-league command, no Sleeper League connected.'
-                    else:
-                        embed = 'You do not have access to this command, it is reserved for patrons only!'
-                else:
-                    embed = 'Please run add-league command, no Sleeper League connected.'
-            else:
-                embed = 'Invalid week number given. Choose a valid week between 1 and 18.'
-        else:
-            embed = 'Invalid week number given. Choose a valid week between 1 and 18.'
-    else:
-        embed = 'Invalid arguments. Please use the format [prefix]starter-fantasy-points [first name] [last name] [team abbreviation] [week]'
-    return embed
-
-
 
 def game_stats(ctx, *args):
     if len(args) == 5:
