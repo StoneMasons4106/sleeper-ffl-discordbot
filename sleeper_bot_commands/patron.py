@@ -410,7 +410,7 @@ def transactions(ctx, week):
                     else:
                         for transaction in transactions:
                             count = count + 1
-                            if count == 21:
+                            if count == 16:
                                 break
                             elif transaction["type"] == 'free_agent':
                                 for drop in transaction["drops"]:

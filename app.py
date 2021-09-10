@@ -491,7 +491,7 @@ class Help(commands.Cog, name='Help'):
 
     @help.command(name="transactions")
     async def transactions(self, ctx):
-        embed = functions.my_embed('Transactions', 'Returns the last 20 transactions for any specified week. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>transactions [week]', False, ctx)
+        embed = functions.my_embed('Transactions', 'Returns the last 15 transactions for any specified week. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>transactions [week]', False, ctx)
         await ctx.send(embed=embed)
 
 
