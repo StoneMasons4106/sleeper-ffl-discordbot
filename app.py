@@ -10,7 +10,7 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
 import functions
 import scheduled_jobs
-from sleeper_bot_commands import league, setup, weather, players, help, manage, patron
+from sleeper_bot_commands import league, setup, weather, players, help, manage, patron, user
 from bs4 import BeautifulSoup as bs4
 if os.path.exists("env.py"):
     import env
@@ -274,6 +274,26 @@ class Weather(commands.Cog, name='Weather'):
 
 
 
+## User Cog
+
+class User(commands.Cog, name='User'):
+
+    def __init__(self, bot):
+        self.bot = bot
+
+    
+    ### Get Specified User Info
+
+    @commands.command(name='user-info')
+    async def user_info(self, ctx, display_name: str):
+        message = user.user_info(ctx, display_name)
+        if type(message) is str:
+           await ctx.send(message)
+        else: 
+            await ctx.send(embed=message)
+
+
+
 ## Manage Cog
 
 class Manage(commands.Cog, name='Manage'):
@@ -447,6 +467,14 @@ class Help(commands.Cog, name='Help'):
         await ctx.send(embed=embed)
 
 
+     ### User Info Help
+
+    @help.command(name="user-info")
+    async def user_info(self, ctx):
+        embed = functions.my_embed('User Info', 'Returns information for the specified user in your league.', discord.Colour.blue(), '**Syntax**', '<prefix>user-info [display name]', False, ctx)
+        await ctx.send(embed=embed)
+
+
     ### Kick Help
 
     @help.command(name="kick")
@@ -534,6 +562,7 @@ bot.add_cog(Setup(bot))
 bot.add_cog(League(bot))
 bot.add_cog(Players(bot))
 bot.add_cog(Weather(bot))
+bot.add_cog(User(bot))
 bot.add_cog(Manage(bot))
 bot.add_cog(Patron(bot))
 bot.add_cog(Help(bot))

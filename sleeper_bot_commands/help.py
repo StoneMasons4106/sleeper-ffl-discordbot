@@ -22,6 +22,7 @@ def help(ctx):
     embed.add_field(name='League', value='my-league, my-league-matchups, my-league-scoreboard, my-league-standings', inline=False)
     embed.add_field(name='Players', value='trending-players, roster, status, who-has', inline=False)
     embed.add_field(name='Weather', value='forecast, current-weather', inline=False)
+    embed.add_field(name='User', value='user-info', inline=False)
     embed.add_field(name='Manage', value='kick, ban, unban', inline=False)
     embed.add_field(name='Patron Only', value='game-stats, waiver-order, transactions', inline=False)
     embed.add_field(name='Setup', value='set-channel, add-league, set-score-type, set-prefix', inline=False)
