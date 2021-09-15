@@ -181,7 +181,7 @@ async def send_waiver_clear(bot):
                                         count = count + 1
                                         user = sleeper_wrapper.User(roster["owner_id"]).get_user()
                                         waiver_order_string += f'{str(count)}. {user["display_name"]}\n'
-                                    embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False)
+                                    embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False, bot)
                                     await channel.send(f'Time to check your waiver claims, looks like they cleared last night! Here is a quick look at the current waiver order after the claims went through:')
                                     await channel.send(embed=embed)
                                 except:

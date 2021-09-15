@@ -18,33 +18,20 @@ MONGO_CONN = pymongo.MongoClient(MONGO_URI)
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
-# Get Custom Prefixes
-
-def get_prefix(bot, message):
-    existing_prefix = MONGO.prefixes.find_one(
-                {"server": str(message.guild.id)})
-    MONGO_CONN.close()
-    if existing_prefix:
-        my_prefix = existing_prefix["prefix"]
-    else:
-        my_prefix = '$'
-    return my_prefix
-
-
 # Get Existing Server League Object from Mongo
 
-def get_existing_league(ctx):
+def get_existing_league(message):
     existing_league = MONGO.servers.find_one(
-                {"server": str(ctx.message.guild.id)})
+                {"server": str(message.guild.id)})
     MONGO_CONN.close()
     return existing_league
 
 
 # Get Existing Player Object from Mongo
 
-def get_existing_player(args):
+def get_existing_player(first_name, last_name, team_abbreviation):
     existing_player = MONGO.players.find_one(
-                {"name": re.compile(f'{args[0]} {args[1]}', re.IGNORECASE), "team": re.compile(args[2], re.IGNORECASE)})
+                {"name": re.compile(f'{first_name} {last_name}', re.IGNORECASE), "team": re.compile(team_abbreviation, re.IGNORECASE)})
     MONGO_CONN.close()
     return existing_player
 
@@ -60,10 +47,10 @@ def get_all_servers():
 
 # Set Embed for Discord Bot Responses
 
-def my_embed(title, description, color, name, value, inline, ctx):
+def my_embed(title, description, color, name, value, inline, bot):
     embed = discord.Embed(title=title, description=description, color=color)
     embed.add_field(name=name, value=value, inline=inline)
-    embed.set_author(name=ctx.me.display_name, icon_url=ctx.me.avatar_url)
+    embed.set_author(name='Sleeper-FFL', icon_url=bot.user.display_avatar)
     return embed
 
 

@@ -8,10 +8,8 @@ import pymongo
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.combining import OrTrigger
-import functions
 import scheduled_jobs
 from sleeper_bot_commands import league, setup, weather, players, help, manage, patron, user
-from bs4 import BeautifulSoup as bs4
 if os.path.exists("env.py"):
     import env
 
@@ -25,12 +23,11 @@ MONGO_CONN = pymongo.MongoClient(MONGO_URI)
 MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
-# Define Bot and Bot Prefix/Remove Default Help
+# Define Bot/Intents
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix=functions.get_prefix, intents=intents)
-bot.remove_command("help")
+bot = discord.Bot(intents=intents)
 
 
 # Bot Events
@@ -39,7 +36,7 @@ bot.remove_command("help")
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="$help"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="slash commands"))
     scheduler = AsyncIOScheduler(timezone='America/New_York')
     trigger_one = OrTrigger([
         CronTrigger(day_of_week='thu', hour=15)
@@ -98,474 +95,251 @@ async def on_guild_remove(guild):
     MONGO_CONN.close()
 
 
+
 # Bot Commands
 
-## Setup Cog
+## Setup Commands
 
-class Setup(commands.Cog, name='Setup'):
+### Set Channel to Send Timed Messages in
 
-    def __init__(self, bot):
-        self.bot = bot
-
-
-    ### Set Custom Prefix
-
-    @commands.command(name='set-prefix')
-    async def set_prefix(self, ctx, prefix: str):
-        message = setup.set_prefix(ctx, prefix)
-        await ctx.send(embed=message)
-
-
-    ### Set Channel to Send Timed Messages in
-
-    @commands.command(name='set-channel')
-    async def set_channel(self, ctx, channel_id: str):
-        message = setup.set_channel(ctx, channel_id)
-        await ctx.send(embed=message)
-
-
-    ### Set League ID in MongoDB
-
-    @commands.command(name='add-league')
-    async def add_league(self, ctx, league_id: str):
-        message = setup.add_league(ctx, league_id)
-        await ctx.send(embed=message)
-
-
-    ### Set Score Type in MongoDB
-
-    @commands.command(name='set-score-type')
-    async def set_score_type(self, ctx, score_type: str):
-        message = setup.set_score_type(ctx, score_type)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-## League Cog
-
-class League(commands.Cog, name='League'):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-
-    ### Get League Name and Member Info
-
-    @commands.command(name='my-league')
-    async def my_league(self, ctx):
-        message = league.my_league(ctx)
-        await ctx.send(embed=message)
-    
-
-    ### Get League Standings Sorted by Most to Least Wins
-
-    @commands.command(name='my-league-standings')
-    async def my_league_standings(self, ctx):
-        message = league.my_league_standings(ctx)
-        await ctx.send(embed=message)
-
-
-    ### Get Current Week Matchups
-
-    @commands.command(name='my-league-matchups')
-    async def my_league_matchups(self, ctx, week: str):
-        message = league.my_league_matchups(ctx, week)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-    ### Get Current Week Scoreboard
-
-    @commands.command(name='my-league-scoreboard')
-    async def my_league_scoreboard(self, ctx, week: str):
-        message = league.my_league_scoreboard(ctx, week)
-        if type(message) is str:
-            await ctx.send(message)
-        else:
-            await ctx.send(embed=message)
-
-
-
-## Players Cog
-
-class Players(commands.Cog, name='Players'):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-
-    ### Get Trending Players
-
-    @commands.command(name='trending-players')
-    async def trending_players(self, ctx, add_drop: str):
-        message = players.trending_players(ctx, add_drop)
-        if type(message) is str:
-            await ctx.send(message)
-        else:
-            await ctx.send(embed=message)
-
-    
-    ### Get Roster of Team in Your League
-
-    @commands.command(name='roster')
-    async def roster(self, ctx, username: str, roster_portion: str):
-        message = players.roster(ctx, username, roster_portion)
-        if type(message) is str:
-            await ctx.send(message)
-        else:
-            await ctx.send(embed=message)
-
-
-    ### Get the Roster, Injury, and Depth Chart Status of a Particular Player
-            
-    @commands.command(name='status')
-    async def status(self, ctx, *args):
-        message = players.status(ctx, *args)
-        if type(message) is str:
-            await ctx.send(message)
-        else:
-            await ctx.send(embed=message)
-
-
-    ### See Who Has a Particular Player
-
-    @commands.command(name='who-has')
-    async def who_has(self, ctx, *args):
-        message = players.who_has(ctx, *args)
-        if type(message) is str:
-            await ctx.send(message)
-        else:
-            await ctx.send(embed=message)
-
-
-
-## Weather Cog
-
-class Weather(commands.Cog, name='Weather'):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-    
-    ### Get Local Forecast
-
-    @commands.command(name='forecast')
-    async def forecast(self, ctx, *city: str):
-        message = weather.forecast(ctx, *city)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-    ### Get Current Weather
-
-    @commands.command(name='current-weather')
-    async def current_weather(self, ctx, *city: str):
-        message = weather.current_weather(ctx, *city)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-
-## User Cog
-
-class User(commands.Cog, name='User'):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-    
-    ### Get Specified User Info
-
-    @commands.command(name='user-info')
-    async def user_info(self, ctx, display_name: str):
-        message = user.user_info(ctx, display_name)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-
-## Manage Cog
-
-class Manage(commands.Cog, name='Manage'):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-
-    ### Kick Command
-
-    @commands.command(name='kick')
-    @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, user: discord.Member, *, reason=None):
-        message = await manage.kick(ctx, user, reason=None)
+@bot.slash_command(name='set-channel', description='Sets the channel you want to use for automated messages.')
+async def set_channel(ctx, channel_id: str):
+    message = setup.set_channel(ctx, bot, channel_id)
+    if type(message) is str:
         await ctx.send(message)
-    
-
-    ### Ban Command
-
-    @commands.command(name='ban')
-    @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, user: discord.Member, *, reason=None):
-        message = await manage.ban(ctx, user, reason=reason)
-        await ctx.send(message)
-
-
-    ###Unban Command
-
-    @commands.command(name='unban')
-    async def unban(self, ctx, *, member):
-        message = await manage.unban(ctx, member)
-        await ctx.send(message)
-
-
-
-## Patron Cog
-
-class Patron(commands.Cog, name='Patron'):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-
-    ### Game Stats Command
-
-    @commands.command(name='game-stats')
-    async def game_stats(self, ctx, *args):
-        message = patron.game_stats(ctx, *args)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-    ### Waiver Order Command
-
-    @commands.command(name='waiver-order')
-    async def waiver_order(self, ctx):
-        message = patron.waiver_order(ctx)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-    ### Transactions Command
-
-    @commands.command(name='transactions')
-    async def transactions(self, ctx, week: str):
-        message = patron.transactions(ctx, week)
-        if type(message) is str:
-           await ctx.send(message)
-        else: 
-            await ctx.send(embed=message)
-
-
-
-## Help Cog
-
-class Help(commands.Cog, name='Help'):
-
-    def __init__(self, bot):
-        self.bot = bot
-
-
-    ### Help Command
-
-    @commands.group(invoke_without_command=True)
-    async def help(self, ctx):
-        message = help.help(ctx)
+    else: 
         await ctx.send(embed=message)
 
+
+### Set League ID in MongoDB
+
+@bot.slash_command(name='add-league', description='Connects your Discord server to your Sleeper league.')
+async def add_league(ctx, league_id: str):
+    message = setup.add_league(ctx, bot, league_id)
+    if type(message) is str:
+        await ctx.send(message)
+    else: 
+        await ctx.send(embed=message)
+
+
+### Set Score Type in MongoDB
+
+@bot.slash_command(name='set-score-type', description='Sets the score type of your specific league.')
+async def set_score_type(ctx, score_type: str):
+    message = setup.set_score_type(ctx, bot, score_type)
+    if type(message) is str:
+        await ctx.send(message)
+    else: 
+        await ctx.send(embed=message)
+
+
+
+## League Commands
+
+### Get League Name and Member Info
+
+@bot.slash_command(name='my-league', description='Returns general league information. Must run add-league first.')
+async def my_league(ctx):
+    message = league.my_league(ctx, bot)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### Get League Standings Sorted by Most to Least Wins
+
+@bot.slash_command(name='my-league-standings', description='Returns current league standings. Must run add-league first.')
+async def my_league_standings(ctx):
+    message = league.my_league_standings(ctx, bot)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### Get Current Week Matchups
+
+@bot.slash_command(name='my-league-matchups', description='Returns matchups for a specific week. Must run add-league first.')
+async def my_league_matchups(ctx, week: str):
+    message = league.my_league_matchups(ctx, bot, week)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### Get Current Week Scoreboard
+
+@bot.slash_command(name='my-league-scoreboard', description='Returns the scoreboard for a specific week. Must run add-league first.')
+async def my_league_scoreboard(ctx, week: str):
+    message = league.my_league_scoreboard(ctx, bot, week)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else:
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+
+## Players Commands
+
+### Get Trending Players
+
+@bot.slash_command(name='trending-players', description='Returns the top 10 trending players either in being added or dropped.')
+async def trending_players(ctx, add_drop: str):
+    message = players.trending_players(bot, add_drop)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else:
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### Get Roster of Team in Your League
+
+@bot.slash_command(name='roster', description='Returns a portion or entirety of a roster. Must run add-league first.')
+async def roster(ctx, username: str, roster_portion: str):
+    message = players.roster(ctx, bot, username, roster_portion)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else:
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### Get the Roster, Injury, and Depth Chart Status of a Particular Player
+        
+@bot.slash_command(name='status', description='Returns the injury and depth chart status of a given player.')
+async def status(ctx, first_name: str, last_name: str, team_abbreviation: str):
+    message = players.status(bot, first_name, last_name, team_abbreviation)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else:
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### See Who Has a Particular Player
+
+@bot.slash_command(name='who-has', description='Returns the user who has a given player. Must run add-league first.')
+async def who_has(ctx, first_name: str, last_name: str, team_abbreviation: str):
+    message = players.who_has(ctx, bot, first_name, last_name, team_abbreviation)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else:
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+
+## Weather Commands
     
-    ### My League Help
+### Get Local Forecast
 
-    @help.command(name="my-league")
-    async def my_league(self, ctx):
-        embed = functions.my_embed('My League', 'Returns information about the league such as league name, players, number of players, trade deadline, and the week that playoffs start. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### My League Standings Help
-
-    @help.command(name="my-league-standings")
-    async def my_league_standings(self, ctx):
-        embed = functions.my_embed('My League Standings', 'Returns current league standings. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-standings', False, ctx)
-        await ctx.send(embed=embed)
+@bot.slash_command(name='forecast', description='Returns the 3 day forecast for a city or zip code.')
+async def forecast(ctx, city: str):
+    message = weather.forecast(bot, city)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
 
 
-    ### My League Matchups Help
+### Get Current Weather
 
-    @help.command(name="my-league-matchups")
-    async def my_league_matchups(self, ctx):
-        embed = functions.my_embed('My League Matchups', 'Returns matchups for the specified week. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-matchups [week]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### My League Scoreboard Help
-
-    @help.command(name="my-league-scoreboard")
-    async def my_league_scoreboard(self, ctx):
-        embed = functions.my_embed('My League Scoreboard', 'Returns scoreboard for the specified week. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>my-league-scoreboard [week]', False, ctx)
-        await ctx.send(embed=embed)
+@bot.slash_command(name='current-weather', description='Returns the current weather for a city or zip code.')
+async def current_weather(ctx, city: str):
+    message = weather.current_weather(bot, city)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
 
 
-    ### Trending Players Help
 
-    @help.command(name="trending-players")
-    async def trending_players(self, ctx):
-        embed = functions.my_embed('Trending Players', 'Returns top 10 trending players based on add or drop rate for the past 24 hours.', discord.Colour.blue(), '**Syntax**', '<prefix>trending players [add or drop]', False, ctx)
-        await ctx.send(embed=embed)
+## User Commands
 
+### Get Specified User Info
 
-    ### Roster Help
-
-    @help.command(name="roster")
-    async def roster(self, ctx):
-        embed = functions.my_embed('Roster', 'Returns the list of player on a given players roster based on parameters specified. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>roster [username] [starters, bench, or all]', False, ctx)
-        await ctx.send(embed=embed)
+@bot.slash_command(name='user-info', description='Returns Sleeper user information for a given user. Must run add-league first.')
+async def user_info(ctx, display_name: str):
+    message = user.user_info(ctx, bot, display_name)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
 
 
-    ### Status Help
 
-    @help.command(name="status")
-    async def status(self, ctx):
-        embed = functions.my_embed('Status', 'Returns the roster, injury, and depth chart status of a specific player.', discord.Colour.blue(), '**Syntax**', '<prefix>status [first name] [last name] [team abbreviation]', False, ctx)
-        await ctx.send(embed=embed)
-
+## Manage Commands
     
-    ### Who Has Help
+### Kick Command
 
-    @help.command(name="who-has")
-    async def who_has(self, ctx):
-        embed = functions.my_embed('Who Has', 'Returns the owner in your league who has a specific player.', discord.Colour.blue(), '**Syntax**', '<prefix>who-has [first name] [last name] [team abbreviation]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Forecast Help
-
-    @help.command(name="forecast")
-    async def forecast(self, ctx):
-        embed = functions.my_embed('Forecast', 'Returns the 3 day forecast for a given city or zip code.', discord.Colour.blue(), '**Syntax**', '<prefix>forecast [city or zip code]', False, ctx)
-        await ctx.send(embed=embed)
+@bot.slash_command(name='kick', description='Kicks a given user.')
+@commands.has_permissions(kick_members=True)
+async def kick(ctx, user: discord.Member, *, reason=None):
+    message = await manage.kick(ctx, user, reason=None)
+    await ctx.respond(message)
 
 
-    ### Current Weather Help
+### Ban Command
 
-    @help.command(name="current-weather")
-    async def current_weather(self, ctx):
-        embed = functions.my_embed('Current Weather', 'Returns the current weather for a given city or zip code.', discord.Colour.blue(), '**Syntax**', '<prefix>current-weather [city or zip code]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-     ### User Info Help
-
-    @help.command(name="user-info")
-    async def user_info(self, ctx):
-        embed = functions.my_embed('User Info', 'Returns information for the specified user in your league.', discord.Colour.blue(), '**Syntax**', '<prefix>user-info [display name]', False, ctx)
-        await ctx.send(embed=embed)
+@bot.slash_command(name='ban', description='Bans a given user.')
+@commands.has_permissions(ban_members=True)
+async def ban(ctx, user: discord.Member, *, reason=None):
+    message = await manage.ban(ctx, user, reason=reason)
+    await ctx.respond(message)
 
 
-    ### Kick Help
+###Unban Command
 
-    @help.command(name="kick")
-    async def kick(self, ctx):
-        embed = functions.my_embed('Kick', 'Kicks specified user from Discord server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>kick @[username]', False, ctx)
-        await ctx.send(embed=embed)
-
-    
-    ### Ban Help
-
-    @help.command(name="ban")
-    async def ban(self, ctx):
-        embed = functions.my_embed('Ban', 'Bans specified user from Discord server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>ban @[username]', False, ctx)
-        await ctx.send(embed=embed)
-
-    
-    ### Unban Help
-
-    @help.command(name="unban")
-    async def unban(self, ctx):
-        embed = functions.my_embed('Unban', 'Unbans specified user from Discord server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>unban [username]#[number]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Game Stats Help
-
-    @help.command(name="game-stats")
-    async def game_stats(self, ctx):
-        embed = functions.my_embed('Game Stats', 'Returns game stats for the specified player for the specified year and week. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>game-stats [first name] [last name] [current team abbreviation] [year] [week], use <prefix>game-stats [first name] [last name] [current team abbreviation] for most current game', False, ctx)
-        await ctx.send(embed=embed)
-
-    
-    ### Waiver Order Help
-
-    @help.command(name="waiver-order")
-    async def waiver_order(self, ctx):
-        embed = functions.my_embed('Waiver Order', 'Returns your current waiver order. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>waiver-order', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Transactions Help
-
-    @help.command(name="transactions")
-    async def transactions(self, ctx):
-        embed = functions.my_embed('Transactions', 'Returns the last 10 transactions for any specified week. Only available for Patrons. Must run add-league command first.', discord.Colour.blue(), '**Syntax**', '<prefix>transactions [week]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Add League Help
-
-    @help.command(name="add-league")
-    async def add_league(self, ctx):
-        embed = functions.my_embed('Add League', 'Creates a connection in our database between your Sleeper League and your Discord Server. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>add-league [sleeper_league_id]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Set Channel Help
-
-    @help.command(name="set-channel")
-    async def set_channel(self, ctx):
-        embed = functions.my_embed('Set Channel', 'Designates a channel for your automated messages to funnel through. Restricted for administrators. See our Github for schedule of these messages.', discord.Colour.blue(), '**Syntax**', '<prefix>set-channel [discord_channel_id]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Score Type Help
-
-    @help.command(name="set-score-type")
-    async def score_type(self, ctx):
-        embed = functions.my_embed('Score Type', 'Designates the score type that your Sleeper League uses. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>score-type [pts_std, pts_half_ppr, or pts_ppr]', False, ctx)
-        await ctx.send(embed=embed)
-
-
-    ### Set Prefix Help
-
-    @help.command(name="set-prefix")
-    async def set_prefix(self, ctx):
-        embed = functions.my_embed('Set Prefix', 'Designates the prefix you want this bot to use. Restricted for administrators.', discord.Colour.blue(), '**Syntax**', '<prefix>set-prefix [prefix]', False, ctx)
-        await ctx.send(embed=embed)
+@bot.slash_command(name='unban', description='Unbans a given user.')
+async def unban(ctx, *, member):
+    message = await manage.unban(ctx, member)
+    await ctx.respond(message)
 
 
 
-# Bot Add Cogs
+## Patron Commands
 
-bot.add_cog(Setup(bot))
-bot.add_cog(League(bot))
-bot.add_cog(Players(bot))
-bot.add_cog(Weather(bot))
-bot.add_cog(User(bot))
-bot.add_cog(Manage(bot))
-bot.add_cog(Patron(bot))
-bot.add_cog(Help(bot))
+### Game Stats Command
+
+@bot.slash_command(name='game-stats', description='Returns game stats for a player for a given game. Patron only.')
+async def game_stats(ctx, first_name: str, last_name: str, team_abbreviation: str, year_played: str, week_played: str):
+    message = patron.game_stats(ctx, bot, first_name, last_name, team_abbreviation, year_played, week_played)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### Waiver Order Command
+
+@bot.slash_command(name='waiver-order', description='Returns current waiver order. Must run add-league first. Patron only.')
+async def waiver_order(ctx):
+    message = patron.waiver_order(ctx, bot)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+### Transactions Command
+
+@bot.slash_command(name='transactions', description='Returns last 10 transactions for a given week. Must run add-league first. Patron only.')
+async def transactions(ctx, week: str):
+    message = patron.transactions(ctx, bot, week)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
+
+
+
+## Help Commands
+
+### Bot Info Command
+
+@bot.slash_command(name='bot-info', description='Returns bot information and important messages.')
+async def bot_info(ctx):
+    message = help.help(bot)
+    await ctx.respond(embed=message, ephemeral=True)
 
 
 # Bot Run

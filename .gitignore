@@ -2,3 +2,4 @@ env.py
 __pycache__/
 sleeper_responses/*
 espn_responses/*
+find_member.py

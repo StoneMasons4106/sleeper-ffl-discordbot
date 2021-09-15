@@ -1,4 +1,4 @@
-discord.py==1.7.3
+git+https://github.com/Pycord-Development/pycord@master
 pymongo==3.11.4
 aiohttp==3.6.3
 async-timeout==3.0.1
