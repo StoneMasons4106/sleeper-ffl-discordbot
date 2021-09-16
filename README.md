@@ -3,13 +3,12 @@
 This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/SwapnikKatkoori/sleeper-api-wrapper) for providing granular information about one's Sleeper Fantasy Football league, right to Discord. If you wish to donate to the project, here's my [Patreon](https://www.patreon.com/stonemasons).
 
 * IMPORTANT:
-    * Please make sure that the Permissions for Slash Commands are enabled, or recent development of the bot WON'T WORK in your server. If you already have the bot in your server, go to server settings, roles, Sleeper-FFL, and under Permissions, search Application Commands. Allow and save. If this still doesn't work, without kicking the bot, use the invite link below under setup, and reinvite the bot.
+    * Now that Slash Commands are deployed to the live bot, if you are having issues with seeing the commands, without kicking the bot, use the invite link below under Setup, and reinvite the bot to ensure access to the applications.commands scope.
 
 
 ## Features
 
-* Help command with full list of commands, categories, and helpful links to Github, Patreon and Top.gg.
-    * Use the syntax (prefix)help (command) to get details on a specific command, and expected syntax.
+* Bot-info command server and member counts, patron commands, and helpful links to Github, Patreon and Top.gg.
 
 * Specific information about your league such as the names, members, trade deadline, and starting week of the playoffs.
 
@@ -49,15 +48,15 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848311382086&permissions=122340240631&scope=bot%20applications.commands) to invite the bot to your Discord server.
 
-Default Prefix: $
+Prefix: /
 
 * Finish setting up by running the following commands:
     * add-league:
-        * $add-league sleeper_league_id (Example: 726571239501557767)
+        * /add-league sleeper_league_id (Example: 726571239501557767)
     * set-channel:
-        * $set-channel discord_channel_id (Example: 872626056258023484)
+        * /set-channel discord_channel_id (Example: 872626056258023484)
     * set-score-type
-        * $set-score-type pts_ppr/pts_half_ppr/pts_std
+        * /set-score-type pts_ppr/pts_half_ppr/pts_std
 
 
 ## Issues
