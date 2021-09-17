@@ -106,9 +106,9 @@ async def on_guild_remove(guild):
 async def set_channel(ctx, channel_id: str):
     message = setup.set_channel(ctx, bot, channel_id)
     if type(message) is str:
-        await ctx.send(message)
+        await ctx.respond(message)
     else: 
-        await ctx.send(embed=message)
+        await ctx.respond(embed=message)
 
 
 ### Set League ID in MongoDB
@@ -117,9 +117,9 @@ async def set_channel(ctx, channel_id: str):
 async def add_league(ctx, league_id: str):
     message = setup.add_league(ctx, bot, league_id)
     if type(message) is str:
-        await ctx.send(message)
+        await ctx.respond(message)
     else: 
-        await ctx.send(embed=message)
+        await ctx.respond(embed=message)
 
 
 ### Set Score Type in MongoDB
@@ -128,9 +128,9 @@ async def add_league(ctx, league_id: str):
 async def set_score_type(ctx, score_type: str):
     message = setup.set_score_type(ctx, bot, score_type)
     if type(message) is str:
-        await ctx.send(message)
+        await ctx.respond(message)
     else: 
-        await ctx.send(embed=message)
+        await ctx.respond(embed=message)
 
 
 

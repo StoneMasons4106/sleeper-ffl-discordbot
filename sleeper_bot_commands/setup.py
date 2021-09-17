@@ -79,7 +79,7 @@ def add_league(ctx, bot, league_id: str):
                         embed = functions.my_embed('Sleeper League Connection Status', 'Result of connection to Sleeper League request', discord.Colour.blue(), 'Connection Status', 'Successfully updated your Sleeper league to '+league_id+'!', False, bot)                    
                     else:
                         server_league_object = {
-                            "server": str(ctx.message.guild.id),
+                            "server": str(ctx.guild.id),
                             "league": league_id
                         }
                         MONGO.servers.insert_one(server_league_object)
