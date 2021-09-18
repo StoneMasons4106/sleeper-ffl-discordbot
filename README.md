@@ -58,6 +58,9 @@ Prefix: /
     * set-score-type
         * /set-score-type pts_ppr/pts_half_ppr/pts_std
 
+* OPTIONAL: Currently there is no public way to access news updates via API or webhook, but it looks like the guys at Sleeper worked on something of their own that you can utilize in your server.
+    * If you'd like news functionality, join [this server](https://discord.gg/5UuU85sQ9h), and follow the breaking, hype, minor, and defense channels in your desired server.
+
 
 ## Issues
 
