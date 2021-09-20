@@ -53,7 +53,7 @@ def game_stats(ctx, bot, first_name, last_name, team_abbreviation, year_played, 
                             embed = f'Looks like {first_name} {last_name} did not play on the week specified, please try again!'
                         else:
                             res2 = res = requests.get(
-                                f'https://www.espn.com/nfl/schedule/_/year/{year_played}'
+                                f'https://www.espn.com/nfl/schedule/_/week/1/year/{year_played}'
                             )
                             soup2 = bs4(res2.text, 'html.parser')
                             search_data = soup2.find_all('h2', class_="table-caption")
