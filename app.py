@@ -322,7 +322,7 @@ async def waiver_order(ctx):
 
 ### Transactions Command
 
-@bot.slash_command(name='transactions', description='Returns last 10 transactions for a given week. Must run add-league first. Patron only.')
+@bot.slash_command(name='transactions', description='Returns last 10 transactions for a given week. Must run add-league first. Patron only.', guild_ids=[870315490596229141])
 async def transactions(ctx, week: str):
     message = patron.transactions(ctx, bot, week)
     if type(message) is str:

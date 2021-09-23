@@ -227,39 +227,94 @@ def transactions(ctx, bot, week):
                                 if count == 11:
                                     break
                                 elif transaction["type"] == 'free_agent':
-                                    for drop in transaction["drops"]:
-                                        existing_player = MONGO.players.find_one({"id": str(drop)})
-                                        roster_id = transaction["drops"][drop]
-                                        for roster in rosters:
-                                            if roster["roster_id"] == roster_id:
-                                                this_roster = roster
-                                                break
+                                    roster_id = transaction["roster_ids"][0]
+                                    for roster in rosters:
+                                        if roster["roster_id"] == roster_id:
+                                            this_roster = roster
+                                            break
+                                        else:
+                                            continue
+                                    for user in users:
+                                        if this_roster["owner_id"] == user["user_id"]:
+                                            username = user["display_name"]
+                                            break
+                                        else:
+                                            continue
+                                    if transaction["drops"]:
+                                        transactions_string += f'{username} dropped '
+                                    drop_count = 0
+                                    try:
+                                        for drop in transaction["drops"]:
+                                            drop_count = drop_count + 1
+                                            existing_player = MONGO.players.find_one({"id": str(drop)})
+                                            if drop_count != 1:
+                                                transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
-                                                continue
-                                        for user in users:
-                                            if this_roster["owner_id"] == user["user_id"]:
-                                                username = user["display_name"]
-                                                transactions_string += f'{username} dropped {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n\n'
+                                                transactions_string += f'{existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
+                                            MONGO_CONN.close()
+                                    except:
+                                        pass
+                                    try:
+                                        if transaction["adds"]:
+                                            if transaction["drops"]:
+                                                transactions_string += '\n'
+                                            transactions_string += f'{username} added '
+                                        add_count = 0
+                                        for add in transaction["adds"]:
+                                            add_count = add_count + 1
+                                            existing_player = MONGO.players.find_one({"id": str(add)})
+                                            if add_count != 1:
+                                                transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
-                                                continue
-                                        MONGO_CONN.close()
+                                                transactions_string += f'{existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
+                                            MONGO_CONN.close()
+                                    except:
+                                        pass
+                                    transactions_string += '\n\n'
                                 elif transaction["type"] == 'waiver':
-                                    for add in transaction["adds"]:
-                                        existing_player = MONGO.players.find_one({"id": str(add)})
-                                        roster_id = transaction["adds"][add]
-                                        for roster in rosters:
-                                            if roster["roster_id"] == roster_id:
-                                                this_roster = roster
-                                                break
+                                    roster_id = transaction["roster_ids"][0]
+                                    for roster in rosters:
+                                        if roster["roster_id"] == roster_id:
+                                            this_roster = roster
+                                            break
+                                        else:
+                                            continue
+                                    for user in users:
+                                        if this_roster["owner_id"] == user["user_id"]:
+                                            username = user["display_name"]
+                                        else:
+                                            continue
+                                    if transaction["adds"]:
+                                        transactions_string += f'{username} added '
+                                    add_count = 0
+                                    try:
+                                        for add in transaction["adds"]:
+                                            add_count = add_count + 1
+                                            existing_player = MONGO.players.find_one({"id": str(add)})
+                                            if add_count != 1:
+                                                transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
-                                                continue
-                                        for user in users:
-                                            if this_roster["owner_id"] == user["user_id"]:
-                                                username = user["display_name"]
-                                                transactions_string += f'{username} added {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n\n'
+                                                transactions_string += f'{existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
+                                            MONGO_CONN.close()
+                                    except:
+                                        pass
+                                    try:
+                                        if transaction["drops"]:
+                                            if transaction["adds"]:
+                                                transactions_string += '\n'
+                                            transactions_string += f'{username} dropped '
+                                        drop_count = 0
+                                        for drop in transaction["drops"]:
+                                            drop_count = drop_count + 1
+                                            existing_player = MONGO.players.find_one({"id": str(drop)})
+                                            if drop_count != 1:
+                                                transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
-                                                continue
-                                        MONGO_CONN.close()
+                                                transactions_string += f'{existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
+                                            MONGO_CONN.close()
+                                    except:
+                                        pass
+                                    transactions_string += '\n\n'
                                 else:
                                     second_transactions_string = 'Trade:\n'
                                     for add in transaction["adds"]:
