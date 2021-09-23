@@ -61,7 +61,7 @@ def game_stats(ctx, bot, first_name, last_name, team_abbreviation, year_played, 
                                 h2_split = str(h2).split('<h2 class="table-caption">')
                                 h2_split_two = h2_split[1].split("</h2>")
                                 h2_split_three = h2_split_two[0].split(", ")
-                                if h2_split_three[0] == "Sunday":
+                                if h2_split_three[0] == "Thursday":
                                     h2_split_four = h2_split_three[1].split(" ")
                                     week_one = pendulum.datetime(int(year_played), 9, int(h2_split_four[1]))
                                 else:
@@ -77,21 +77,7 @@ def game_stats(ctx, bot, first_name, last_name, team_abbreviation, year_played, 
                                 else:
                                     week_current = pendulum.datetime(int(year_played), int(current_week[0]), int(current_week[1]))
                                 week_num = week_current.diff(week_one).in_weeks() + 1
-                                if row_split_two[0] == "Sat" or row_split_two[0] == "Thu" or row_split_two == "Fri":
-                                    if week_num == 1:
-                                        if str(week_num) == str(week_played):
-                                            game_data = game
-                                            break
-                                        else:
-                                            continue 
-                                    else:
-                                        week_num = week_num + 1
-                                        if str(week_num) == str(week_played):
-                                            game_data = game
-                                            break
-                                        else:
-                                            continue
-                                elif str(week_num) == str(week_played):
+                                if str(week_num) == str(week_played):
                                     game_data = game
                                     break
                                 else:
