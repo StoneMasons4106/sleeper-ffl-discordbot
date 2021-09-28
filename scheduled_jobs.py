@@ -87,8 +87,7 @@ async def get_current_matchups(bot):
                                         matchups_string += f'{user["display_name"]}\n'
                                     else:
                                         matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
-                                embed = discord.Embed(title='Current Week Matchups', description=f'Matchups for Week {str(week[0])}', color=discord.Colour.blue())
-                                embed.add_field(name='Matchups', value=matchups_string, inline=False)
+                                embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week[0])}', discord.Colour.blue(), 'Matchups', matchups_string, False, bot)
                                 await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week[0])} in our league:')
                                 await channel.send(embed=embed)
                             except:
@@ -136,10 +135,23 @@ async def get_current_scoreboard(bot):
                                         scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
                                     else:
                                         scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
-                                embed = discord.Embed(title='Current Week Scoreboard', description=f'Scoreboard for Week {str(week[0])}', color=discord.Colour.blue())
-                                embed.add_field(name='Scoreboard', value=scoreboard_string, inline=False)
-                                await channel.send(f'Another week in the books! Here is the scoreboard for week {str(week[0])} in our league:')
+                                filtered_roster_object = []
+                                for roster in rosters:
+                                    if roster["owner_id"] != None:
+                                        filtered_roster_object.append(roster)
+                                    else:
+                                        pass
+                                standings_object = sleeper_wrapper.League(int(league_id)).get_standings(filtered_roster_object, users)
+                                standings_string = ''
+                                count = 0
+                                for i in standings_object:
+                                    count = count + 1
+                                    standings_string += f'{str(count)}. {i[0]} / Record: {i[1]}-{i[2]} / Points For: {i[3]}\n'
+                                embed = functions.my_embed('Current Week Scoreboard', f'Scoreboard for Week {str(week[0])}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, bot)
+                                embed_two = functions.my_embed('Current Week Standings', f'Standings for Week {str(week[0])}', discord.Colour.blue(), 'Standings', standings_string, False, bot)
+                                await channel.send(f'Another week in the books! Here is the scoreboard and standings for week {str(week[0])} in our league:')
                                 await channel.send(embed=embed)
+                                await channel.send(embed=embed_two)
                             except:
                                 pass
                         else:
