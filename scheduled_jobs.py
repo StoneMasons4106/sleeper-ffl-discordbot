@@ -74,7 +74,7 @@ async def get_current_matchups(bot):
                         if matchups:
                             try:
                                 channel = await bot.fetch_channel(int(server["channel"]))
-                                sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                                sorted_matchups = sorted(matchups, key=lambda i: (i["matchup_id"] is None, i["matchup_id"]))
                                 matchups_string = ''
                                 count = 0
                                 matchup_count = 1
@@ -122,7 +122,7 @@ async def get_current_scoreboard(bot):
                         if matchups:
                             try:
                                 channel = await bot.fetch_channel(int(server["channel"]))
-                                sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                                sorted_matchups = sorted(matchups, key=lambda i: (i["matchup_id"] is None, i["matchup_id"]))
                                 scoreboard_string = ''
                                 count = 0
                                 matchup_count = 1
