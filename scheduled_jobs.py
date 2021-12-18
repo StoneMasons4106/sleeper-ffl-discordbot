@@ -79,14 +79,17 @@ async def get_current_matchups(bot):
                                 count = 0
                                 matchup_count = 1
                                 for matchup in sorted_matchups:
-                                    count = count + 1
-                                    roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                                    user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                                    if (count % 2) == 0:
-                                        matchup_count = matchup_count + 1
-                                        matchups_string += f'{user["display_name"]}\n'
+                                    if matchup["matchup_id"] is None:
+                                        pass
                                     else:
-                                        matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
+                                        count = count + 1
+                                        roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                        user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                        if (count % 2) == 0:
+                                            matchup_count = matchup_count + 1
+                                            matchups_string += f'{user["display_name"]}\n'
+                                        else:
+                                            matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
                                 embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week[0])}', discord.Colour.blue(), 'Matchups', matchups_string, False, bot)
                                 await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week[0])} in our league:')
                                 await channel.send(embed=embed)
@@ -127,14 +130,17 @@ async def get_current_scoreboard(bot):
                                 count = 0
                                 matchup_count = 1
                                 for matchup in sorted_matchups:
-                                    count = count + 1
-                                    roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                                    user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                                    if (count % 2) == 0:
-                                        matchup_count = matchup_count + 1
-                                        scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                                    if matchup["matchup_id"] is None:
+                                        pass
                                     else:
-                                        scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
+                                        count = count + 1
+                                        roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                        user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                        if (count % 2) == 0:
+                                            matchup_count = matchup_count + 1
+                                            scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                                        else:
+                                            scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
                                 filtered_roster_object = []
                                 for roster in rosters:
                                     if roster["owner_id"] != None:

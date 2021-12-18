@@ -90,14 +90,17 @@ def my_league_matchups(ctx, bot, week):
                             count = 0
                             matchup_count = 1
                             for matchup in sorted_matchups:
-                                count = count + 1
-                                roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                                user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                                if (count % 2) == 0:
-                                    matchup_count = matchup_count + 1
-                                    matchups_string += f'{user["display_name"]}\n'
+                                if matchup["matchup_id"] is None:
+                                    pass
                                 else:
-                                    matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
+                                    count = count + 1
+                                    roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                    user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                    if (count % 2) == 0:
+                                        matchup_count = matchup_count + 1
+                                        matchups_string += f'{user["display_name"]}\n'
+                                    else:
+                                        matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
                             embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {week}', discord.Colour.blue(), 'Matchups', matchups_string, False, bot)
                         else:
                             embed = 'There are no matchups this week, try this command again during the season!'
@@ -131,14 +134,17 @@ def my_league_scoreboard(ctx, bot, week):
                             count = 0
                             matchup_count = 1
                             for matchup in sorted_matchups:
-                                count = count + 1
-                                roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
-                                user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
-                                if (count % 2) == 0:
-                                    matchup_count = matchup_count + 1
-                                    scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                                if matchup["matchup_id"] is None:
+                                    pass
                                 else:
-                                    scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
+                                    count = count + 1
+                                    roster = next((roster for roster in rosters if roster["roster_id"] == matchup["roster_id"]), None)
+                                    user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
+                                    if (count % 2) == 0:
+                                        matchup_count = matchup_count + 1
+                                        scoreboard_string += f'{user["display_name"]} - {matchup["points"]}\n'
+                                    else:
+                                        scoreboard_string += f'{str(matchup_count)}. {user["display_name"]} - {matchup["points"]} / '
                             embed = functions.my_embed(f'Week {week} Scoreboard', f'Scoreboard for Week {str(week)}', discord.Colour.blue(), 'Scoreboard', scoreboard_string, False, bot)
                         else:
                             embed = 'There are no matchups this week, try this command again during the season!'
