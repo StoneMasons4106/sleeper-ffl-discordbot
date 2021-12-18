@@ -85,7 +85,7 @@ def my_league_matchups(ctx, bot, week):
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                         matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
                         if matchups:
-                            sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                            sorted_matchups = sorted(matchups, key=lambda i: (i["matchup_id"] is None, i["matchup_id"]))
                             matchups_string = ''
                             count = 0
                             matchup_count = 1
@@ -126,7 +126,7 @@ def my_league_scoreboard(ctx, bot, week):
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                         matchups = sleeper_wrapper.League(int(league_id)).get_matchups(int(week))
                         if matchups:
-                            sorted_matchups = sorted(matchups, key=lambda i: i["matchup_id"])
+                            sorted_matchups = sorted(matchups, key=lambda i: (i["matchup_id"] is None, i["matchup_id"]))
                             scoreboard_string = ''
                             count = 0
                             matchup_count = 1
