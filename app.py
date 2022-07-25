@@ -298,16 +298,6 @@ async def unban(ctx, *, member):
 
 ## Patron Commands
 
-### Game Stats Command
-
-@bot.slash_command(name='game-stats', description='Returns game stats for a player for a given game. Patron only.')
-async def game_stats(ctx, first_name: str, last_name: str, team_abbreviation: str, year_played: str, week_played: str):
-    message = patron.game_stats(ctx, bot, first_name, last_name, team_abbreviation, year_played, week_played)
-    if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
-    else: 
-        await ctx.respond(embed=message, ephemeral=True)
-
 
 ### Waiver Order Command
 
