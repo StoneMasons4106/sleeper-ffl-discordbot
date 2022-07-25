@@ -46,13 +46,14 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 ## Setup
 
-Use the link [here](https://discord.com/api/oauth2/authorize?client_id=871087848311382086&permissions=122340240631&scope=bot%20applications.commands) to invite the bot to your Discord server.
+Use the link [here](https://discord.com/oauth2/authorize?client_id=871087848311382086&permissions=8&scope=applications.commands%20bot) to invite the bot to your Discord server.
 
 Prefix: /
 
 * Finish setting up by running the following commands:
     * add-league:
         * /add-league sleeper_league_id (Example: 726571239501557767)
+        * This MUST be updated every season as the league ID updates every offseason.
     * set-channel:
         * /set-channel discord_channel_id (Example: 872626056258023484)
     * set-score-type
@@ -64,4 +65,4 @@ Prefix: /
 
 ## Issues
 
-Please post any issues in the Issues section of this repo. Thank you.
+* Please post any issues in the Issues section of this repo. Thank you.
