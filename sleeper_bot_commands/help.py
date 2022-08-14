@@ -21,7 +21,7 @@ def help(bot):
     for guild in bot.guilds:
         count = count + int(len(guild.members))
     embed.add_field(name='Member Count', value=str(count), inline=False)
-    embed.add_field(name='Patron Only Commands', value='game-stats, waiver-order, transactions', inline=False)
+    embed.add_field(name='Patron Only Commands', value='waiver-order, transactions', inline=False)
     embed.add_field(name='Interested in Donating to the Project?', value='This has been a passion project for me, but continued scalability and improvements are not always free. If you have enjoyed the bot, please donate via the Patreon link. As a thank you, you will get access to some bonus commands not available to free users.', inline=False)
     embed.add_field(name='Still Have Questions?', value='Feel free to add and DM me, StoneMasons#5854.', inline=False)
     return embed
