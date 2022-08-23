@@ -24,11 +24,9 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 * Check the current weather or forecast for the area of a game based on city or zip code powered by [WeatherAPI](https://www.weatherapi.com/).
 
-* Custom prefixes, in case you have another bot with the same default prefix.
-
 * See who has a specific player.
 
-* Access to game-stats, waiver-order, and transactions commands which will be available only to patrons on Patreon meeting the Patron Tier.
+* Access to waiver-order, and transactions commands which will be available only to patrons on Patreon meeting the Patron Tier.
 
 * Scheduled messages to keep your league up to date and notify you of the latest information following the schedule below:
 
