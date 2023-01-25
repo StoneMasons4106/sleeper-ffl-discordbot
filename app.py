@@ -302,14 +302,15 @@ async def find_user(ctx, *, member):
     author_id = os.environ.get('AUTHOR_ID')
     message_author_id = str(ctx.author.id)
     if message_author_id == author_id:
-        await ctx.defer(ephemeral=True)
-        for guild in bot.guilds:
-            for member in guild.members:
-                if f'{member.name}#{member.discriminator}' == member:
-                    await ctx.followup.send(f'{member} - {guild.id}', ephemeral=True)
-                    break
-                else:
-                    continue
+        username = member.split('#')[0]
+        user_discriminator = member.split('#')[1]
+        user_id = discord.utils.get(bot.get_all_members(), name=username, discriminator=user_discriminator).id
+        user = await bot.fetch_user(user_id)
+        shared_guilds = [guild for guild in bot.guilds if user in guild.members]
+        if shared_guilds:
+            await ctx.respond(f'{member} - {shared_guilds[0]}')
+        else:
+            await ctx.respond('No shared guilds found.')
     else:
         await ctx.respond('You do not have access to this command.')
     
