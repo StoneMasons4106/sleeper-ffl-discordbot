@@ -302,10 +302,11 @@ async def find_user(ctx, *, member):
     author_id = os.environ.get('AUTHOR_ID')
     message_author_id = str(ctx.author.id)
     if message_author_id == author_id:
-        for guild in bot.guilds.reverse():
+        await ctx.defer(ephemeral=True)
+        for guild in bot.guilds:
             for member in guild.members:
                 if f'{member.name}#{member.discriminator}' == member:
-                    await ctx.respond(f'{member} - {guild.id}')
+                    await ctx.followup.send(f'{member} - {guild.id}')
                     break
                 else:
                     continue
