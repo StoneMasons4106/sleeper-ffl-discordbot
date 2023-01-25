@@ -287,13 +287,28 @@ async def ban(ctx, user: discord.Member, *, reason=None):
     await ctx.respond(message)
 
 
-###Unban Command
+### Unban Command
 
 @bot.slash_command(name='unban', description='Unbans a given user.')
 async def unban(ctx, *, member):
     message = await manage.unban(ctx, member)
     await ctx.respond(message)
 
+
+### Find User Command
+@bot.slash_command(name='find-user', description='Finds a given user and returns their server info related to the bot.')
+async def find_user(ctx, *, member):
+    if ctx.author.id == os.environ.get('AUTHOR_ID'):
+        for guild in bot.guilds:
+            for member in guild.members:
+                if f'{member.name}#{member.discriminator}' == member:
+                    await ctx.respond(f'{member} - {guild.id}')
+                    break
+                else:
+                    continue
+    else:
+        await ctx.respond('You do not have access to this command.')
+    
 
 
 ## Patron Commands
