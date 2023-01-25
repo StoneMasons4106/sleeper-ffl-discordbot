@@ -308,11 +308,11 @@ async def find_user(ctx, *, member):
         user = await bot.fetch_user(user_id)
         shared_guilds = [guild for guild in bot.guilds if user in guild.members]
         if shared_guilds:
-            await ctx.respond(f'{member} - {shared_guilds[0]}')
+            await ctx.respond(f'{member} - {shared_guilds[0].id}', ephemeral=True)
         else:
-            await ctx.respond('No shared guilds found.')
+            await ctx.respond('No shared guilds found.', ephemeral=True)
     else:
-        await ctx.respond('You do not have access to this command.')
+        await ctx.respond('You do not have access to this command.', ephemeral=True)
     
 
 
