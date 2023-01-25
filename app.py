@@ -299,7 +299,9 @@ async def unban(ctx, *, member):
 
 @bot.slash_command(name='find-user', description='Finds a given user and returns their server info related to the bot.')
 async def find_user(ctx, *, member):
-    if str(ctx.author.id) == os.environ.get('AUTHOR_ID'):
+    author_id = os.environ.get('AUTHOR_ID')
+    message_author_id = str(ctx.author.id)
+    if message_author_id == author_id:
         for guild in bot.guilds:
             for member in guild.members:
                 if f'{member.name}#{member.discriminator}' == member:
