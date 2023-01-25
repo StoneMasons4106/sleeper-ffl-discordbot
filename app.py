@@ -302,8 +302,7 @@ async def find_user(ctx, *, member):
     author_id = os.environ.get('AUTHOR_ID')
     message_author_id = str(ctx.author.id)
     if message_author_id == author_id:
-        username = member.split('#')[0]
-        user_discriminator = member.split('#')[1]
+        username, user_discriminator = member.split('#')
         user_id = discord.utils.get(bot.get_all_members(), name=username, discriminator=user_discriminator).id
         user = await bot.fetch_user(user_id)
         shared_guilds = [guild for guild in bot.guilds if user in guild.members]
