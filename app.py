@@ -306,7 +306,7 @@ async def find_user(ctx, *, member):
         for guild in bot.guilds:
             for member in guild.members:
                 if f'{member.name}#{member.discriminator}' == member:
-                    await ctx.followup.send(f'{member} - {guild.id}')
+                    await ctx.followup.send(f'{member} - {guild.id}', ephemeral=True)
                     break
                 else:
                     continue
