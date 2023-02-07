@@ -1,6 +1,6 @@
 # Sleeper Fantasy Football Discord Bot
 
-This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/SwapnikKatkoori/sleeper-api-wrapper) for providing granular information about one's Sleeper Fantasy Football league, right to Discord. If you wish to donate to the project, here's my [Patreon](https://www.patreon.com/stonemasons).
+This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/SwapnikKatkoori/sleeper-api-wrapper) for providing granular information about one's Sleeper Fantasy Football league, right to Discord. If you wish to donate to the project, here's my [Patreon](https://www.patreon.com/stonemasons), or you can subscribe to our [Discord](https://discord.gg/4MSEK8cpfp).
 
 * IMPORTANT:
     * Now that Slash Commands are deployed to the live bot, if you are having issues with seeing the commands, without kicking the bot, use the invite link below under Setup, and reinvite the bot to ensure access to the applications.commands scope.
@@ -8,7 +8,7 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 ## Features
 
-* Bot-info command server and member counts, patron commands, and helpful links to Github, Patreon and Top.gg.
+* Bot-info command server and member counts, patron commands, and helpful links to Github, Discord, Patreon and Top.gg.
 
 * Specific information about your league such as the names, members, trade deadline, and starting week of the playoffs.
 
