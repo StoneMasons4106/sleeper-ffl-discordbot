@@ -4,8 +4,6 @@ aiohttp==3.8.3
 async-timeout==4.0.2
 chardet==3.0.4
 yarl==1.8.1
-idna==3.4
-multidict==6.0.2
 attrs==22.1.0
 dnspython==2.1.0
 sleeper-api-wrapper==1.0.7
