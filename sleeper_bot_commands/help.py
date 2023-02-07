@@ -15,7 +15,7 @@ MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 
 def help(bot):
-    embed = functions.my_embed('Bot Info', 'Important notifications, helpful links, bot server and member count.', discord.Colour.blue(), 'Helpful Links', '[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Discord](https://discord.gg/4MSEK8cpfp), [Top.gg](https://top.gg/bot/871087848311382086), [Patreon](https://www.patreon.com/stonemasons)', False, bot)
+    embed = functions.my_embed('Bot Info', 'Important notifications, helpful links, bot server and member count.', discord.Colour.blue(), 'Helpful Links', '[Github](https://github.com/StoneMasons4106/sleeper-ffl-discordbot), [Discord](https://discord.com/servers/sleeper-ffl-community-1072358271454818425), [Top.gg](https://top.gg/bot/871087848311382086), [Patreon](https://www.patreon.com/stonemasons)', False, bot)
     embed.add_field(name='Server Count', value=str(len(bot.guilds)), inline=False)
     count = 0
     for guild in bot.guilds:
