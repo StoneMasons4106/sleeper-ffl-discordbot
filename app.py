@@ -343,6 +343,17 @@ async def transactions(ctx, week: str):
         await ctx.respond(embed=message, ephemeral=True)
 
 
+### NGS Command
+
+@bot.slash_command(name='ngs', description='Returns next gen stats given the kind of stat, player, year, and week. For yearly stats, use week 0.')
+async def ngs(ctx, kind: str, player: str, year: int, week: int):
+    message = patron.ngs(ctx, bot, kind, player, year, week)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=True)
+    else: 
+        await ctx.respond(embed=message, ephemeral=True)
+
+
 
 ## Help Commands
 

@@ -16,3 +16,4 @@ pendulum==2.1.2
 pytzdata==2020.1
 beautifulsoup4==4.11.1
 soupsieve==2.3.2.post1
+nfl_data_py==0.2.8

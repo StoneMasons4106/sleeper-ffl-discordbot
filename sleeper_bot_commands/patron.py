@@ -4,6 +4,7 @@ import os
 import pymongo
 import sleeper_wrapper
 import functions
+import nfl_data_py as nfl
 if os.path.exists("env.py"):
     import env
 
@@ -41,6 +42,61 @@ def waiver_order(ctx, bot):
             embed = 'Please run add-league command, no Sleeper League connected.'
     return embed
 
+
+
+def ngs(ctx, bot, kind, player, year, week):
+    if ctx.guild == None:
+        embed= 'This command is only available when sent in a guild rather than a DM. Try again there.'
+    else:
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            if functions.is_patron(existing_league):
+                try:
+                    ngs = nfl.import_ngs_data(kind, [year])
+                    player_filter = ngs.loc[((ngs['player_display_name'] == player) & (ngs['week'] == week))]
+                except:
+                    player_filter = None
+
+                if player_filter:
+                    if kind == 'passing':
+                        if week == 0:
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Time to Throw', player_filter["avg_time_to_throw"].values[0], False, bot)
+                        else:
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Time to Throw', player_filter["avg_time_to_throw"].values[0], False, bot)
+                        embed.add_field(name='Avg Completed Air Yards', value=player_filter["avg_completed_air_yards"].values[0], inline=False)
+                        embed.add_field(name='Avg Intended Air Yards', value=player_filter["avg_intended_air_yards"].values[0], inline=False)
+                        embed.add_field(name='Avg Air Yards Differential', value=player_filter["avg_air_yards_differential"].values[0], inline=False)
+                        embed.add_field(name='Aggressiveness', value=player_filter["aggressiveness"].values[0], inline=False)
+                        embed.add_field(name='Avg Air Yards to Sticks', value=player_filter["avg_air_yards_to_sticks"].values[0], inline=False)
+                        embed.add_field(name='Completion Percent Over Expected', value=player_filter["completion_percentage_above_expectation"].values[0], inline=False)
+                    elif kind == 'rushing':
+                        if week == 0:
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Efficiency', player_filter["efficiency"].values[0], False, bot)
+                        else:
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Efficiency', player_filter["efficiency"].values[0], False, bot)
+                        embed.add_field(name='Percent of Attempts vs 8 Defenders', value=player_filter["percent_attempts_gte_eight_defenders"].values[0], inline=False)
+                        embed.add_field(name='Avg Time to Line of Scrimmage', value=player_filter["avg_time_to_los"].values[0], inline=False)
+                        embed.add_field(name='Rush Yards Over Expected', value=player_filter["rush_yards_over_expected"].values[0], inline=False)
+                        embed.add_field(name='Rush Yards Over Expected per Attempt', value=player_filter["rush_yards_over_expected_per_att"].values[0], inline=False)
+                        embed.add_field(name='Rush Percent Over Expected', value=player_filter["rush_pct_over_expected"].values[0], inline=False)
+                    else:
+                        if week == 0:
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Cushion', player_filter["avg_cushion"].values[0], False, bot)
+                        else:
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Cushion', player_filter["avg_cushion"].values[0], False, bot)
+                        embed.add_field(name='Avg Separation', value=player_filter["avg_separation"].values[0], inline=False)
+                        embed.add_field(name='Avg Intended Air Yards', value=player_filter["avg_intended_air_yards"].values[0], inline=False)
+                        embed.add_field(name='Percent Share of Intended Air Yards', value=player_filter["percent_share_of_intended_air_yards"].values[0], inline=False)
+                        embed.add_field(name='Avg YAC Above Expectation', value=player_filter["avg_yac_above_expectation"].values[0], inline=False)
+                else:
+                    embed = 'No stats were found with the given parameters.'
+            else:
+                embed = 'You do not have access to this command, it is reserved for patrons only!'  
+        else:
+            embed = 'Please run add-league command, no Sleeper League connected.'
+                
+        return embed
+    
 
 
 def transactions(ctx, bot, week):
