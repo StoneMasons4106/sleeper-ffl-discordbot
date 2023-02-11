@@ -75,7 +75,7 @@ def ngs(ctx, bot, kind, player, year, week):
                         if week == 0:
                             embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Efficiency', player_filter["efficiency"].values[0], False, bot)
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Efficiency', player_filter["efficiency"].values[0], False, bot)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Efficiency', player_filter["efficiency"].values[0], False, bot)
                         embed.add_field(name='Percent of Attempts vs 8 Defenders', value=player_filter["percent_attempts_gte_eight_defenders"].values[0], inline=False)
                         embed.add_field(name='Avg Time to Line of Scrimmage', value=player_filter["avg_time_to_los"].values[0], inline=False)
                         embed.add_field(name='Rush Yards Over Expected', value=player_filter["rush_yards_over_expected"].values[0], inline=False)
@@ -85,7 +85,7 @@ def ngs(ctx, bot, kind, player, year, week):
                         if week == 0:
                             embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Cushion', player_filter["avg_cushion"].values[0], False, bot)
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Cushion', player_filter["avg_cushion"].values[0], False, bot)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Cushion', player_filter["avg_cushion"].values[0], False, bot)
                         embed.add_field(name='Avg Separation', value=player_filter["avg_separation"].values[0], inline=False)
                         embed.add_field(name='Avg Intended Air Yards', value=player_filter["avg_intended_air_yards"].values[0], inline=False)
                         embed.add_field(name='Percent Share of Intended Air Yards', value=player_filter["percent_share_of_intended_air_yards"].values[0], inline=False)
