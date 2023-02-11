@@ -62,34 +62,34 @@ def ngs(ctx, bot, kind, player, year, week):
                 else:
                     if kind == 'passing':
                         if week == 0:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Time to Throw', player_filter["avg_time_to_throw"].values[0], False, bot)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Time to Throw', "{:.2f}".format(player_filter["avg_time_to_throw"].values[0]), False, bot)
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Time to Throw', player_filter["avg_time_to_throw"].values[0], False, bot)
-                        embed.add_field(name='Avg Completed Air Yards', value=player_filter["avg_completed_air_yards"].values[0], inline=False)
-                        embed.add_field(name='Avg Intended Air Yards', value=player_filter["avg_intended_air_yards"].values[0], inline=False)
-                        embed.add_field(name='Avg Air Yards Differential', value=player_filter["avg_air_yards_differential"].values[0], inline=False)
-                        embed.add_field(name='Aggressiveness', value=player_filter["aggressiveness"].values[0], inline=False)
-                        embed.add_field(name='Avg Air Yards to Sticks', value=player_filter["avg_air_yards_to_sticks"].values[0], inline=False)
-                        embed.add_field(name='Completion Percent Over Expected', value=player_filter["completion_percentage_above_expectation"].values[0], inline=False)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Time to Throw', "{:.2f}".format(player_filter["avg_time_to_throw"].values[0]), False, bot)
+                        embed.add_field(name='Avg Completed Air Yards', value="{:.2f}".format(player_filter["avg_completed_air_yards"].values[0]), inline=False)
+                        embed.add_field(name='Avg Intended Air Yards', value="{:.2f}".format(player_filter["avg_intended_air_yards"].values[0]), inline=False)
+                        embed.add_field(name='Avg Air Yards Differential', value="{:.2f}".format(player_filter["avg_air_yards_differential"].values[0]), inline=False)
+                        embed.add_field(name='Aggressiveness', value="{:.2f}".format(player_filter["aggressiveness"].values[0]), inline=False)
+                        embed.add_field(name='Avg Air Yards to Sticks', value="{:.2f}".format(player_filter["avg_air_yards_to_sticks"].values[0]), inline=False)
+                        embed.add_field(name='Completion Percent Over Expected', value="{:.2f}".format(player_filter["completion_percentage_above_expectation"].values[0]), inline=False)
                     elif kind == 'rushing':
                         if week == 0:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Efficiency', player_filter["efficiency"].values[0], False, bot)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Efficiency', "{:.2f}".format(player_filter["efficiency"].values[0]), False, bot)
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Efficiency', player_filter["efficiency"].values[0], False, bot)
-                        embed.add_field(name='Percent of Attempts vs 8 Defenders', value=player_filter["percent_attempts_gte_eight_defenders"].values[0], inline=False)
-                        embed.add_field(name='Avg Time to Line of Scrimmage', value=player_filter["avg_time_to_los"].values[0], inline=False)
-                        embed.add_field(name='Rush Yards Over Expected', value=player_filter["rush_yards_over_expected"].values[0], inline=False)
-                        embed.add_field(name='Rush Yards Over Expected per Attempt', value=player_filter["rush_yards_over_expected_per_att"].values[0], inline=False)
-                        embed.add_field(name='Rush Percent Over Expected', value=player_filter["rush_pct_over_expected"].values[0], inline=False)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Efficiency', "{:.2f}".format(player_filter["efficiency"].values[0]), False, bot)
+                        embed.add_field(name='Percent of Attempts vs 8 Defenders', value="{:.2f}".format(player_filter["percent_attempts_gte_eight_defenders"].values[0]), inline=False)
+                        embed.add_field(name='Avg Time to Line of Scrimmage', value="{:.2f}".format(player_filter["avg_time_to_los"].values[0]), inline=False)
+                        embed.add_field(name='Rush Yards Over Expected', value="{:.2f}".format(player_filter["rush_yards_over_expected"].values[0]), inline=False)
+                        embed.add_field(name='Rush Yards Over Expected per Attempt', value="{:.2f}".format(player_filter["rush_yards_over_expected_per_att"].values[0]), inline=False)
+                        embed.add_field(name='Rush Percent Over Expected', value="{:.2f}".format(player_filter["rush_pct_over_expected"].values[0]), inline=False)
                     else:
                         if week == 0:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Cushion', player_filter["avg_cushion"].values[0], False, bot)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Cushion', "{:.2f}".format(player_filter["avg_cushion"].values[0]), False, bot)
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Cushion', player_filter["avg_cushion"].values[0], False, bot)
-                        embed.add_field(name='Avg Separation', value=player_filter["avg_separation"].values[0], inline=False)
-                        embed.add_field(name='Avg Intended Air Yards', value=player_filter["avg_intended_air_yards"].values[0], inline=False)
-                        embed.add_field(name='Percent Share of Intended Air Yards', value=player_filter["percent_share_of_intended_air_yards"].values[0], inline=False)
-                        embed.add_field(name='Avg YAC Above Expectation', value=player_filter["avg_yac_above_expectation"].values[0], inline=False)
+                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Cushion', "{:.2f}".format(player_filter["avg_cushion"].values[0]), False, bot)
+                        embed.add_field(name='Avg Separation', value="{:.2f}".format(player_filter["avg_separation"].values[0]), inline=False)
+                        embed.add_field(name='Avg Intended Air Yards', value="{:.2f}".format(player_filter["avg_intended_air_yards"].values[0]), inline=False)
+                        embed.add_field(name='Percent Share of Intended Air Yards', value="{:.2f}".format(player_filter["percent_share_of_intended_air_yards"].values[0]), inline=False)
+                        embed.add_field(name='Avg YAC Above Expectation', value="{:.2f}".format(player_filter["avg_yac_above_expectation"].values[0]), inline=False)
             else:
                 embed = 'You do not have access to this command, it is reserved for patrons only!'  
         else:
