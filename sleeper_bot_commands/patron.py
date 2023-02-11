@@ -57,7 +57,9 @@ def ngs(ctx, bot, kind, player, year, week):
                 except:
                     player_filter = None
 
-                if player_filter:
+                if player_filter.empty:
+                    embed = 'No stats were found with the given parameters.'
+                else:
                     if kind == 'passing':
                         if week == 0:
                             embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Time to Throw', player_filter["avg_time_to_throw"].values[0], False, bot)
@@ -88,8 +90,6 @@ def ngs(ctx, bot, kind, player, year, week):
                         embed.add_field(name='Avg Intended Air Yards', value=player_filter["avg_intended_air_yards"].values[0], inline=False)
                         embed.add_field(name='Percent Share of Intended Air Yards', value=player_filter["percent_share_of_intended_air_yards"].values[0], inline=False)
                         embed.add_field(name='Avg YAC Above Expectation', value=player_filter["avg_yac_above_expectation"].values[0], inline=False)
-                else:
-                    embed = 'No stats were found with the given parameters.'
             else:
                 embed = 'You do not have access to this command, it is reserved for patrons only!'  
         else:
