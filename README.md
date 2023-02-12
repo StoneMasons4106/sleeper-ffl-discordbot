@@ -8,6 +8,12 @@ This Discord Bot is powered by the [Sleeper API Wrapper](https://github.com/Swap
 
 ## Features
 
+* **NEW:** Next Gen Stats command only available to patrons! Takes kind of stat, player name, year, and week as arguments.
+    * Kind: Accepts 'passing', 'rushing', or 'receiving'
+    * Player Name: Accepts first and last name separated with a space
+    * Year: Accepts valid years from 2016 forward
+    * Week: 1-18 for regular season, 19+ denotes playoffs. Use 0 for full season stats
+
 * Bot-info command server and member counts, patron commands, and helpful links to Github, Discord, Patreon and Top.gg.
 
 * Specific information about your league such as the names, members, trade deadline, and starting week of the playoffs.
