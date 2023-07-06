@@ -1,4 +1,4 @@
-git+https://github.com/Pycord-Development/pycord@master
+py-cord==2.4.1
 pymongo==3.11.4
 aiohttp==3.8.3
 async-timeout==4.0.2
