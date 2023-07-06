@@ -302,17 +302,29 @@ async def find_user(ctx, *, member):
     author_id = os.environ.get('AUTHOR_ID')
     message_author_id = str(ctx.author.id)
     if message_author_id == author_id:
-        username, user_discriminator = member.split('#')
-        try:
-            user_id = discord.utils.get(bot.get_all_members(), name=username, discriminator=user_discriminator).id
-            user = await bot.fetch_user(user_id)
-            shared_guilds = [guild for guild in bot.guilds if user in guild.members]
-            if shared_guilds:
-                await ctx.respond(f'{member} - {shared_guilds[0].id}', ephemeral=True)
-            else:
+        if '#' in member:
+            username, user_discriminator = member.split('#')
+            try:
+                user_id = discord.utils.get(bot.get_all_members(), name=username, discriminator=user_discriminator).id
+                user = await bot.fetch_user(user_id)
+                shared_guilds = [guild for guild in bot.guilds if user in guild.members]
+                if shared_guilds:
+                    await ctx.respond(f'{member} - {shared_guilds[0].id}', ephemeral=True)
+                else:
+                    await ctx.respond('No shared guilds found.', ephemeral=True)
+            except:
                 await ctx.respond('No shared guilds found.', ephemeral=True)
-        except:
-            await ctx.respond('No shared guilds found.', ephemeral=True)
+        else:
+            try:
+                user_id = discord.utils.get(bot.get_all_members(), name=member).id
+                user = await bot.fetch_user(user_id)
+                shared_guilds = [guild for guild in bot.guilds if user in guild.members]
+                if shared_guilds:
+                    await ctx.respond(f'{member} - {shared_guilds[0].id}', ephemeral=True)
+                else:
+                    await ctx.respond('No shared guilds found.', ephemeral=True)
+            except:
+                await ctx.respond('No shared guilds found.', ephemeral=True)
     else:
         await ctx.respond('You do not have access to this command.', ephemeral=True)
     
