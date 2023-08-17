@@ -61,9 +61,10 @@ def get_current_week():
     nfl_state = requests.get(
         'https://api.sleeper.app/v1/state/nfl'
     )
-    nfl_date_list = nfl_state.json()["season_start_date"].split("-")
-    starting_week = pendulum.datetime(int(nfl_date_list[0]), int(nfl_date_list[1]), int(nfl_date_list[2]), tz='America/New_York')
-    if starting_week.is_future():
+    nfl_date_list = nfl_state.json()
+    starting_date = nfl_date_list["season_start_date"].split("-")
+    starting_week = pendulum.datetime(int(starting_date[0]), int(starting_date[1]), int(starting_date[2]), tz='America/New_York')
+    if starting_week.is_future() or nfl_date_list['season_type'] == 'pre':
         future = True
         week = 1
     else:
