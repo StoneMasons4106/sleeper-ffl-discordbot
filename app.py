@@ -150,34 +150,34 @@ async def my_league(ctx, ephemeral: bool):
 ### Get League Standings Sorted by Most to Least Wins
 
 @bot.slash_command(name='my-league-standings', description='Returns current league standings. Must run add-league first.')
-async def my_league_standings(ctx):
-    message = league.my_league_standings(ctx, bot)
+async def my_league_standings(ctx, ephemeral: bool):
+    message = league.my_league_standings(ctx, ephemeral, bot)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### Get Current Week Matchups
 
 @bot.slash_command(name='my-league-matchups', description='Returns matchups for a specific week. Must run add-league first.')
-async def my_league_matchups(ctx, week: str):
-    message = league.my_league_matchups(ctx, bot, week)
+async def my_league_matchups(ctx, ephemeral: bool, week: str):
+    message = league.my_league_matchups(ctx, ephemeral, bot, week)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### Get Current Week Scoreboard
 
 @bot.slash_command(name='my-league-scoreboard', description='Returns the scoreboard for a specific week. Must run add-league first.')
-async def my_league_scoreboard(ctx, week: str):
-    message = league.my_league_scoreboard(ctx, bot, week)
+async def my_league_scoreboard(ctx, ephemeral: bool, week: str):
+    message = league.my_league_scoreboard(ctx, ephemeral, bot, week)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else:
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 
