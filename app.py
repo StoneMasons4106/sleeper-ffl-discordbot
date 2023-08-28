@@ -139,12 +139,12 @@ async def set_score_type(ctx, score_type: str):
 ### Get League Name and Member Info
 
 @bot.slash_command(name='my-league', description='Returns general league information. Must run add-league first.')
-async def my_league(ctx):
-    message = league.my_league(ctx, bot)
+async def my_league(ctx, ephemeral: bool):
+    message = league.my_league(ctx, ephemeral, bot)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### Get League Standings Sorted by Most to Least Wins

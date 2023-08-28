@@ -7,7 +7,7 @@ if os.path.exists("env.py"):
 
 
 
-def my_league(ctx, bot):
+def my_league(ctx, ephemeral, bot):
     if ctx.guild == None:
         embed = 'This command is only available when sent in a guild rather than a DM. Try again there.'
     else:
