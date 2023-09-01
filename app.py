@@ -140,7 +140,7 @@ async def set_score_type(ctx, score_type: str):
 
 @bot.slash_command(name='my-league', description='Returns general league information. Must run add-league first.')
 async def my_league(ctx, ephemeral: bool):
-    message = league.my_league(ctx, ephemeral, bot)
+    message = league.my_league(ctx, bot)
     if type(message) is str:
         await ctx.respond(message, ephemeral=ephemeral)
     else: 
@@ -151,7 +151,7 @@ async def my_league(ctx, ephemeral: bool):
 
 @bot.slash_command(name='my-league-standings', description='Returns current league standings. Must run add-league first.')
 async def my_league_standings(ctx, ephemeral: bool):
-    message = league.my_league_standings(ctx, ephemeral, bot)
+    message = league.my_league_standings(ctx, bot)
     if type(message) is str:
         await ctx.respond(message, ephemeral=ephemeral)
     else: 
@@ -162,7 +162,7 @@ async def my_league_standings(ctx, ephemeral: bool):
 
 @bot.slash_command(name='my-league-matchups', description='Returns matchups for a specific week. Must run add-league first.')
 async def my_league_matchups(ctx, ephemeral: bool, week: str):
-    message = league.my_league_matchups(ctx, ephemeral, bot, week)
+    message = league.my_league_matchups(ctx, bot, week)
     if type(message) is str:
         await ctx.respond(message, ephemeral=ephemeral)
     else: 
@@ -173,7 +173,7 @@ async def my_league_matchups(ctx, ephemeral: bool, week: str):
 
 @bot.slash_command(name='my-league-scoreboard', description='Returns the scoreboard for a specific week. Must run add-league first.')
 async def my_league_scoreboard(ctx, ephemeral: bool, week: str):
-    message = league.my_league_scoreboard(ctx, ephemeral, bot, week)
+    message = league.my_league_scoreboard(ctx, bot, week)
     if type(message) is str:
         await ctx.respond(message, ephemeral=ephemeral)
     else:
@@ -186,45 +186,45 @@ async def my_league_scoreboard(ctx, ephemeral: bool, week: str):
 ### Get Trending Players
 
 @bot.slash_command(name='trending-players', description='Returns the top 10 trending players either in being added or dropped.')
-async def trending_players(ctx, add_drop: str):
+async def trending_players(ctx, ephemeral: bool, add_drop: str):
     message = players.trending_players(bot, add_drop)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else:
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### Get Roster of Team in Your League
 
 @bot.slash_command(name='roster', description='Returns a portion or entirety of a roster. Must run add-league first.')
-async def roster(ctx, username: str, roster_portion: str):
+async def roster(ctx, ephemeral: bool, username: str, roster_portion: str):
     message = players.roster(ctx, bot, username, roster_portion)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else:
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### Get the Roster, Injury, and Depth Chart Status of a Particular Player
         
 @bot.slash_command(name='status', description='Returns the injury and depth chart status of a given player.')
-async def status(ctx, first_name: str, last_name: str, team_abbreviation: str):
+async def status(ctx, ephemeral: bool, first_name: str, last_name: str, team_abbreviation: str):
     message = players.status(bot, first_name, last_name, team_abbreviation)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else:
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### See Who Has a Particular Player
 
 @bot.slash_command(name='who-has', description='Returns the user who has a given player. Must run add-league first.')
-async def who_has(ctx, first_name: str, last_name: str, team_abbreviation: str):
+async def who_has(ctx, ephemeral: bool, first_name: str, last_name: str, team_abbreviation: str):
     message = players.who_has(ctx, bot, first_name, last_name, team_abbreviation)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else:
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 
@@ -233,23 +233,23 @@ async def who_has(ctx, first_name: str, last_name: str, team_abbreviation: str):
 ### Get Local Forecast
 
 @bot.slash_command(name='forecast', description='Returns the 3 day forecast for a city or zip code.')
-async def forecast(ctx, city: str):
+async def forecast(ctx, ephemeral: bool, city: str):
     message = weather.forecast(bot, city)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### Get Current Weather
 
 @bot.slash_command(name='current-weather', description='Returns the current weather for a city or zip code.')
-async def current_weather(ctx, city: str):
+async def current_weather(ctx, ephemeral: bool, city: str):
     message = weather.current_weather(bot, city)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 
@@ -258,12 +258,12 @@ async def current_weather(ctx, city: str):
 ### Get Specified User Info
 
 @bot.slash_command(name='user-info', description='Returns Sleeper user information for a given user. Must run add-league first.')
-async def user_info(ctx, display_name: str):
+async def user_info(ctx, ephemeral: bool, display_name: str):
     message = user.user_info(ctx, bot, display_name)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 
@@ -336,34 +336,34 @@ async def find_user(ctx, *, member):
 ### Waiver Order Command
 
 @bot.slash_command(name='waiver-order', description='Returns current waiver order. Must run add-league first. Patron only.')
-async def waiver_order(ctx):
+async def waiver_order(ctx, ephemeral: bool):
     message = patron.waiver_order(ctx, bot)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### Transactions Command
 
 @bot.slash_command(name='transactions', description='Returns last 10 transactions for a given week. Must run add-league first. Patron only.')
-async def transactions(ctx, week: str):
+async def transactions(ctx, ephemeral: bool, week: str):
     message = patron.transactions(ctx, bot, week)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 ### NGS Command
 
 @bot.slash_command(name='ngs', description='Returns next gen stats given the kind of stat, player, year, and week. For yearly stats, use week 0.')
-async def ngs(ctx, kind: str, player: str, year: int, week: int):
+async def ngs(ctx, ephemeral: bool, kind: str, player: str, year: int, week: int):
     message = patron.ngs(ctx, bot, kind, player, year, week)
     if type(message) is str:
-        await ctx.respond(message, ephemeral=True)
+        await ctx.respond(message, ephemeral=ephemeral)
     else: 
-        await ctx.respond(embed=message, ephemeral=True)
+        await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 
@@ -372,9 +372,9 @@ async def ngs(ctx, kind: str, player: str, year: int, week: int):
 ### Bot Info Command
 
 @bot.slash_command(name='bot-info', description='Returns bot information and important messages.')
-async def bot_info(ctx):
+async def bot_info(ctx, ephemeral: bool):
     message = help.help(bot)
-    await ctx.respond(embed=message, ephemeral=True)
+    await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
 # Bot Run

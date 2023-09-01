@@ -7,7 +7,7 @@ if os.path.exists("env.py"):
 
 
 
-def my_league(ctx, ephemeral, bot):
+def my_league(ctx, bot):
     if ctx.guild == None:
         embed = 'This command is only available when sent in a guild rather than a DM. Try again there.'
     else:
@@ -41,7 +41,7 @@ def my_league(ctx, ephemeral, bot):
     return embed
 
 
-def my_league_standings(ctx, ephemeral, bot):
+def my_league_standings(ctx, bot):
     if ctx.guild == None:
         embed = 'This command is only available when sent in a guild rather than a DM. Try again there.'
     else:
@@ -71,7 +71,7 @@ def my_league_standings(ctx, ephemeral, bot):
     return embed
 
 
-def my_league_matchups(ctx, ephemeral, bot, week):
+def my_league_matchups(ctx, bot, week):
     if ctx.guild == None:
         embed = 'This command is only available when sent in a guild rather than a DM. Try again there.'
     else:    
@@ -115,7 +115,7 @@ def my_league_matchups(ctx, ephemeral, bot, week):
     return embed
 
 
-def my_league_scoreboard(ctx, ephemeral, bot, week):
+def my_league_scoreboard(ctx, bot, week):
     if ctx.guild == None:
         embed = 'This command is only available when sent in a guild rather than a DM. Try again there.'
     else:
