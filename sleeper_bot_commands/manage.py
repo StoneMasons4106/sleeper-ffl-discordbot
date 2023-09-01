@@ -30,12 +30,19 @@ async def unban(ctx, member):
     else:    
         if ctx.author.guild_permissions.administrator:
             banned_users = await ctx.guild.bans()
-            member_name, member_discriminator = member.split('#')
-            for ban_entry in banned_users:
-                user = ban_entry.user
-                if (user.name, user.discriminator) == (member_name, member_discriminator):
-                    await ctx.guild.unban(user)
-                    message = f"{user} has been welcomed back! Shower them with gifts!"
+            if '#' in member:
+                member_name, member_discriminator = member.split('#')
+                for ban_entry in banned_users:
+                    user = ban_entry.user
+                    if (user.name, user.discriminator) == (member_name, member_discriminator):
+                        await ctx.guild.unban(user)
+                        message = f"{user} has been welcomed back! Shower them with gifts!"
+            else:
+                for ban_entry in banned_users:
+                    user = ban_entry.user
+                    if user.name == member:
+                        await ctx.guild.unban(user)
+                        message = f"{user} has been welcomed back! Shower them with gifts!"
         else:
             message = 'You do not have access to this command.'
     return message
