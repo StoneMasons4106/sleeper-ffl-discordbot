@@ -64,7 +64,7 @@ def get_current_week():
     nfl_date_list = nfl_state.json()
     starting_date = nfl_date_list["season_start_date"].split("-")
     starting_week = pendulum.datetime(int(starting_date[0]), int(starting_date[1]), int(starting_date[2]), tz='America/New_York')
-    if starting_week.is_future() or nfl_date_list['season_type'] == 'pre' or nfl_date_list['season_type'] == 'post':
+    if starting_week.is_future() or nfl_date_list['season_type'] == 'pre' or nfl_date_list['season_type'] == 'post' or nfl_date_list['season_type'] == 'off':
         future = True
         week = 1
     else:
