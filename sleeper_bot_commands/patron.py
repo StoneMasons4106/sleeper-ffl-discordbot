@@ -112,6 +112,7 @@ def transactions(ctx, bot, week):
                         users = sleeper_wrapper.League(int(league_id)).get_users()
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                         transactions = sleeper_wrapper.League(int(league_id)).get_transactions(int(week))
+                        print(transactions)
                         transactions_string = ''
                         count = 0
                         if len(transactions) == 0:
