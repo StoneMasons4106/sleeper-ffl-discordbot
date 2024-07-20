@@ -112,7 +112,6 @@ def transactions(ctx, bot, week):
                         users = sleeper_wrapper.League(int(league_id)).get_users()
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                         transactions = sleeper_wrapper.League(int(league_id)).get_transactions(int(week))
-                        print(transactions)
                         transactions_string = ''
                         count = 0
                         if len(transactions) == 0:
@@ -214,23 +213,24 @@ def transactions(ctx, bot, week):
                                     transactions_string += '\n\n'
                                 else:
                                     second_transactions_string = 'Trade:\n'
-                                    for add in transaction["adds"]:
-                                        existing_player = MONGO.players.find_one({"id": str(add)})
-                                        roster_id = transaction["adds"][add]
-                                        for roster in rosters:
-                                            if roster["roster_id"] == roster_id:
-                                                this_roster = roster
-                                                break
-                                            else:
-                                                continue
-                                        for user in users:
-                                            if this_roster["owner_id"] == user["user_id"]:
-                                                username = user["display_name"]
-                                                second_transactions_string += f'{username} received {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n'
-                                                break
-                                            else:
-                                                continue
-                                        MONGO_CONN.close()
+                                    if transaction["adds"]:
+                                        for add in transaction["adds"]:
+                                            existing_player = MONGO.players.find_one({"id": str(add)})
+                                            roster_id = transaction["adds"][add]
+                                            for roster in rosters:
+                                                if roster["roster_id"] == roster_id:
+                                                    this_roster = roster
+                                                    break
+                                                else:
+                                                    continue
+                                            for user in users:
+                                                if this_roster["owner_id"] == user["user_id"]:
+                                                    username = user["display_name"]
+                                                    second_transactions_string += f'{username} received {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n'
+                                                    break
+                                                else:
+                                                    continue
+                                            MONGO_CONN.close()
                                     if len(transaction["draft_picks"]) != 0:
                                         for draft_pick in transaction["draft_picks"]:
                                             for roster in rosters:
