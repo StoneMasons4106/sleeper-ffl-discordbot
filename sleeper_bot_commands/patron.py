@@ -115,26 +115,26 @@ def box_score(ctx, bot, kind, player, year, week):
                     embed = 'No stats were found with the given parameters.'
                 else:
                     if kind == 'passing':
-                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Comp/Att', f'{player_filter["completions"]}/{player_filter["attempts"]}', False, bot)
-                        embed.add_field(name='Yards', value=player_filter["passing_yards"], inline=False)
-                        embed.add_field(name='Touchdowns', value=player_filter["passing_tds"], inline=False)
-                        embed.add_field(name='Interceptions', value=player_filter["interceptions"], inline=False)
-                        embed.add_field(name='Sacks', value=player_filter["sacks"], inline=False)
-                        embed.add_field(name='Fumbles Lost', value=player_filter["sack_fumbles_lost"], inline=False)
-                        embed.add_field(name='YAC', value=player_filter["passing_yards_after_catch"], inline=False)
+                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Comp/Att', f'{int(player_filter["completions"])}/{int(player_filter["attempts"])}', False, bot)
+                        embed.add_field(name='Yards', value="{:.0f}".format(player_filter["passing_yards"].values[0]), inline=False)
+                        embed.add_field(name='Touchdowns', value=int(player_filter["passing_tds"]), inline=False)
+                        embed.add_field(name='Interceptions', value="{:.0f}".format(player_filter["interceptions"].values[0]), inline=False)
+                        embed.add_field(name='Sacks', value="{:.0f}".format(player_filter["sacks"].values[0]), inline=False)
+                        embed.add_field(name='Fumbles Lost', value=int(player_filter["sack_fumbles_lost"]), inline=False)
+                        embed.add_field(name='YAC', value="{:.0f}".format(player_filter["passing_yards_after_catch"].values[0]), inline=False)
                         embed.add_field(name='Passing EPA', value="{:.2f}".format(player_filter["passing_epa"].values[0]), inline=False)
                     elif kind == 'rushing':
-                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Carries', player_filter["carries"], False, bot)
-                        embed.add_field(name='Yards', value=player_filter["rushing_yards"], inline=False)
-                        embed.add_field(name='Touchdowns', value=player_filter["rushing_tds"], inline=False)
-                        embed.add_field(name='Fumbles Lost', value=player_filter["rushing_fumbles_lost"], inline=False)
+                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Carries', int(player_filter["carries"]), False, bot)
+                        embed.add_field(name='Yards', value="{:.0f}".format(player_filter["rushing_yards"].values[0]), inline=False)
+                        embed.add_field(name='Touchdowns', value=int(player_filter["rushing_tds"]), inline=False)
+                        embed.add_field(name='Fumbles Lost', value="{:.0f}".format(player_filter["rushing_fumbles_lost"].values[0]), inline=False)
                         embed.add_field(name='Rushing EPA', value="{:.2f}".format(player_filter["rushing_epa"].values[0]), inline=False)
                     else:
-                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Receptions', player_filter["receptions"], False, bot)
-                        embed.add_field(name='Targets', value=player_filter["targets"], inline=False)
-                        embed.add_field(name='Yards', value=player_filter["receiving_yards"], inline=False)
-                        embed.add_field(name='Touchdowns', value=player_filter["receiving_tds"], inline=False)
-                        embed.add_field(name='Fumbles Lost', value=player_filter["receiving_fumbles_lost"], inline=False)
+                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Receptions', int(player_filter["receptions"]), False, bot)
+                        embed.add_field(name='Targets', value=int(player_filter["targets"]), inline=False)
+                        embed.add_field(name='Yards', value="{:.0f}".format(player_filter["receiving_yards"].values[0]), inline=False)
+                        embed.add_field(name='Touchdowns', value=int(player_filter["receiving_tds"]), inline=False)
+                        embed.add_field(name='Fumbles Lost', value="{:.0f}".format(player_filter["receiving_fumbles_lost"].values[0]), inline=False)
                         embed.add_field(name='Receiving EPA', value="{:.2f}".format(player_filter["receiving_epa"].values[0]), inline=False)
             else:
                 embed = 'You do not have access to this command, it is reserved for patrons only!'  
