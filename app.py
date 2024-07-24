@@ -407,6 +407,22 @@ async def ngs(ctx, ephemeral: bool, kind: str, player: str, year: int, week: int
         await ctx.respond(embed=message, ephemeral=ephemeral)
 
 
+### Box Score Command
+
+@bot.slash_command(name='box-score', description='Returns the box score given the kind of stat, player, year, and week.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("kind", description="Please select the kind of stats you'd like to view for this player.", choices=["passing", "rushing", "receiving"])
+@option("player", description="Please enter the player name that you'd like to view Next Gen Stats for.")
+@option("year", description="Please enter the year you'd like to view these stats for. Valid back through 1999.")
+@option("week", description="Please enter the week you'd like to view these stats for.")
+async def box_score(ctx, ephemeral: bool, kind: str, player: str, year: int, week: int):
+    message = patron.box_score(ctx, bot, kind, player, year, week)
+    if type(message) is str:
+        await ctx.respond(message, ephemeral=ephemeral)
+    else: 
+        await ctx.respond(embed=message, ephemeral=ephemeral)
+
+
 
 ## Help Commands
 

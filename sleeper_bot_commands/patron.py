@@ -98,6 +98,52 @@ def ngs(ctx, bot, kind, player, year, week):
         return embed
     
 
+def box_score(ctx, bot, kind, player, year, week):
+    if ctx.guild == None:
+        embed= 'This command is only available when sent in a guild rather than a DM. Try again there.'
+    else:
+        existing_league = functions.get_existing_league(ctx)
+        if existing_league:
+            if functions.is_patron(existing_league):
+                try:
+                    weekly_data = nfl.import_weekly_data([year])
+                    player_filter = weekly_data.loc[((weekly_data['player_display_name'] == player) & (weekly_data['week'] == week))]
+                except:
+                    player_filter = None
+
+                if player_filter.empty:
+                    embed = 'No stats were found with the given parameters.'
+                else:
+                    if kind == 'passing':
+                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Comp/Att', f'{player_filter["completions"]}/{player_filter["attempts"]}', False, bot)
+                        embed.add_field(name='Yards', value=player_filter["passing_yards"], inline=False)
+                        embed.add_field(name='Touchdowns', value=player_filter["passing_tds"], inline=False)
+                        embed.add_field(name='Interceptions', value=player_filter["interceptions"], inline=False)
+                        embed.add_field(name='Sacks', value=player_filter["sacks"], inline=False)
+                        embed.add_field(name='Fumbles Lost', value=player_filter["sack_fumbles_lost"], inline=False)
+                        embed.add_field(name='YAC', value=player_filter["passing_yards_after_catch"], inline=False)
+                        embed.add_field(name='Passing EPA', value="{:.2f}".format(player_filter["passing_epa"].values[0]), inline=False)
+                    elif kind == 'rushing':
+                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Carries', player_filter["carries"], False, bot)
+                        embed.add_field(name='Yards', value=player_filter["rushing_yards"], inline=False)
+                        embed.add_field(name='Touchdowns', value=player_filter["rushing_tds"], inline=False)
+                        embed.add_field(name='Fumbles Lost', value=player_filter["rushing_fumbles_lost"], inline=False)
+                        embed.add_field(name='Rushing EPA', value="{:.2f}".format(player_filter["rushing_epa"].values[0]), inline=False)
+                    else:
+                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Receptions', player_filter["receptions"], False, bot)
+                        embed.add_field(name='Targets', value=player_filter["targets"], inline=False)
+                        embed.add_field(name='Yards', value=player_filter["receiving_yards"], inline=False)
+                        embed.add_field(name='Touchdowns', value=player_filter["receiving_tds"], inline=False)
+                        embed.add_field(name='Fumbles Lost', value=player_filter["receiving_fumbles_lost"], inline=False)
+                        embed.add_field(name='Receiving EPA', value="{:.2f}".format(player_filter["receiving_epa"].values[0]), inline=False)
+            else:
+                embed = 'You do not have access to this command, it is reserved for patrons only!'  
+        else:
+            embed = 'Please run add-league command, no Sleeper League connected.'
+                
+        return embed
+    
+
 
 def transactions(ctx, bot, week):
     if ctx.guild == None:
