@@ -1,6 +1,7 @@
 # Import needed libraries
 
 import discord
+from discord import option
 from discord.ext import commands
 from discord.utils import find
 import os
@@ -103,6 +104,7 @@ async def on_guild_remove(guild):
 ### Set Channel to Send Timed Messages in
 
 @bot.slash_command(name='set-channel', description='Sets the channel you want to use for automated messages.')
+@option("channel_id", description="Please provide the ID of the channel where you'd like to receive automated messages.")
 async def set_channel(ctx, channel_id: str):
     message = setup.set_channel(ctx, bot, channel_id)
     if type(message) is str:
@@ -114,6 +116,7 @@ async def set_channel(ctx, channel_id: str):
 ### Set League ID in MongoDB
 
 @bot.slash_command(name='add-league', description='Connects your Discord server to your Sleeper league.')
+@option("league_id", description="Please provide the ID of your Sleeper league to retrieve information from.")
 async def add_league(ctx, league_id: str):
     message = setup.add_league(ctx, bot, league_id)
     if type(message) is str:
@@ -125,6 +128,7 @@ async def add_league(ctx, league_id: str):
 ### Set Score Type in MongoDB
 
 @bot.slash_command(name='set-score-type', description='Sets the score type of your specific league.')
+@option("score_type", description="Please provide the scoring type that your league uses.", choices=["pts_ppr", "pts_half_ppr", "pts_std"])
 async def set_score_type(ctx, score_type: str):
     message = setup.set_score_type(ctx, bot, score_type)
     if type(message) is str:
@@ -139,6 +143,7 @@ async def set_score_type(ctx, score_type: str):
 ### Get League Name and Member Info
 
 @bot.slash_command(name='my-league', description='Returns general league information. Must run add-league first.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
 async def my_league(ctx, ephemeral: bool):
     message = league.my_league(ctx, bot)
     if type(message) is str:
@@ -150,6 +155,7 @@ async def my_league(ctx, ephemeral: bool):
 ### Get League Standings Sorted by Most to Least Wins
 
 @bot.slash_command(name='my-league-standings', description='Returns current league standings. Must run add-league first.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
 async def my_league_standings(ctx, ephemeral: bool):
     message = league.my_league_standings(ctx, bot)
     if type(message) is str:
@@ -161,6 +167,8 @@ async def my_league_standings(ctx, ephemeral: bool):
 ### Get Current Week Matchups
 
 @bot.slash_command(name='my-league-matchups', description='Returns matchups for a specific week. Must run add-league first.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("week", description="Please enter the week number you'd like to view matchups for.")
 async def my_league_matchups(ctx, ephemeral: bool, week: str):
     message = league.my_league_matchups(ctx, bot, week)
     if type(message) is str:
@@ -172,6 +180,8 @@ async def my_league_matchups(ctx, ephemeral: bool, week: str):
 ### Get Current Week Scoreboard
 
 @bot.slash_command(name='my-league-scoreboard', description='Returns the scoreboard for a specific week. Must run add-league first.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("week", description="Please enter the week number you'd like to view scores for.")
 async def my_league_scoreboard(ctx, ephemeral: bool, week: str):
     message = league.my_league_scoreboard(ctx, bot, week)
     if type(message) is str:
@@ -186,6 +196,8 @@ async def my_league_scoreboard(ctx, ephemeral: bool, week: str):
 ### Get Trending Players
 
 @bot.slash_command(name='trending-players', description='Returns the top 10 trending players either in being added or dropped.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("add_drop", description="Please select whether you'd like to view players being added or dropped.", choices=["add", "drop"])
 async def trending_players(ctx, ephemeral: bool, add_drop: str):
     message = players.trending_players(bot, add_drop)
     if type(message) is str:
@@ -197,6 +209,9 @@ async def trending_players(ctx, ephemeral: bool, add_drop: str):
 ### Get Roster of Team in Your League
 
 @bot.slash_command(name='roster', description='Returns a portion or entirety of a roster. Must run add-league first.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("username", description="Please provide the username of the leaguemate you'd like to view the roster of.")
+@option("roster_portion", description="Please select the portion of the roster you'd like to view.", choices=["starters", "bench", "all"])
 async def roster(ctx, ephemeral: bool, username: str, roster_portion: str):
     message = players.roster(ctx, bot, username, roster_portion)
     if type(message) is str:
@@ -208,6 +223,10 @@ async def roster(ctx, ephemeral: bool, username: str, roster_portion: str):
 ### Get the Roster, Injury, and Depth Chart Status of a Particular Player
         
 @bot.slash_command(name='status', description='Returns the injury and depth chart status of a given player.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("first_name", description="Please provide the first name of the player you want to view the depth chart and injury status for.")
+@option("last_name", description="Please provide the last name of the player you want to view the depth chart and injury status for.")
+@option("team_abbreviation", description="Please provide the team abbreviation in all caps of the player you want to view the depth chart and injury status for.")
 async def status(ctx, ephemeral: bool, first_name: str, last_name: str, team_abbreviation: str):
     message = players.status(bot, first_name, last_name, team_abbreviation)
     if type(message) is str:
@@ -219,6 +238,10 @@ async def status(ctx, ephemeral: bool, first_name: str, last_name: str, team_abb
 ### See Who Has a Particular Player
 
 @bot.slash_command(name='who-has', description='Returns the user who has a given player. Must run add-league first.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("first_name", description="Please provide the first name of the player you want to see the owner of.")
+@option("last_name", description="Please provide the last name of the player you want to see the owner of.")
+@option("team_abbreviation", description="Please provide the team abbreviation in all caps of the player you want to see the owner of.")
 async def who_has(ctx, ephemeral: bool, first_name: str, last_name: str, team_abbreviation: str):
     message = players.who_has(ctx, bot, first_name, last_name, team_abbreviation)
     if type(message) is str:
@@ -233,6 +256,8 @@ async def who_has(ctx, ephemeral: bool, first_name: str, last_name: str, team_ab
 ### Get Local Forecast
 
 @bot.slash_command(name='forecast', description='Returns the 3 day forecast for a city or zip code.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("city", description="Please provide the name of the city or zipcode that you want to view the 3 day forecast for.")
 async def forecast(ctx, ephemeral: bool, city: str):
     message = weather.forecast(bot, city)
     if type(message) is str:
@@ -244,6 +269,8 @@ async def forecast(ctx, ephemeral: bool, city: str):
 ### Get Current Weather
 
 @bot.slash_command(name='current-weather', description='Returns the current weather for a city or zip code.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("city", description="Please provide the name of the city or zipcode that you want to view the current weather for.")
 async def current_weather(ctx, ephemeral: bool, city: str):
     message = weather.current_weather(bot, city)
     if type(message) is str:
@@ -258,6 +285,8 @@ async def current_weather(ctx, ephemeral: bool, city: str):
 ### Get Specified User Info
 
 @bot.slash_command(name='user-info', description='Returns Sleeper user information for a given user. Must run add-league first.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("display_name", description="Please enter the display name of the user you'd like to see information about.")
 async def user_info(ctx, ephemeral: bool, display_name: str):
     message = user.user_info(ctx, bot, display_name)
     if type(message) is str:
@@ -273,6 +302,7 @@ async def user_info(ctx, ephemeral: bool, display_name: str):
 
 @bot.slash_command(name='kick', description='Kicks a given user.')
 @commands.has_permissions(kick_members=True)
+@option("user", description="Please enter the user being kicked.")
 async def kick(ctx, user: discord.Member, *, reason=None):
     message = await manage.kick(ctx, user, reason=None)
     await ctx.respond(message)
@@ -282,6 +312,7 @@ async def kick(ctx, user: discord.Member, *, reason=None):
 
 @bot.slash_command(name='ban', description='Bans a given user.')
 @commands.has_permissions(ban_members=True)
+@option("user", description="Please enter the user being banned.")
 async def ban(ctx, user: discord.Member, *, reason=None):
     message = await manage.ban(ctx, user, reason=reason)
     await ctx.respond(message)
@@ -290,6 +321,7 @@ async def ban(ctx, user: discord.Member, *, reason=None):
 ### Unban Command
 
 @bot.slash_command(name='unban', description='Unbans a given user.')
+@option("member", description="Please enter the exact username of the member being unbanned.")
 async def unban(ctx, *, member):
     message = await manage.unban(ctx, member)
     await ctx.respond(message)
@@ -298,6 +330,7 @@ async def unban(ctx, *, member):
 ### Find User Command
 
 @bot.slash_command(name='find-user', description='Finds a given user and returns their server info related to the bot.')
+@option("member", description="Please enter the exact username of the member you want to find the guild ID of.")
 async def find_user(ctx, *, member):
     author_id = os.environ.get('AUTHOR_ID')
     message_author_id = str(ctx.author.id)
@@ -336,6 +369,7 @@ async def find_user(ctx, *, member):
 ### Waiver Order Command
 
 @bot.slash_command(name='waiver-order', description='Returns current waiver order. Must run add-league first. Patron only.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
 async def waiver_order(ctx, ephemeral: bool):
     message = patron.waiver_order(ctx, bot)
     if type(message) is str:
@@ -347,6 +381,8 @@ async def waiver_order(ctx, ephemeral: bool):
 ### Transactions Command
 
 @bot.slash_command(name='transactions', description='Returns last 10 transactions for a given week. Must run add-league first. Patron only.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("week", description="Please enter the week number you'd like to view transactions for.")
 async def transactions(ctx, ephemeral: bool, week: str):
     message = patron.transactions(ctx, bot, week)
     if type(message) is str:
@@ -358,6 +394,11 @@ async def transactions(ctx, ephemeral: bool, week: str):
 ### NGS Command
 
 @bot.slash_command(name='ngs', description='Returns next gen stats given the kind of stat, player, year, and week. For yearly stats, use week 0.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
+@option("kind", description="Please select the kind of Next Gen Stats you'd like to view for this player.", choices=["passing", "rushing", "receiving"])
+@option("player", description="Please enter the player name that you'd like to view Next Gen Stats for.")
+@option("year", description="Please enter the year you'd like to view these stats for. Valid back through 2016.")
+@option("week", description="Please enter the week you'd like to view these stats for. Use 0 for season stats.")
 async def ngs(ctx, ephemeral: bool, kind: str, player: str, year: int, week: int):
     message = patron.ngs(ctx, bot, kind, player, year, week)
     if type(message) is str:
@@ -372,6 +413,7 @@ async def ngs(ctx, ephemeral: bool, kind: str, player: str, year: int, week: int
 ### Bot Info Command
 
 @bot.slash_command(name='bot-info', description='Returns bot information and important messages.')
+@option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
 async def bot_info(ctx, ephemeral: bool):
     message = help.help(bot)
     await ctx.respond(embed=message, ephemeral=ephemeral)
