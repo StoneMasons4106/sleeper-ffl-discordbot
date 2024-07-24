@@ -226,7 +226,7 @@ async def roster(ctx, ephemeral: bool, username: str, roster_portion: str):
 @option("ephemeral", description="Select whether or not you'd like the response to be viewable to just you.")
 @option("first_name", description="Please provide the first name of the player you want to view the depth chart and injury status for.")
 @option("last_name", description="Please provide the last name of the player you want to view the depth chart and injury status for.")
-@option("team_abbreviation", description="Please provide the team abbreviation in all caps of the player you want to view the depth chart and injury status for.")
+@option("team_abbreviation", description="Please provide the team abbreviation in all caps of the player you want to view the status of.")
 async def status(ctx, ephemeral: bool, first_name: str, last_name: str, team_abbreviation: str):
     message = players.status(bot, first_name, last_name, team_abbreviation)
     if type(message) is str:
