@@ -27,7 +27,7 @@ MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 intents = discord.Intents.default()
 intents.members = True
-bot = discord.Bot(intents=intents)
+bot = discord.AutoShardedBot(intents=intents)
 
 
 # Bot Events
