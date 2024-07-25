@@ -52,7 +52,6 @@ def ngs(ctx, bot, kind, player, year, week):
         if existing_league:
             if functions.is_patron(existing_league):
                 try:
-                    print(kind)
                     ngs = nfl.import_ngs_data(kind, [year])
                     player_filter = ngs.loc[((ngs['player_display_name'] == player) & (ngs['week'] == week))]
                 except:
