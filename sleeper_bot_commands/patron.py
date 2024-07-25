@@ -57,7 +57,7 @@ def ngs(ctx, bot, kind, player, year, week):
                 except:
                     player_filter = None
 
-                if player_filter is None:
+                if player_filter is None or player_filter.empty:
                     embed = 'No stats were found with the given parameters.'
                 else:
                     if kind == 'passing':
@@ -111,7 +111,7 @@ def box_score(ctx, bot, kind, player, year, week):
                 except:
                     player_filter = None
 
-                if player_filter is None:
+                if player_filter is None or player_filter.empty:
                     embed = 'No stats were found with the given parameters.'
                 else:
                     if kind == 'passing':
