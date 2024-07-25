@@ -17,3 +17,4 @@ pytzdata==2020.1
 beautifulsoup4==4.12.3
 soupsieve==2.5
 nfl_data_py==0.3.0
+numpy==1.25.2
