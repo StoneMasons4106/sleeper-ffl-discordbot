@@ -54,7 +54,8 @@ def ngs(ctx, bot, kind, player, year, week):
                 try:
                     ngs = nfl.import_ngs_data(kind, [year])
                     player_filter = ngs.loc[((ngs['player_display_name'] == player) & (ngs['week'] == week))]
-                except:
+                except Exception as e:
+                    print(Exception)
                     player_filter = None
 
                 if player_filter is None:
