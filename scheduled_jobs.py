@@ -87,9 +87,9 @@ async def get_current_matchups(bot):
                                         user = next((user for user in users if user["user_id"] == roster["owner_id"]), None)
                                         if (count % 2) == 0:
                                             matchup_count = matchup_count + 1
-                                            matchups_string += f'{user["display_name"]}\n'
+                                            matchups_string += f'{user["metadata"]["team_name"]}\n'
                                         else:
-                                            matchups_string += f'{str(matchup_count)}. {user["display_name"]} vs. '
+                                            matchups_string += f'{str(matchup_count)}. {user["metadata"]["team_name"]} vs. '
                                 embed = functions.my_embed('Current Week Matchups', f'Matchups for Week {str(week[0])}', discord.Colour.blue(), 'Matchups', matchups_string, False, bot)
                                 await channel.send(f'Who is ready to rumble?! Here are the matchups for week {str(week[0])} in our league:')
                                 await channel.send(embed=embed)
