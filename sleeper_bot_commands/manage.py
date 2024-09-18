@@ -32,13 +32,13 @@ async def unban(ctx, member):
             banned_users = ctx.guild.bans()
             if '#' in member:
                 member_name, member_discriminator = member.split('#')
-                for ban_entry in banned_users:
+                async for ban_entry in banned_users:
                     user = ban_entry.user
                     if (user.name, user.discriminator) == (member_name, member_discriminator):
                         await ctx.guild.unban(user)
                         message = f"{user} has been welcomed back! Shower them with gifts!"
             else:
-                for ban_entry in banned_users:
+                async for ban_entry in banned_users:
                     user = ban_entry.user
                     if user.name == member:
                         await ctx.guild.unban(user)
