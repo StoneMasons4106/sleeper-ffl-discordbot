@@ -29,7 +29,7 @@ async def unban(ctx, member):
         message = 'This command is only available when sent in a guild rather than a DM. Try again there.'
     else:    
         if ctx.author.guild_permissions.administrator:
-            banned_users = await ctx.guild.bans()
+            banned_users = ctx.guild.bans()
             if '#' in member:
                 member_name, member_discriminator = member.split('#')
                 for ban_entry in banned_users:
