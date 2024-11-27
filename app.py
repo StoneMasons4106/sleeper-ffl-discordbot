@@ -37,6 +37,7 @@ bot = discord.AutoShardedBot(intents=intents)
 
 @bot.event
 async def on_ready():
+    print('successfully finished startup')
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="slash commands"))
     scheduler = AsyncIOScheduler(timezone='America/New_York')
     trigger_one = OrTrigger([
