@@ -40,7 +40,7 @@ def help(bot):
     )
     embed.add_field(
         name="Off Tackle",
-        value="Please support my other project, [Off Tackle](https://www.off-tackle.com)), an NFL analytics platform. There are planned fantasy football applications and league syncing in the future, but in the meantime, dive into the numbers and see how your favorite players and teams are performing.",
+        value="Please support my other project, [Off Tackle](https://www.off-tackle.com), an NFL analytics platform. There are planned fantasy football applications and league syncing in the future, but in the meantime, dive into the numbers and see how your favorite players and teams are performing.",
         inline=False,
     )
     embed.add_field(
