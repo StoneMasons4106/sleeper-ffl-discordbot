@@ -5,6 +5,7 @@ import pymongo
 import sleeper_wrapper
 import functions
 import nfl_data_py as nfl
+
 if os.path.exists("env.py"):
     import env
 
@@ -17,8 +18,8 @@ MONGO = pymongo.MongoClient(MONGO_URI)[MONGO_DBNAME]
 
 def waiver_order(ctx, bot):
     if ctx.guild == None:
-        embed= 'This command is only available when sent in a guild rather than a DM. Try again there.'
-    else:    
+        embed = "This command is only available when sent in a guild rather than a DM. Try again there."
+    else:
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
             if functions.is_patron(existing_league):
@@ -26,129 +27,404 @@ def waiver_order(ctx, bot):
                     league_id = existing_league["league"]
                     rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
                     users = sleeper_wrapper.League(int(league_id)).get_users()
-                    sorted_rosters = sorted(rosters, key=lambda i: i["settings"]["waiver_position"])
-                    waiver_order_string = ''
+                    sorted_rosters = sorted(
+                        rosters, key=lambda i: i["settings"]["waiver_position"]
+                    )
+                    waiver_order_string = ""
                     count = 0
                     for roster in sorted_rosters:
                         count = count + 1
                         user = find(lambda u: u["user_id"] == roster["owner_id"], users)
                         waiver_order_string += f'{str(count)}. {user["display_name"]}\n'
-                    embed = functions.my_embed('Waiver Order', f'Returns the current waiver order for your league.', discord.Colour.blue(), f'Current Waiver Order', waiver_order_string, False, bot)
+                    embed = functions.my_embed(
+                        "Waiver Order",
+                        f"Returns the current waiver order for your league.",
+                        discord.Colour.blue(),
+                        f"Current Waiver Order",
+                        waiver_order_string,
+                        False,
+                        bot,
+                    )
                 else:
-                    embed = 'Please run add-league command, no Sleeper League connected.'
+                    embed = (
+                        "Please run add-league command, no Sleeper League connected."
+                    )
             else:
-                embed = 'You do not have access to this command, it is reserved for patrons only!'  
+                embed = "You do not have access to this command, it is reserved for patrons only!"
         else:
-            embed = 'Please run add-league command, no Sleeper League connected.'
+            embed = "Please run add-league command, no Sleeper League connected."
     return embed
-
 
 
 def ngs(ctx, bot, kind, player, year, week):
     if ctx.guild == None:
-        embed= 'This command is only available when sent in a guild rather than a DM. Try again there.'
+        embed = "This command is only available when sent in a guild rather than a DM. Try again there."
     else:
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
             if functions.is_patron(existing_league):
                 try:
                     ngs = nfl.import_ngs_data(kind, [year])
-                    player_filter = ngs.loc[((ngs['player_display_name'] == player) & (ngs['week'] == week))]
+                    player_filter = ngs.loc[
+                        ((ngs["player_display_name"] == player) & (ngs["week"] == week))
+                    ]
                 except:
                     player_filter = None
 
                 if player_filter is None or player_filter.empty:
-                    embed = 'No stats were found with the given parameters.'
+                    embed = "No stats were found with the given parameters."
                 else:
-                    if kind == 'passing':
+                    if kind == "passing":
                         if week == 0:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Time to Throw', "{:.2f}".format(player_filter["avg_time_to_throw"].values[0]), False, bot)
+                            embed = functions.my_embed(
+                                "NGS",
+                                f"{kind.capitalize()} Next Gen Stats for {player} for {year}",
+                                discord.Colour.blue(),
+                                "Avg Time to Throw",
+                                "{:.2f}".format(
+                                    player_filter["avg_time_to_throw"].values[0]
+                                ),
+                                False,
+                                bot,
+                            )
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Time to Throw', "{:.2f}".format(player_filter["avg_time_to_throw"].values[0]), False, bot)
-                        embed.add_field(name='Avg Completed Air Yards', value="{:.2f}".format(player_filter["avg_completed_air_yards"].values[0]), inline=False)
-                        embed.add_field(name='Avg Intended Air Yards', value="{:.2f}".format(player_filter["avg_intended_air_yards"].values[0]), inline=False)
-                        embed.add_field(name='Avg Air Yards Differential', value="{:.2f}".format(player_filter["avg_air_yards_differential"].values[0]), inline=False)
-                        embed.add_field(name='Aggressiveness', value="{:.2f}".format(player_filter["aggressiveness"].values[0]), inline=False)
-                        embed.add_field(name='Avg Air Yards to Sticks', value="{:.2f}".format(player_filter["avg_air_yards_to_sticks"].values[0]), inline=False)
-                        embed.add_field(name='Completion Percent Over Expected', value="{:.2f}".format(player_filter["completion_percentage_above_expectation"].values[0]), inline=False)
-                    elif kind == 'rushing':
+                            embed = functions.my_embed(
+                                "NGS",
+                                f"{kind.capitalize()} Next Gen Stats for {player} for Week {week}",
+                                discord.Colour.blue(),
+                                "Avg Time to Throw",
+                                "{:.2f}".format(
+                                    player_filter["avg_time_to_throw"].values[0]
+                                ),
+                                False,
+                                bot,
+                            )
+                        embed.add_field(
+                            name="Avg Completed Air Yards",
+                            value="{:.2f}".format(
+                                player_filter["avg_completed_air_yards"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Avg Intended Air Yards",
+                            value="{:.2f}".format(
+                                player_filter["avg_intended_air_yards"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Avg Air Yards Differential",
+                            value="{:.2f}".format(
+                                player_filter["avg_air_yards_differential"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Aggressiveness",
+                            value="{:.2f}".format(
+                                player_filter["aggressiveness"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Avg Air Yards to Sticks",
+                            value="{:.2f}".format(
+                                player_filter["avg_air_yards_to_sticks"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Completion Percent Over Expected",
+                            value="{:.2f}".format(
+                                player_filter[
+                                    "completion_percentage_above_expectation"
+                                ].values[0]
+                            ),
+                            inline=False,
+                        )
+                    elif kind == "rushing":
                         if week == 0:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Efficiency', "{:.2f}".format(player_filter["efficiency"].values[0]), False, bot)
+                            embed = functions.my_embed(
+                                "NGS",
+                                f"{kind.capitalize()} Next Gen Stats for {player} for {year}",
+                                discord.Colour.blue(),
+                                "Efficiency",
+                                "{:.2f}".format(player_filter["efficiency"].values[0]),
+                                False,
+                                bot,
+                            )
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Efficiency', "{:.2f}".format(player_filter["efficiency"].values[0]), False, bot)
-                        embed.add_field(name='Percent of Attempts vs 8 Defenders', value="{:.2f}".format(player_filter["percent_attempts_gte_eight_defenders"].values[0]), inline=False)
-                        embed.add_field(name='Avg Time to Line of Scrimmage', value="{:.2f}".format(player_filter["avg_time_to_los"].values[0]), inline=False)
-                        embed.add_field(name='Rush Yards Over Expected', value="{:.2f}".format(player_filter["rush_yards_over_expected"].values[0]), inline=False)
-                        embed.add_field(name='Rush Yards Over Expected per Attempt', value="{:.2f}".format(player_filter["rush_yards_over_expected_per_att"].values[0]), inline=False)
-                        embed.add_field(name='Rush Percent Over Expected', value="{:.2f}".format(player_filter["rush_pct_over_expected"].values[0]), inline=False)
+                            embed = functions.my_embed(
+                                "NGS",
+                                f"{kind.capitalize()} Next Gen Stats for {player} for Week {week}",
+                                discord.Colour.blue(),
+                                "Efficiency",
+                                "{:.2f}".format(player_filter["efficiency"].values[0]),
+                                False,
+                                bot,
+                            )
+                        embed.add_field(
+                            name="Percent of Attempts vs 8 Defenders",
+                            value="{:.2f}".format(
+                                player_filter[
+                                    "percent_attempts_gte_eight_defenders"
+                                ].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Avg Time to Line of Scrimmage",
+                            value="{:.2f}".format(
+                                player_filter["avg_time_to_los"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Rush Yards Over Expected",
+                            value="{:.2f}".format(
+                                player_filter["rush_yards_over_expected"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Rush Yards Over Expected per Attempt",
+                            value="{:.2f}".format(
+                                player_filter[
+                                    "rush_yards_over_expected_per_att"
+                                ].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Rush Percent Over Expected",
+                            value="{:.2f}".format(
+                                player_filter["rush_pct_over_expected"].values[0]
+                            ),
+                            inline=False,
+                        )
                     else:
                         if week == 0:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for {year}', discord.Colour.blue(), 'Avg Cushion', "{:.2f}".format(player_filter["avg_cushion"].values[0]), False, bot)
+                            embed = functions.my_embed(
+                                "NGS",
+                                f"{kind.capitalize()} Next Gen Stats for {player} for {year}",
+                                discord.Colour.blue(),
+                                "Avg Cushion",
+                                "{:.2f}".format(player_filter["avg_cushion"].values[0]),
+                                False,
+                                bot,
+                            )
                         else:
-                            embed = functions.my_embed('NGS', f'{kind.capitalize()} Next Gen Stats for {player} for Week {week}', discord.Colour.blue(), 'Avg Cushion', "{:.2f}".format(player_filter["avg_cushion"].values[0]), False, bot)
-                        embed.add_field(name='Avg Separation', value="{:.2f}".format(player_filter["avg_separation"].values[0]), inline=False)
-                        embed.add_field(name='Avg Intended Air Yards', value="{:.2f}".format(player_filter["avg_intended_air_yards"].values[0]), inline=False)
-                        embed.add_field(name='Percent Share of Intended Air Yards', value="{:.2f}".format(player_filter["percent_share_of_intended_air_yards"].values[0]), inline=False)
-                        embed.add_field(name='Avg YAC Above Expectation', value="{:.2f}".format(player_filter["avg_yac_above_expectation"].values[0]), inline=False)
+                            embed = functions.my_embed(
+                                "NGS",
+                                f"{kind.capitalize()} Next Gen Stats for {player} for Week {week}",
+                                discord.Colour.blue(),
+                                "Avg Cushion",
+                                "{:.2f}".format(player_filter["avg_cushion"].values[0]),
+                                False,
+                                bot,
+                            )
+                        embed.add_field(
+                            name="Avg Separation",
+                            value="{:.2f}".format(
+                                player_filter["avg_separation"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Avg Intended Air Yards",
+                            value="{:.2f}".format(
+                                player_filter["avg_intended_air_yards"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Percent Share of Intended Air Yards",
+                            value="{:.2f}".format(
+                                player_filter[
+                                    "percent_share_of_intended_air_yards"
+                                ].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Avg YAC Above Expectation",
+                            value="{:.2f}".format(
+                                player_filter["avg_yac_above_expectation"].values[0]
+                            ),
+                            inline=False,
+                        )
             else:
-                embed = 'You do not have access to this command, it is reserved for patrons only!'  
+                embed = "You do not have access to this command, it is reserved for patrons only!"
         else:
-            embed = 'Please run add-league command, no Sleeper League connected.'
-                
+            embed = "Please run add-league command, no Sleeper League connected."
+
         return embed
-    
+
 
 def box_score(ctx, bot, kind, player, year, week):
     if ctx.guild == None:
-        embed= 'This command is only available when sent in a guild rather than a DM. Try again there.'
+        embed = "This command is only available when sent in a guild rather than a DM. Try again there."
     else:
         existing_league = functions.get_existing_league(ctx)
         if existing_league:
             if functions.is_patron(existing_league):
                 try:
                     weekly_data = nfl.import_weekly_data([year])
-                    player_filter = weekly_data.loc[((weekly_data['player_display_name'] == player) & (weekly_data['week'] == week))]
+                    player_filter = weekly_data.loc[
+                        (
+                            (weekly_data["player_display_name"] == player)
+                            & (weekly_data["week"] == week)
+                        )
+                    ]
                 except:
                     player_filter = None
 
                 if player_filter is None or player_filter.empty:
-                    embed = 'No stats were found with the given parameters.'
+                    embed = "No stats were found with the given parameters."
                 else:
-                    if kind == 'passing':
-                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Comp/Att', f'{int(player_filter["completions"])}/{int(player_filter["attempts"])}', False, bot)
-                        embed.add_field(name='Yards', value="{:.0f}".format(player_filter["passing_yards"].values[0]), inline=False)
-                        embed.add_field(name='Touchdowns', value=int(player_filter["passing_tds"]), inline=False)
-                        embed.add_field(name='Interceptions', value="{:.0f}".format(player_filter["interceptions"].values[0]), inline=False)
-                        embed.add_field(name='Sacks', value="{:.0f}".format(player_filter["sacks"].values[0]), inline=False)
-                        embed.add_field(name='Fumbles Lost', value=int(player_filter["sack_fumbles_lost"]), inline=False)
-                        embed.add_field(name='YAC', value="{:.0f}".format(player_filter["passing_yards_after_catch"].values[0]), inline=False)
-                        embed.add_field(name='Passing EPA', value="{:.2f}".format(player_filter["passing_epa"].values[0]), inline=False)
-                    elif kind == 'rushing':
-                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Carries', int(player_filter["carries"]), False, bot)
-                        embed.add_field(name='Yards', value="{:.0f}".format(player_filter["rushing_yards"].values[0]), inline=False)
-                        embed.add_field(name='Touchdowns', value=int(player_filter["rushing_tds"]), inline=False)
-                        embed.add_field(name='Fumbles Lost', value="{:.0f}".format(player_filter["rushing_fumbles_lost"].values[0]), inline=False)
-                        embed.add_field(name='Rushing EPA', value="{:.2f}".format(player_filter["rushing_epa"].values[0]), inline=False)
+                    if kind == "passing":
+                        embed = functions.my_embed(
+                            "Box Score",
+                            f"{kind.capitalize()} Stats for {player} for Week {week}",
+                            discord.Colour.blue(),
+                            "Comp/Att",
+                            f'{int(player_filter["completions"])}/{int(player_filter["attempts"])}',
+                            False,
+                            bot,
+                        )
+                        embed.add_field(
+                            name="Yards",
+                            value="{:.0f}".format(
+                                player_filter["passing_yards"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Touchdowns",
+                            value=int(player_filter["passing_tds"]),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Interceptions",
+                            value="{:.0f}".format(
+                                player_filter["interceptions"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Sacks",
+                            value="{:.0f}".format(player_filter["sacks"].values[0]),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Fumbles Lost",
+                            value=int(player_filter["sack_fumbles_lost"]),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="YAC",
+                            value="{:.0f}".format(
+                                player_filter["passing_yards_after_catch"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Passing EPA",
+                            value="{:.2f}".format(
+                                player_filter["passing_epa"].values[0]
+                            ),
+                            inline=False,
+                        )
+                    elif kind == "rushing":
+                        embed = functions.my_embed(
+                            "Box Score",
+                            f"{kind.capitalize()} Stats for {player} for Week {week}",
+                            discord.Colour.blue(),
+                            "Carries",
+                            int(player_filter["carries"]),
+                            False,
+                            bot,
+                        )
+                        embed.add_field(
+                            name="Yards",
+                            value="{:.0f}".format(
+                                player_filter["rushing_yards"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Touchdowns",
+                            value=int(player_filter["rushing_tds"]),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Fumbles Lost",
+                            value="{:.0f}".format(
+                                player_filter["rushing_fumbles_lost"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Rushing EPA",
+                            value="{:.2f}".format(
+                                player_filter["rushing_epa"].values[0]
+                            ),
+                            inline=False,
+                        )
                     else:
-                        embed = functions.my_embed('Box Score', f'{kind.capitalize()} Stats for {player} for Week {week}', discord.Colour.blue(), 'Receptions', int(player_filter["receptions"]), False, bot)
-                        embed.add_field(name='Targets', value=int(player_filter["targets"]), inline=False)
-                        embed.add_field(name='Yards', value="{:.0f}".format(player_filter["receiving_yards"].values[0]), inline=False)
-                        embed.add_field(name='Touchdowns', value=int(player_filter["receiving_tds"]), inline=False)
-                        embed.add_field(name='Fumbles Lost', value="{:.0f}".format(player_filter["receiving_fumbles_lost"].values[0]), inline=False)
-                        embed.add_field(name='Receiving EPA', value="{:.2f}".format(player_filter["receiving_epa"].values[0]), inline=False)
+                        embed = functions.my_embed(
+                            "Box Score",
+                            f"{kind.capitalize()} Stats for {player} for Week {week}",
+                            discord.Colour.blue(),
+                            "Receptions",
+                            int(player_filter["receptions"]),
+                            False,
+                            bot,
+                        )
+                        embed.add_field(
+                            name="Targets",
+                            value=int(player_filter["targets"]),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Yards",
+                            value="{:.0f}".format(
+                                player_filter["receiving_yards"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Touchdowns",
+                            value=int(player_filter["receiving_tds"]),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Fumbles Lost",
+                            value="{:.0f}".format(
+                                player_filter["receiving_fumbles_lost"].values[0]
+                            ),
+                            inline=False,
+                        )
+                        embed.add_field(
+                            name="Receiving EPA",
+                            value="{:.2f}".format(
+                                player_filter["receiving_epa"].values[0]
+                            ),
+                            inline=False,
+                        )
             else:
-                embed = 'You do not have access to this command, it is reserved for patrons only!'  
+                embed = "You do not have access to this command, it is reserved for patrons only!"
         else:
-            embed = 'Please run add-league command, no Sleeper League connected.'
-                
+            embed = "Please run add-league command, no Sleeper League connected."
+
         return embed
-    
 
 
 def transactions(ctx, bot, week):
     if ctx.guild == None:
-        embed= 'This command is only available when sent in a guild rather than a DM. Try again there.'
-    else:    
+        embed = "This command is only available when sent in a guild rather than a DM. Try again there."
+    else:
         if week.isnumeric() and int(week) > 0 and int(week) < 19:
             existing_league = functions.get_existing_league(ctx)
             if existing_league:
@@ -157,18 +433,28 @@ def transactions(ctx, bot, week):
                         league_id = existing_league["league"]
                         users = sleeper_wrapper.League(int(league_id)).get_users()
                         rosters = sleeper_wrapper.League(int(league_id)).get_rosters()
-                        transactions = sleeper_wrapper.League(int(league_id)).get_transactions(int(week))
-                        transactions_string = ''
+                        transactions = sleeper_wrapper.League(
+                            int(league_id)
+                        ).get_transactions(int(week))
+                        transactions_string = ""
                         count = 0
                         if len(transactions) == 0:
-                            transactions_string = 'None'
-                            embed = functions.my_embed('Transactions', 'Returns the last 10 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, bot)
+                            transactions_string = "None"
+                            embed = functions.my_embed(
+                                "Transactions",
+                                "Returns the last 10 transactions for any specified week.",
+                                discord.Colour.blue(),
+                                "Recent Transactions",
+                                transactions_string,
+                                False,
+                                bot,
+                            )
                         else:
                             for transaction in transactions:
                                 count = count + 1
                                 if count == 11:
                                     break
-                                elif transaction["type"] == 'free_agent':
+                                elif transaction["type"] == "free_agent":
                                     roster_id = transaction["roster_ids"][0]
                                     for roster in rosters:
                                         if roster["roster_id"] == roster_id:
@@ -183,12 +469,14 @@ def transactions(ctx, bot, week):
                                         else:
                                             continue
                                     if transaction["drops"]:
-                                        transactions_string += f'{username} dropped '
+                                        transactions_string += f"{username} dropped "
                                     drop_count = 0
                                     try:
                                         for drop in transaction["drops"]:
                                             drop_count = drop_count + 1
-                                            existing_player = MONGO.players.find_one({"id": str(drop)})
+                                            existing_player = MONGO.players.find_one(
+                                                {"id": str(drop)}
+                                            )
                                             if drop_count != 1:
                                                 transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
@@ -199,12 +487,14 @@ def transactions(ctx, bot, week):
                                     try:
                                         if transaction["adds"]:
                                             if transaction["drops"]:
-                                                transactions_string += '\n'
-                                            transactions_string += f'{username} added '
+                                                transactions_string += "\n"
+                                            transactions_string += f"{username} added "
                                         add_count = 0
                                         for add in transaction["adds"]:
                                             add_count = add_count + 1
-                                            existing_player = MONGO.players.find_one({"id": str(add)})
+                                            existing_player = MONGO.players.find_one(
+                                                {"id": str(add)}
+                                            )
                                             if add_count != 1:
                                                 transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
@@ -212,8 +502,8 @@ def transactions(ctx, bot, week):
                                             MONGO_CONN.close()
                                     except:
                                         pass
-                                    transactions_string += '\n\n'
-                                elif transaction["type"] == 'waiver':
+                                    transactions_string += "\n\n"
+                                elif transaction["type"] == "waiver":
                                     roster_id = transaction["roster_ids"][0]
                                     for roster in rosters:
                                         if roster["roster_id"] == roster_id:
@@ -227,12 +517,14 @@ def transactions(ctx, bot, week):
                                         else:
                                             continue
                                     if transaction["adds"]:
-                                        transactions_string += f'{username} added '
+                                        transactions_string += f"{username} added "
                                     add_count = 0
                                     try:
                                         for add in transaction["adds"]:
                                             add_count = add_count + 1
-                                            existing_player = MONGO.players.find_one({"id": str(add)})
+                                            existing_player = MONGO.players.find_one(
+                                                {"id": str(add)}
+                                            )
                                             if add_count != 1:
                                                 transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
@@ -243,12 +535,16 @@ def transactions(ctx, bot, week):
                                     try:
                                         if transaction["drops"]:
                                             if transaction["adds"]:
-                                                transactions_string += '\n'
-                                            transactions_string += f'{username} dropped '
+                                                transactions_string += "\n"
+                                            transactions_string += (
+                                                f"{username} dropped "
+                                            )
                                         drop_count = 0
                                         for drop in transaction["drops"]:
                                             drop_count = drop_count + 1
-                                            existing_player = MONGO.players.find_one({"id": str(drop)})
+                                            existing_player = MONGO.players.find_one(
+                                                {"id": str(drop)}
+                                            )
                                             if drop_count != 1:
                                                 transactions_string += f', {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}'
                                             else:
@@ -256,12 +552,14 @@ def transactions(ctx, bot, week):
                                             MONGO_CONN.close()
                                     except:
                                         pass
-                                    transactions_string += '\n\n'
+                                    transactions_string += "\n\n"
                                 else:
-                                    second_transactions_string = 'Trade:\n'
+                                    second_transactions_string = "Trade:\n"
                                     if transaction["adds"]:
                                         for add in transaction["adds"]:
-                                            existing_player = MONGO.players.find_one({"id": str(add)})
+                                            existing_player = MONGO.players.find_one(
+                                                {"id": str(add)}
+                                            )
                                             roster_id = transaction["adds"][add]
                                             for roster in rosters:
                                                 if roster["roster_id"] == roster_id:
@@ -270,7 +568,10 @@ def transactions(ctx, bot, week):
                                                 else:
                                                     continue
                                             for user in users:
-                                                if this_roster["owner_id"] == user["user_id"]:
+                                                if (
+                                                    this_roster["owner_id"]
+                                                    == user["user_id"]
+                                                ):
                                                     username = user["display_name"]
                                                     second_transactions_string += f'{username} received {existing_player["name"]} - {existing_player["team"]} {existing_player["position"]}\n'
                                                     break
@@ -280,28 +581,44 @@ def transactions(ctx, bot, week):
                                     if len(transaction["draft_picks"]) != 0:
                                         for draft_pick in transaction["draft_picks"]:
                                             for roster in rosters:
-                                                if roster["roster_id"] == draft_pick["owner_id"]:
+                                                if (
+                                                    roster["roster_id"]
+                                                    == draft_pick["owner_id"]
+                                                ):
                                                     this_roster = roster
                                                     break
                                                 else:
                                                     continue
                                             for user in users:
-                                                if this_roster["owner_id"] == user["user_id"]:
+                                                if (
+                                                    this_roster["owner_id"]
+                                                    == user["user_id"]
+                                                ):
                                                     username = user["display_name"]
                                                     second_transactions_string += f'{username} received a draft pick in round {draft_pick["round"]} in the {draft_pick["season"]} season\n'
                                                     break
                                                 else:
-                                                    continue 
+                                                    continue
                                     else:
                                         pass
-                                    transactions_string += f'{second_transactions_string}\n'
-                            embed = functions.my_embed('Transactions', 'Returns the last 10 transactions for any specified week.', discord.Colour.blue(), 'Recent Transactions', transactions_string, False, bot)
+                                    transactions_string += (
+                                        f"{second_transactions_string}\n"
+                                    )
+                            embed = functions.my_embed(
+                                "Transactions",
+                                "Returns the last 10 transactions for any specified week.",
+                                discord.Colour.blue(),
+                                "Recent Transactions",
+                                transactions_string,
+                                False,
+                                bot,
+                            )
                     else:
-                        embed = 'Please run add-league command, no Sleeper League connected.'    
+                        embed = "Please run add-league command, no Sleeper League connected."
                 else:
-                    embed = 'You do not have access to this command, it is reserved for patrons only!'  
+                    embed = "You do not have access to this command, it is reserved for patrons only!"
             else:
-                embed = 'Please run add-league command, no Sleeper League connected.'
+                embed = "Please run add-league command, no Sleeper League connected."
         else:
-            embed = 'Please use a valid week number between 1 and 18.'
+            embed = "Please use a valid week number between 1 and 18."
     return embed
